@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  c-bank:
+    image: mohammadnowresideh1997/c-bank
+    container_name: c-bank
+    ports:
+      - 3006:3006
