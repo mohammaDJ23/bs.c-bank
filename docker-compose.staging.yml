@@ -3,5 +3,12 @@ services:
   c-bank:
     image: mohammadnowresideh1997/c-bank
     container_name: c-bank
+    restart: always
     ports:
       - 3006:3006
+    networks:
+      - services_app-network
+
+networks:
+  services_app-network:
+    external: true
