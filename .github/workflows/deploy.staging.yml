@@ -37,7 +37,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             CACHE_SECRET_KEY=${{ secrets.CACHE_SECRET_KEY }}
-            PUBLIC_PATH=${{ secrets.PUBLIC_PATH }}
             AUTH_SERVICE=${{ secrets.AUTH_SERVICE }}
             BANK_SERVICE=${{ secrets.BANK_SERVICE }}
             USER_SERVICE=${{ secrets.USER_SERVICE }}
