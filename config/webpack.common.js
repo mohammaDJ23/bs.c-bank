@@ -74,7 +74,7 @@ module.exports = {
     new HtmlWebpackPlugin({ template: './public/index.html' }),
     new ModuleFederationPlugin({
       name: 'bank',
-      filename: 'remoteEntry.js',
+      filename: 'bank.remoteEntry.js',
       exposes: { './BankApp': './src/bootstrap.tsx' },
       shared: packageJson.dependencies,
     }),
