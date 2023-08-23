@@ -9,4 +9,7 @@ module.exports = merge(commonConfig, {
       'process.env': JSON.stringify(process.env),
     }),
   ],
+  output: {
+    publicPath: `${process.env.BANK_APP}/bank/static/`,
+  },
 });
