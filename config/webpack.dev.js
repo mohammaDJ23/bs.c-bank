@@ -15,4 +15,7 @@ module.exports = merge(commonConfig, {
     }),
   ],
   devServer: { port: 3006, historyApiFallback: true },
+  output: {
+    publicPath: `${process.env.BANK_APP}/`,
+  },
 });
