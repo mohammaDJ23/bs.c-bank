@@ -23,7 +23,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ secrets.DOCKER_USERNAME }}/c-bank
+          images: ${{ secrets.DOCKER_USERNAME }}/c-bank-staging
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'staging') }}
 
@@ -36,13 +36,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            CACHE_SECRET_KEY=${{ secrets.CACHE_SECRET_KEY }}
-            AUTH_SERVICE=${{ secrets.AUTH_SERVICE }}
-            BANK_SERVICE=${{ secrets.BANK_SERVICE }}
-            USER_SERVICE=${{ secrets.USER_SERVICE }}
-            CONTAINER_APP=${{ secrets.CONTAINER_APP }}
-            AUTH_APP=${{ secrets.AUTH_APP }}
-            BANK_APP=${{ secrets.BANK_APP }}
+            CACHE_SECRET_KEY=${{ secrets.STAGING_CACHE_SECRET_KEY }}
+            AUTH_SERVICE=${{ secrets.STAGING_AUTH_SERVICE }}
+            BANK_SERVICE=${{ secrets.STAGING_BANK_SERVICE }}
+            USER_SERVICE=${{ secrets.STAGING_USER_SERVICE }}
+            CONTAINER_APP=${{ secrets.STAGING_CONTAINER_APP }}
+            AUTH_APP=${{ secrets.STAGING_AUTH_APP }}
+            BANK_APP=${{ secrets.STAGING_BANK_APP }}
 
   deploying-ssh:
     needs: build-push-action
