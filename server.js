@@ -22,4 +22,4 @@ app.get('*', (req, res) => {
   res.json({ errorMessage: 'Could not found the frontend directory.' });
 });
 
-app.listen(3006);
+app.listen(process.env.PORT, () => console.log('the server is running on ' + process.env.PORT));

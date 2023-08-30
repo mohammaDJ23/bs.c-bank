@@ -43,6 +43,7 @@ jobs:
             CONTAINER_APP=${{ secrets.STAGING_CONTAINER_APP }}
             AUTH_APP=${{ secrets.STAGING_AUTH_APP }}
             BANK_APP=${{ secrets.STAGING_BANK_APP }}
+            PORT=${{ secrets.STAGING_PORT }}
 
   deploying-ssh:
     needs: build-push-action
