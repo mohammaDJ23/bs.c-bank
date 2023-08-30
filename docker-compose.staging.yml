@@ -1,11 +1,13 @@
 version: '3.8'
 services:
   c-bank-staging:
-    image: mohammadnowresideh1997/c-bank-staging
+    image: ${DOCKER_USERNAME}/c-bank-staging
+    env_file:
+      - /root/config/c-bank-staging.env.txt
     container_name: c-bank-staging
     restart: always
     ports:
-      - 3006:3006
+      - ${PORT}:${PORT}
     networks:
       - services_app-network
 
