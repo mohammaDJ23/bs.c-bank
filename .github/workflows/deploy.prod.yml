@@ -1,9 +1,9 @@
-name: Deploy to staging environment
+name: Deploy to prod environment
 
 on:
   push:
     branches:
-      - staging
+      - master
 
 jobs:
   build-push-action:
@@ -23,27 +23,27 @@ jobs:
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ secrets.DOCKER_USERNAME }}/c-bank-staging
+          images: ${{ secrets.DOCKER_USERNAME }}/c-bank-prod
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'staging') }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
-          file: ./Dockerfile.staging
+          file: ./Dockerfile.prod
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            CACHE_SECRET_KEY=${{ secrets.STAGING_CACHE_SECRET_KEY }}
-            AUTH_SERVICE=${{ secrets.STAGING_AUTH_SERVICE }}
-            BANK_SERVICE=${{ secrets.STAGING_BANK_SERVICE }}
-            USER_SERVICE=${{ secrets.STAGING_USER_SERVICE }}
-            CONTAINER_APP=${{ secrets.STAGING_CONTAINER_APP }}
-            AUTH_APP=${{ secrets.STAGING_AUTH_APP }}
-            BANK_APP=${{ secrets.STAGING_BANK_APP }}
-            PORT=${{ secrets.STAGING_PORT }}
+            CACHE_SECRET_KEY=${{ secrets.PROD_CACHE_SECRET_KEY }}
+            AUTH_SERVICE=${{ secrets.PROD_AUTH_SERVICE }}
+            BANK_SERVICE=${{ secrets.PROD_BANK_SERVICE }}
+            USER_SERVICE=${{ secrets.PROD_USER_SERVICE }}
+            CONTAINER_APP=${{ secrets.PROD_CONTAINER_APP }}
+            AUTH_APP=${{ secrets.PROD_AUTH_APP }}
+            BANK_APP=${{ secrets.PROD_BANK_APP }}
+            PORT=${{ secrets.PROD_PORT }}
 
   deploying-ssh:
     needs: build-push-action
@@ -62,7 +62,7 @@ jobs:
           command_timeout: 60m
           script: |
             cd app
-            npm run docker:stop:c-bank:staging
-            npm run docker:rm:c-bank:staging
-            npm run docker:rmi:c-bank:staging
-            npm run docker:compose:up:c-bank:staging
+            npm run docker:stop:c-bank:prod
+            npm run docker:rm:c-bank:prod
+            npm run docker:rmi:c-bank:prod
+            npm run docker:compose:up:c-bank:prod

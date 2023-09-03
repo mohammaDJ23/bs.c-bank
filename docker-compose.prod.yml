@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  c-bank-prod:
+    image: ${DOCKER_USERNAME}/c-bank-prod
+    env_file:
+      - /root/config/c-bank-prod.env.txt
+    container_name: c-bank-prod
+    restart: always
+    ports:
+      - ${PORT}:${PORT}
+    networks:
+      - services_app-network
+
+networks:
+  services_app-network:
+    external: true
