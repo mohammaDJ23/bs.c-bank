@@ -1,10 +1,10 @@
 version: '3.8'
 services:
-  c-bank-staging:
-    image: ${DOCKER_USERNAME}/c-bank-staging
+  c-bank-prod:
+    image: ${DOCKER_USERNAME}/c-bank-prod
     env_file:
-      - /root/config/c-bank-staging.env.txt
-    container_name: c-bank-staging
+      - /root/config/c-bank-prod.env.txt
+    container_name: c-bank-prod
     restart: always
     ports:
       - ${PORT}:${PORT}
