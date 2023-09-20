@@ -26,11 +26,12 @@ const UsersContent: FC = () => {
   const menuOptions = [<Typography onClick={() => showModal(ModalNames.USER_FILTERS)}>Filters</Typography>];
 
   return (
-    <Navigation title={`Users ${!isInitialUsersApiProcessing ? `(${usersTotal})` : ''}`} menuOptions={menuOptions}>
-      <ListContainer>
-        <List />
-      </ListContainer>
-    </Navigation>
+    // <Navigation title={`Users ${!isInitialUsersApiProcessing ? `(${usersTotal})` : ''}`} menuOptions={menuOptions}>
+    //   <ListContainer>
+    //     <List />
+    //   </ListContainer>
+    // </Navigation>
+    <></>
   );
 };
 
