@@ -17,9 +17,7 @@ interface FormState<T = {}> {
 
 function makeFormsState(): FormState {
   let state: FormState = {};
-  console.log('in the makeFormsState', forms);
   for (const formName in forms) {
-    console.log('form name', formName);
     state[formName] = new forms[formName as keyof typeof forms]();
   }
   return state;
