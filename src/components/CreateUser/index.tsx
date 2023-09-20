@@ -16,22 +16,24 @@ const CreateUserContent: FC = () => {
   const form = createUserFormInstance.getForm();
   const { enqueueSnackbar } = useSnackbar();
 
-  const formSubmition = useCallback(() => {
-    createUserFormInstance.onSubmit(() => {
-      request<CreateUser, CreateUser>(new CreateUserApi(form)).then(response => {
-        createUserFormInstance.resetForm();
-        enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
-      });
-    });
-  }, [createUserFormInstance, form, request]);
+  console.log(form);
 
-  useEffect(() => {
-    focus('firstName');
-  }, []);
+  // const formSubmition = useCallback(() => {
+  //   createUserFormInstance.onSubmit(() => {
+  //     request<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
+  //       createUserFormInstance.resetForm();
+  //       enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
+  //     });
+  //   });
+  // }, [createUserFormInstance, form, request]);
+
+  // useEffect(() => {
+  //   focus('firstName');
+  // }, []);
 
   return (
     <Navigation>
-      <FormContainer>
+      {/* <FormContainer>
         <Box
           component="form"
           noValidate
@@ -139,7 +141,7 @@ const CreateUserContent: FC = () => {
             </Button>
           </Box>
         </Box>
-      </FormContainer>
+      </FormContainer> */}
     </Navigation>
   );
 };
