@@ -16,22 +16,22 @@ const CreateUserContent: FC = () => {
   const form = createUserFormInstance.getForm();
   const { enqueueSnackbar } = useSnackbar();
 
-  // const formSubmition = useCallback(() => {
-  //   createUserFormInstance.onSubmit(() => {
-  //     request<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
-  //       createUserFormInstance.resetForm();
-  //       enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
-  //     });
-  //   });
-  // }, [createUserFormInstance, form, request]);
+  const formSubmition = useCallback(() => {
+    createUserFormInstance.onSubmit(() => {
+      request<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
+        createUserFormInstance.resetForm();
+        enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
+      });
+    });
+  }, [createUserFormInstance, form, request]);
 
-  // useEffect(() => {
-  //   focus('firstName');
-  // }, []);
+  useEffect(() => {
+    focus('firstName');
+  }, []);
 
   return (
     <Navigation>
-      {/* <FormContainer>
+      <FormContainer>
         <Box
           component="form"
           noValidate
@@ -39,7 +39,7 @@ const CreateUserContent: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             formSubmition();
           }}
@@ -49,7 +49,7 @@ const CreateUserContent: FC = () => {
             variant="standard"
             type="text"
             value={form.firstName}
-            onChange={event => createUserFormInstance.onChange('firstName', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('firstName', event.target.value)}
             helperText={createUserFormInstance.getInputErrorMessage('firstName')}
             error={createUserFormInstance.isInputInValid('firstName')}
             disabled={isCreateUserApiProcessing}
@@ -60,7 +60,7 @@ const CreateUserContent: FC = () => {
             variant="standard"
             type="text"
             value={form.lastName}
-            onChange={event => createUserFormInstance.onChange('lastName', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('lastName', event.target.value)}
             helperText={createUserFormInstance.getInputErrorMessage('lastName')}
             error={createUserFormInstance.isInputInValid('lastName')}
             disabled={isCreateUserApiProcessing}
@@ -70,7 +70,7 @@ const CreateUserContent: FC = () => {
             type="email"
             variant="standard"
             value={form.email}
-            onChange={event => createUserFormInstance.onChange('email', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('email', event.target.value)}
             helperText={createUserFormInstance.getInputErrorMessage('email')}
             error={createUserFormInstance.isInputInValid('email')}
             disabled={isCreateUserApiProcessing}
@@ -81,7 +81,7 @@ const CreateUserContent: FC = () => {
             variant="standard"
             value={form.password}
             autoComplete="off"
-            onChange={event => createUserFormInstance.onChange('password', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('password', event.target.value)}
             helperText={createUserFormInstance.getInputErrorMessage('password')}
             error={createUserFormInstance.isInputInValid('password')}
             disabled={isCreateUserApiProcessing}
@@ -91,7 +91,7 @@ const CreateUserContent: FC = () => {
             type="text"
             variant="standard"
             value={form.phone}
-            onChange={event => createUserFormInstance.onChange('phone', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('phone', event.target.value)}
             helperText={createUserFormInstance.getInputErrorMessage('phone')}
             error={createUserFormInstance.isInputInValid('phone')}
             disabled={isCreateUserApiProcessing}
@@ -103,11 +103,11 @@ const CreateUserContent: FC = () => {
               labelId="role"
               id="role"
               value={form.role}
-              onChange={event => createUserFormInstance.onChange('role', event.target.value)}
+              onChange={(event) => createUserFormInstance.onChange('role', event.target.value)}
               label="Role"
               error={createUserFormInstance.isInputInValid('role')}
             >
-              {getUserRoles().map(el => (
+              {getUserRoles().map((el) => (
                 <MenuItem key={el.value} value={el.value}>
                   {el.label}
                 </MenuItem>
@@ -139,7 +139,7 @@ const CreateUserContent: FC = () => {
             </Button>
           </Box>
         </Box>
-      </FormContainer> */}
+      </FormContainer>
     </Navigation>
   );
 };

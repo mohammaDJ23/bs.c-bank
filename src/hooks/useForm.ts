@@ -12,9 +12,6 @@ export function useForm<T extends FormInstance>(initialForm: Constructor<T>) {
   const { showModal, setForm, onChange: changeInput, resetForm: resettingForm } = useAction();
   const { modals, forms } = useSelector();
 
-  console.log('forms', forms);
-  console.log(initialForm, initialForm.prototype, initialForm.name, forms[initialForm.name]);
-
   return useMemo(
     function () {
       function getFormName() {
