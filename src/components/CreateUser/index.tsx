@@ -16,8 +16,6 @@ const CreateUserContent: FC = () => {
   const form = createUserFormInstance.getForm();
   const { enqueueSnackbar } = useSnackbar();
 
-  console.log(form);
-
   // const formSubmition = useCallback(() => {
   //   createUserFormInstance.onSubmit(() => {
   //     request<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
