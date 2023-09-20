@@ -16,8 +16,10 @@ module.exports = {
     minimizer: [
       new TerserPlugin({
         terserOptions: {
+          mangle: true,
           keep_classnames: true,
           keep_fnames: true,
+          compress: true,
         },
       }),
     ],
