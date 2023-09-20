@@ -13,7 +13,7 @@ export function useForm<T extends FormInstance>(initialForm: Constructor<T>) {
   const { modals, forms } = useSelector();
 
   console.log('forms', forms);
-  console.log(initialForm.name, forms[initialForm.name]);
+  console.log(initialForm, initialForm.prototype, initialForm.name, forms[initialForm.name]);
 
   return useMemo(
     function () {
