@@ -12,7 +12,7 @@ module.exports = {
     maxAssetSize: 512000,
   },
   optimization: {
-    minimize: false,
+    minimize: true,
     minimizer: [
       new TerserPlugin({
         terserOptions: {
