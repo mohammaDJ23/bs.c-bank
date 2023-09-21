@@ -11,19 +11,19 @@ module.exports = {
     maxEntrypointSize: 512000,
     maxAssetSize: 512000,
   },
-  optimization: {
-    minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          mangle: true,
-          keep_classnames: true,
-          keep_fnames: true,
-          compress: true,
-        },
-      }),
-    ],
-  },
+  // optimization: {
+  //   minimize: true,
+  //   minimizer: [
+  //     new TerserPlugin({
+  //       terserOptions: {
+  //         mangle: true,
+  //         keep_classnames: true,
+  //         keep_fnames: true,
+  //         compress: true,
+  //       },
+  //     }),
+  //   ],
+  // },
   module: {
     rules: [
       {
