@@ -18,8 +18,7 @@ module.exports = {
         terserOptions: {
           keep_classnames: true,
           keep_fnames: true,
-          compress: { keep_classnames: true, keep_fnames: true },
-          mangle: { keep_classnames: true, keep_fnames: true },
+          compress: false,
         },
       }),
     ],
