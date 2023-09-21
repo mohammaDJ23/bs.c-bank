@@ -12,8 +12,6 @@ export function usePaginationList<T>(listInstance: ListInstanceConstructor<ListI
   const { setPaginationList, changePaginationListPage } = useAction();
   const { listContainer, paginationList } = useSelector();
 
-  console.log(listInstance, listInstance.name, paginationList);
-
   return useMemo(
     function () {
       function setList<R extends ListInstance>(newListInstance: R) {
