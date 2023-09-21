@@ -1,4 +1,3 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const { ModuleFederationPlugin } = require('webpack').container;
@@ -84,7 +83,6 @@ module.exports = {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: './public/index.html' }),
     new ModuleFederationPlugin({
       name: 'bank',
       filename: 'remoteEntry.js',
