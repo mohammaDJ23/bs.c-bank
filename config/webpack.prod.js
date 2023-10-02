@@ -12,7 +12,7 @@ module.exports = merge(commonConfig, {
       'process.env': JSON.stringify(process.env),
     }),
     new FaviconsWebpackPlugin({
-      logo: './public/app-logo-48.png',
+      logo: './public/app-icon_256.png',
       favicons: {
         path: process.env.BANK_APP + process.env.BANK_PUBLIC_PATH + 'assets/',
         icons: {

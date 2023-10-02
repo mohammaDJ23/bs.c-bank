@@ -11,7 +11,7 @@ module.exports = merge(commonConfig, {
   mode: 'development',
   devtool: 'source-map',
   plugins: [
-    new HtmlWebpackPlugin({ template: './public/index.html', favicon: './public/app-logo-48.png' }),
+    new HtmlWebpackPlugin({ template: './public/index.html', favicon: './public/app-icon_256.png' }),
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(dotenv.parsed),
     }),
