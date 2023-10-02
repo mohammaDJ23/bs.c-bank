@@ -36,6 +36,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
+            CONTAINER_PUBLIC_PATH=${{ secrets.CONTAINER_PUBLIC_PATH }}
+            AUTH_PUBLIC_PATH=${{ secrets.AUTH_PUBLIC_PATH }}
+            BANK_PUBLIC_PATH=${{ secrets.BANK_PUBLIC_PATH }}
             CACHE_SECRET_KEY=${{ secrets.STAGING_CACHE_SECRET_KEY }}
             AUTH_SERVICE=${{ secrets.STAGING_AUTH_SERVICE }}
             BANK_SERVICE=${{ secrets.STAGING_BANK_SERVICE }}
