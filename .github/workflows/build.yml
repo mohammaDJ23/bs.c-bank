@@ -18,6 +18,3 @@ jobs:
 
       - name: Installing the node_modules packages
         run: npm install
-
-      - name: Building process
-        run: npm run webpack:build
