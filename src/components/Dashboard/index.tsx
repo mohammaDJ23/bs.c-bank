@@ -248,7 +248,7 @@ const Dashboard: FC = () => {
                   <Chart
                     options={{
                       chart: {
-                        height: 440,
+                        height: 380,
                         type: 'area',
                       },
                       dataLabels: {
@@ -278,7 +278,7 @@ const Dashboard: FC = () => {
                       },
                     ]}
                     type="area"
-                    height={440}
+                    height={380}
                   />
                 </CardContent>
               </Card>
