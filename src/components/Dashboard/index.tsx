@@ -28,48 +28,10 @@ import {
 } from '../../store';
 import Skeleton from '../shared/Skeleton';
 import Card from '../shared/Card';
-import {
-  Chart,
-  ArgumentAxis,
-  ValueAxis,
-  AreaSeries,
-  Title,
-  Legend,
-  Tooltip,
-  BarSeries,
-} from '@devexpress/dx-react-chart-material-ui';
-import { ArgumentScale, Animation, EventTracker, Stack } from '@devexpress/dx-react-chart';
-import { curveCatmullRom, area } from 'd3-shape';
 import moment from 'moment';
-import { scalePoint } from 'd3-scale';
 import { useSnackbar } from 'notistack';
 import Navigation from '../../layout/Navigation';
-
-const AreaChart = styled(Box)(({ theme }) => ({
-  [theme.breakpoints.down('sm')]: {
-    opacity: '0',
-    visibility: 'hidden',
-    height: '0',
-  },
-  [theme.breakpoints.up('sm')]: {
-    opacity: '1',
-    visibility: 'visible',
-    height: 'auto',
-  },
-}));
-
-const BarChart = styled(Box)(({ theme }) => ({
-  [theme.breakpoints.down('sm')]: {
-    opacity: '1',
-    visibility: 'visible',
-    height: 'auto',
-  },
-  [theme.breakpoints.up('sm')]: {
-    opacity: '0',
-    visibility: 'hidden',
-    height: '0',
-  },
-}));
+import Chart from 'react-apexcharts';
 
 const LargSliderWrapper = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
@@ -91,22 +53,6 @@ const SmallSliderWrapper = styled(Box)(({ theme }) => ({
     display: 'none',
   },
 }));
-
-const Root = (props: Legend.RootProps) => (
-  <Legend.Root {...props} sx={{ display: 'flex', margin: 'auto', flexDirection: 'row' }} />
-);
-const Label = (props: Legend.LabelProps) => <Legend.Label {...props} sx={{ whiteSpace: 'nowrap' }} />;
-
-const Area = (props: any) => (
-  <AreaSeries.Path
-    {...props}
-    path={area()
-      .x(({ arg }: any) => arg)
-      .y1(({ val }: any) => val)
-      .y0(({ startVal }: any) => startVal)
-      .curve(curveCatmullRom)}
-  />
-);
 
 function getOneDayDate() {
   return 1 * 24 * 60 * 60 * 1000;
@@ -137,11 +83,11 @@ const Dashboard: FC = () => {
   const periodAmountChangeRequest = useRef(
     debounce(500, (previousPeriodAmountFilter: PeriodAmountFilter, newPeriodAmountFilter: PeriodAmountFilter) => {
       request<TotalAmount, PeriodAmountFilter>(new PeriodAmountApi(newPeriodAmountFilter))
-        .then(response => {
+        .then((response) => {
           const { totalAmount, quantities } = response.data;
           setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
         })
-        .catch(err => setSpecificDetails('periodAmountFilter', previousPeriodAmountFilter));
+        .catch((err) => setSpecificDetails('periodAmountFilter', previousPeriodAmountFilter));
     })
   );
 
@@ -299,60 +245,41 @@ const Dashboard: FC = () => {
             chartData.length > 0 && (
               <Card>
                 <CardContent>
-                  <AreaChart>
-                    <Chart data={chartData} height={400}>
-                      {/**@ts-ignore*/}
-                      <ArgumentScale factory={scalePoint} />
-                      <ArgumentAxis showGrid />
-                      <ValueAxis
-                        showGrid
-                        tickFormat={scale => tick => {
-                          if (Number.isInteger(tick)) return Math.floor(Number(tick)).toString();
-                          else return '';
-                        }}
-                      />
-                      <AreaSeries
-                        color="#20a0ff"
-                        name="Bills"
-                        valueField="billCounts"
-                        argumentField="date"
-                        seriesComponent={Area}
-                      />
-                      {isUserOwnerOrAdmin && (
-                        <AreaSeries
-                          color="#ff3d00"
-                          name="Users"
-                          valueField="userCounts"
-                          argumentField="date"
-                          seriesComponent={Area}
-                        />
-                      )}
-                      <Animation />
-                      <EventTracker />
-                      <Tooltip />
-                      <Legend position="bottom" rootComponent={Root} labelComponent={Label} />
-                      <Title text="The Previous Week Reports" />
-                    </Chart>
-                  </AreaChart>
-                  <BarChart>
-                    <Chart data={chartData} height={400} rotated>
-                      <ArgumentAxis showGrid />
-                      <ValueAxis
-                        showGrid
-                        tickFormat={scale => tick => {
-                          if (Number.isInteger(tick)) return Math.floor(Number(tick)).toString();
-                          else return '';
-                        }}
-                      />
-                      <BarSeries color="#20a0ff" name="Bills" valueField="billCounts" argumentField="date" />
-                      {isUserOwnerOrAdmin && (
-                        <BarSeries color="#ff3d00" name="Users" valueField="userCounts" argumentField="date" />
-                      )}
-                      <Animation />
-                      <Legend position="bottom" rootComponent={Root} labelComponent={Label} />
-                      <Stack />
-                    </Chart>
-                  </BarChart>
+                  <Chart
+                    options={{
+                      chart: {
+                        height: 380,
+                        type: 'area',
+                      },
+                      dataLabels: {
+                        enabled: false,
+                      },
+                      stroke: {
+                        curve: 'smooth',
+                      },
+                      xaxis: {
+                        type: 'category',
+                        categories: chartData.map((item) => item.date),
+                      },
+                      tooltip: {
+                        x: {
+                          format: 'dd/MM/yy',
+                        },
+                      },
+                    }}
+                    series={[
+                      {
+                        name: 'Users',
+                        data: chartData.map((item) => item.userCounts),
+                      },
+                      {
+                        name: 'Bills',
+                        data: chartData.map((item) => item.billCounts),
+                      },
+                    ]}
+                    type="area"
+                    height={380}
+                  />
                 </CardContent>
               </Card>
             )
