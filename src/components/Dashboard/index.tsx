@@ -245,41 +245,50 @@ const Dashboard: FC = () => {
             chartData.length > 0 && (
               <Card>
                 <CardContent>
-                  <Chart
-                    options={{
-                      chart: {
-                        height: 380,
-                        type: 'area',
-                      },
-                      dataLabels: {
-                        enabled: false,
-                      },
-                      stroke: {
-                        curve: 'smooth',
-                      },
-                      xaxis: {
-                        type: 'category',
-                        categories: chartData.map((item) => item.date),
-                      },
-                      tooltip: {
-                        x: {
-                          format: 'dd/MM/yy',
-                        },
-                      },
-                    }}
-                    series={[
-                      {
-                        name: 'Users',
-                        data: chartData.map((item) => item.userCounts),
-                      },
+                  {(() => {
+                    const series = [
                       {
                         name: 'Bills',
                         data: chartData.map((item) => item.billCounts),
                       },
-                    ]}
-                    type="area"
-                    height={380}
-                  />
+                    ];
+
+                    if (isUserOwnerOrAdmin) {
+                      series.push({
+                        name: 'Users',
+                        data: chartData.map((item) => item.userCounts),
+                      });
+                    }
+
+                    return (
+                      <Chart
+                        options={{
+                          chart: {
+                            height: 380,
+                            type: 'area',
+                          },
+                          dataLabels: {
+                            enabled: false,
+                          },
+                          stroke: {
+                            curve: 'smooth',
+                          },
+                          xaxis: {
+                            type: 'category',
+                            categories: chartData.map((item) => item.date),
+                          },
+                          tooltip: {
+                            x: {
+                              format: 'dd/MM/yy',
+                            },
+                          },
+                        }}
+                        series={series}
+                        type="area"
+                        height={380}
+                      />
+                    );
+                  })()}
                 </CardContent>
               </Card>
             )
