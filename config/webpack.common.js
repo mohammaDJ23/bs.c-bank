@@ -1,5 +1,5 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 const { ModuleFederationPlugin } = require('webpack').container;
 const packageJson = require('../package.json');
 
@@ -9,6 +9,19 @@ module.exports = {
     hints: false,
     maxEntrypointSize: 512000,
     maxAssetSize: 512000,
+  },
+  optimization: {
+    usedExports: true,
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          keep_classnames: true,
+          keep_fnames: true,
+          compress: false,
+        },
+      }),
+    ],
   },
   module: {
     rules: [
@@ -71,7 +84,6 @@ module.exports = {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: './public/index.html' }),
     new ModuleFederationPlugin({
       name: 'bank',
       filename: 'remoteEntry.js',
