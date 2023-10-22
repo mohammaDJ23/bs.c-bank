@@ -67,7 +67,7 @@ export function hasRole(...roles: UserRoles[]): boolean {
   const userInfo = getTokenInfo();
 
   if (!userInfo) return false;
-  else return roles.some(role => userInfo.role === role);
+  else return roles.some((role) => userInfo.role === role);
 }
 
 export function isUser(role?: UserRoles) {
@@ -88,8 +88,20 @@ export function isSameUser(id: number) {
 }
 
 export function hasUserAuthorized(user: UserObj): boolean {
-  const isEnteredUserOwner = isOwner();
-  const isUserOwner = isOwner(user.role);
-  const isUserSame = isSameUser(user.id);
-  return isEnteredUserOwner ? (!isUserOwner ? true : isUserSame) : isUserSame;
+  if (isUser()) {
+    return false;
+  }
+
+  if (isAdmin()) {
+    return isSameUser(user.id);
+  }
+
+  if (isOwner()) {
+    if (isSameUser(user.id)) {
+      return true;
+    }
+    return isSameUser(user.parent.id);
+  }
+
+  return false;
 }

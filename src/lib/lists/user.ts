@@ -12,6 +12,7 @@ export interface UserObj {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
+  parent: UserObj;
 }
 
 export interface UserWithBillInfoObj extends UserObj {
