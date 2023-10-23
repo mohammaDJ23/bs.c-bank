@@ -8,6 +8,7 @@ import Skeleton from './Skeleton';
 import { UserApi } from '../../apis';
 import NotFound from './NotFound';
 import Navigation from '../../layout/Navigation';
+import HasOwnerRoleAuthorizedProvider from '../shared/HasOwnerRoleAuthorizedProvider';
 
 const UpdateUserByOwnerContent: FC = () => {
   const params = useParams();
@@ -20,7 +21,7 @@ const UpdateUserByOwnerContent: FC = () => {
   useEffect(() => {
     const userId = params.id;
     if (userId) {
-      request<UserObj, number>(new UserApi(+userId).setInitialApi()).then(response => {
+      request<UserObj, number>(new UserApi(+userId).setInitialApi()).then((response) => {
         setSpecificDetails('user', response.data);
         updateUserByOwnerFormInstance.initializeForm(
           new UpdateUserByOwner({
@@ -42,7 +43,9 @@ const UpdateUserByOwnerContent: FC = () => {
         {isInitialUserApiProcessing ? (
           <Skeleton />
         ) : specificDetails.user ? (
-          <Form formInstance={updateUserByOwnerFormInstance} />
+          <HasOwnerRoleAuthorizedProvider user={specificDetails.user}>
+            <Form formInstance={updateUserByOwnerFormInstance} />
+          </HasOwnerRoleAuthorizedProvider>
         ) : (
           <NotFound />
         )}

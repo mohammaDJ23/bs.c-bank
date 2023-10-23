@@ -17,10 +17,9 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const { hideModal, showModal } = useAction();
   const { modals } = useSelector();
   const { isApiProcessing, request } = useRequest();
-  const { getTokenInfo } = useAuth();
+  const { hasUserAuthorized } = useAuth();
   const isRestoreUserApiProcessing = isApiProcessing(RestoreUserApi);
-  const tokenInfo = getTokenInfo();
-  const isRestoringAllowed = user.createdBy === tokenInfo?.id;
+  const isAuthorized = hasUserAuthorized(user);
 
   const showRestoreUserModal = useCallback(() => {
     showModal(ModalNames.RESTORE_USER);
@@ -63,7 +62,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
         <Typography fontSize="12px" color="">
           was deleted at: {moment(user.deletedAt).format('LLLL')}
         </Typography>
-        {isRestoringAllowed && (
+        {isAuthorized && (
           <Box mt="30px">
             <Button
               disabled={isRestoreUserApiProcessing}
