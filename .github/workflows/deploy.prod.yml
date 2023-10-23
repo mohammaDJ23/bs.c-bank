@@ -43,6 +43,7 @@ jobs:
             AUTH_SERVICE=${{ secrets.PROD_AUTH_SERVICE }}
             BANK_SERVICE=${{ secrets.PROD_BANK_SERVICE }}
             USER_SERVICE=${{ secrets.PROD_USER_SERVICE }}
+            NOTIFICATION_SERVICE=${{ secrets.PROD_NOTIFICATION_SERVICE }}
             CONTAINER_APP=${{ secrets.PROD_CONTAINER_APP }}
             AUTH_APP=${{ secrets.PROD_AUTH_APP }}
             BANK_APP=${{ secrets.PROD_BANK_APP }}

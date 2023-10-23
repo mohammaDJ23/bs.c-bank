@@ -43,6 +43,7 @@ jobs:
             AUTH_SERVICE=${{ secrets.STAGING_AUTH_SERVICE }}
             BANK_SERVICE=${{ secrets.STAGING_BANK_SERVICE }}
             USER_SERVICE=${{ secrets.STAGING_USER_SERVICE }}
+            NOTIFICATION_SERVICE=${{ secrets.STAGING_NOTIFICATION_SERVICE }}
             CONTAINER_APP=${{ secrets.STAGING_CONTAINER_APP }}
             AUTH_APP=${{ secrets.STAGING_AUTH_APP }}
             BANK_APP=${{ secrets.STAGING_BANK_APP }}
