@@ -61,7 +61,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
 
   const deleteUser = useCallback(() => {
     request<UserObj, number>(new DeleteUserApi(user.id))
-      .then(response => {
+      .then((response) => {
         hideModal(ModalNames.CONFIRMATION);
         if (isUserExist) {
           if ((userInfo.role === UserRoles.OWNER && userInfo.id === user.id) || userInfo.role !== UserRoles.OWNER) {
@@ -75,13 +75,13 @@ const Details: FC<DetailsImporation> = ({ user }) => {
           navigate(Pathes.LOGIN);
         }
       })
-      .catch(err => hideModal(ModalNames.CONFIRMATION));
+      .catch((err) => hideModal(ModalNames.CONFIRMATION));
   }, [user, isUserExist, userInfo, request, hideModal, navigate]);
 
   const downloadBillReport = useCallback(() => {
     if (isDownloadBillReportApiProcessing) return;
 
-    request<Blob>(new DownloadBillReportApi(user.id)).then(response => {
+    request<Blob>(new DownloadBillReportApi(user.id)).then((response) => {
       const href = URL.createObjectURL(response.data);
       const link = document.createElement('a');
       link.href = href;
@@ -106,7 +106,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
                 <MoreVert />
               </IconButton>
               <Menu anchorEl={anchorEl} open={open} onClick={onMenuClose}>
-                {options.map(option => (
+                {options.map((option) => (
                   <MenuItem key={option.path} onClick={onMenuClick(option)}>
                     {option.label}
                   </MenuItem>
