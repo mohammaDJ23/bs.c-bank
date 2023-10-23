@@ -87,21 +87,30 @@ export function isSameUser(id: number) {
   return id === userInfo?.id;
 }
 
-export function hasUserAuthorized(user: UserObj): boolean {
+export function hasUserRoleAuthorized(user: UserObj): boolean {
   if (isUser()) {
-    return false;
+    return isSameUser(user.id);
   }
+  return false;
+}
 
+export function hasAdminRoleAuthorized(user: UserObj): boolean {
   if (isAdmin()) {
     return isSameUser(user.id);
   }
+  return false;
+}
 
+export function hasOwnerRoleAuthorized(user: UserObj): boolean {
   if (isOwner()) {
-    if (isSameUser(user.id)) {
-      return true;
+    if (isOwner(user.role)) {
+      return isSameUser(user.id);
     }
     return isSameUser(user.parent.id);
   }
-
   return false;
+}
+
+export function hasUserAuthorized(user: UserObj): boolean {
+  return hasUserRoleAuthorized(user) || hasAdminRoleAuthorized(user) || hasOwnerRoleAuthorized(user) || false;
 }
