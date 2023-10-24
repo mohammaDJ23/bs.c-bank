@@ -114,3 +114,11 @@ export function hasOwnerRoleAuthorized(user: UserObj): boolean {
 export function hasUserAuthorized(user: UserObj): boolean {
   return hasUserRoleAuthorized(user) || hasAdminRoleAuthorized(user) || hasOwnerRoleAuthorized(user) || false;
 }
+
+export function onLogoutEvent() {
+  const event = new CustomEvent('on-logout', {
+    cancelable: true,
+    detail: getTokenInfo(),
+  });
+  window.dispatchEvent(event);
+}

@@ -23,7 +23,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import NotificationIcon from '@mui/icons-material/Notifications';
 import { styled } from '@mui/material/styles';
-import { LocalStorage, Pathes, routes, UserRoles } from '../lib';
+import { LocalStorage, onLogoutEvent, Pathes, routes, UserRoles } from '../lib';
 import { useAuth } from '../hooks';
 import { MoreVert } from '@mui/icons-material';
 import { Menu, MenuItem } from '@mui/material';
@@ -186,6 +186,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         title: 'Logout',
         icon: <LogoutIcon />,
         onClick: () => {
+          onLogoutEvent();
           LocalStorage.clear();
           navigate(Pathes.LOGIN);
         },
