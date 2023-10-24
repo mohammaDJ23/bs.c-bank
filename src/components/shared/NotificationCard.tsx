@@ -1,0 +1,119 @@
+import { PropsWithChildren, FC } from 'react';
+import { ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Box } from '@mui/system';
+import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
+import { getDynamicPath, getUserRoleColor, NotificationObj, Pathes } from '../../lib';
+import Card from './Card';
+import CountBadge from './CountBadge';
+import { useAuth, usePaginationList } from '../../hooks';
+
+interface NotificationCardImportation extends PropsWithChildren {
+  notification: NotificationObj;
+  index: number;
+  listInfo: ReturnType<ReturnType<typeof usePaginationList>['getFullInfo']>;
+}
+
+const NotificationCard: FC<NotificationCardImportation> = ({ notification, index, listInfo }) => {
+  const navigate = useNavigate();
+  const { getTokenInfo } = useAuth();
+  const userInfo = getTokenInfo()!;
+
+  return (
+    <Card
+      key={index}
+      variant="outlined"
+      sx={{
+        my: '20px',
+        position: 'relative',
+        overflow: 'visible',
+        backgroundColor: notification.user.id === userInfo.id && listInfo.total >= 2 ? '#F8F8F8' : '',
+      }}
+      onClick={() => {
+        navigate(getDynamicPath(Pathes.NOTIFICATION, { id: notification.id }));
+      }}
+    >
+      <ListItemButton>
+        <ListItem disablePadding sx={{ my: '10px' }}>
+          <Box display="flex" flexDirection="column" alignItems="start" width="100%" gap="10px">
+            <Box component="div">
+              <ListItemText
+                primaryTypographyProps={{ fontSize: '14px', mb: '10px' }}
+                sx={{ margin: '0' }}
+                primary={`${notification.user.firstName} ${notification.user.lastName}`}
+              />
+            </Box>
+
+            <Box component="div">
+              <ListItemText
+                secondaryTypographyProps={{ fontSize: '12px' }}
+                sx={{ margin: '0' }}
+                secondary={`device description: ${notification.deviceDescription}`}
+              />
+            </Box>
+
+            <Box component="div">
+              <ListItemText
+                secondaryTypographyProps={{ fontSize: '12px' }}
+                sx={{ margin: '0' }}
+                secondary={`endpoint url: ${notification.endpoint}`}
+              />
+            </Box>
+
+            <Box component="div">
+              <ListItemText
+                secondaryTypographyProps={{ fontSize: '12px' }}
+                sx={{ margin: '0' }}
+                secondary={`visitor id: ${notification.visitorId}`}
+              />
+            </Box>
+
+            <Box
+              component="div"
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              gap="10px"
+              width="100%"
+              flexWrap="wrap"
+            >
+              <Box
+                component="div"
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                gap="10px"
+                flexWrap="wrap"
+              >
+                <ListItemText
+                  sx={{
+                    flex: 'unset',
+                    width: '8px',
+                    height: '8px',
+                    backgroundColor: getUserRoleColor(notification.user.role),
+                    borderRadius: '50%',
+                  }}
+                  secondary={<Box component="span"></Box>}
+                />
+                <ListItemText
+                  sx={{ flex: 'unset' }}
+                  secondaryTypographyProps={{ fontSize: '10px' }}
+                  secondary={notification.user.role}
+                />
+              </Box>
+              <ListItemText
+                sx={{ flex: 'unset' }}
+                secondaryTypographyProps={{ fontSize: '10px' }}
+                secondary={`${moment(notification.createdAt).fromNow()}`}
+              />
+            </Box>
+          </Box>
+
+          <CountBadge index={index} page={listInfo.page} take={listInfo.take} />
+        </ListItem>
+      </ListItemButton>
+    </Card>
+  );
+};
+
+export default NotificationCard;
