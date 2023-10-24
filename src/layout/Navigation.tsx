@@ -194,7 +194,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
 
     if (isUserInfoExist) {
       navigationItems.unshift({
-        title: `${userInfo.firstName} ${userInfo.lastName} (${userInfo.role})`,
+        title: `${userInfo.firstName} ${userInfo.lastName}`,
         icon: <PersonIcon />,
         path: Pathes.USER,
         redirectPath: Pathes.USERS,
