@@ -1,5 +1,5 @@
 import { PropsWithChildren, FC } from 'react';
-import { ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
@@ -38,7 +38,7 @@ const NotificationCard: FC<NotificationCardImportation> = ({ notification, index
           <Box display="flex" flexDirection="column" alignItems="start" width="100%" gap="10px">
             <Box component="div">
               <ListItemText
-                primaryTypographyProps={{ fontSize: '14px', mb: '10px' }}
+                primaryTypographyProps={{ fontSize: '14px', mb: '10px', fontWeight: 'bold' }}
                 sx={{ margin: '0' }}
                 primary={`${notification.user.firstName} ${notification.user.lastName}`}
               />
@@ -46,25 +46,43 @@ const NotificationCard: FC<NotificationCardImportation> = ({ notification, index
 
             <Box component="div">
               <ListItemText
-                secondaryTypographyProps={{ fontSize: '12px' }}
                 sx={{ margin: '0' }}
-                secondary={`device description: ${notification.deviceDescription}`}
+                secondary={
+                  <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                    <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+                      device description:{' '}
+                    </Typography>
+                    {notification.deviceDescription}
+                  </Typography>
+                }
               />
             </Box>
 
             <Box component="div">
               <ListItemText
-                secondaryTypographyProps={{ fontSize: '12px' }}
                 sx={{ margin: '0' }}
-                secondary={`endpoint url: ${notification.endpoint}`}
+                secondary={
+                  <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                    <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+                      endpoint url:{' '}
+                    </Typography>
+                    {notification.endpoint}
+                  </Typography>
+                }
               />
             </Box>
 
             <Box component="div">
               <ListItemText
-                secondaryTypographyProps={{ fontSize: '12px' }}
                 sx={{ margin: '0' }}
-                secondary={`visitor id: ${notification.visitorId}`}
+                secondary={
+                  <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                    <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+                      visitor id:{' '}
+                    </Typography>
+                    {notification.visitorId}
+                  </Typography>
+                }
               />
             </Box>
 
