@@ -10,6 +10,7 @@ import {
   BillListFilters,
   DeletedUserListFilters,
   DeletedBillListFilters,
+  NotificationListFilters,
 } from '../lib';
 import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
@@ -436,6 +437,43 @@ export class BillQuantitiesApi extends RootApi {
         method: 'get',
       },
       { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class NotificationsApi<T = any> extends RootApi {
+  constructor(data: ListParams<T> & NotificationListFilters) {
+    super(
+      {
+        url: '/api/v1/notification/all',
+        method: 'get',
+        params: {
+          page: data.page,
+          take: data.take,
+          filters: {
+            q: data.q,
+            roles: data.roles,
+            fromDate: data.fromDate,
+            toDate: data.toDate,
+          },
+        },
+      },
+      { baseURL: process.env.NOTIFICATION_SERVICE }
+    );
+  }
+}
+
+export type NotificationsApiConstructorType = ConstructorParameters<typeof NotificationsApi>[0] &
+  Pick<RootApi, 'isInitialApi'>;
+
+export class NotificationApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: `/api/v1/notification/${id}`,
+        method: 'get',
+      },
+      { baseURL: process.env.NOTIFICATION_SERVICE }
     );
   }
 }

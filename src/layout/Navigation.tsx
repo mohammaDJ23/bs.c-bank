@@ -21,6 +21,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import CloseIcon from '@mui/icons-material/Close';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
+import NotificationIcon from '@mui/icons-material/notifications';
 import { styled } from '@mui/material/styles';
 import { LocalStorage, Pathes, routes, UserRoles } from '../lib';
 import { useAuth } from '../hooks';
@@ -110,7 +111,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
   const userInfo = getTokenInfo();
   const isUserInfoExist = !!userInfo;
   const isUserLoggedIn = isUserAuthenticated();
-  const activeRoute = routes.find(route => matchPath(route.path, location.pathname));
+  const activeRoute = routes.find((route) => matchPath(route.path, location.pathname));
   const activeRouteTitle = activeRoute?.title || 'Bank system';
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -175,6 +176,13 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         redirectPath: Pathes.DELETED_bILLS,
       },
       {
+        title: 'Notifications',
+        icon: <NotificationIcon />,
+        path: Pathes.NOTIFICATIONS,
+        redirectPath: Pathes.NOTIFICATIONS,
+        roles: [UserRoles.OWNER],
+      },
+      {
         title: 'Logout',
         icon: <LogoutIcon />,
         onClick: () => {
@@ -186,7 +194,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
 
     if (isUserInfoExist) {
       navigationItems.unshift({
-        title: `${userInfo.firstName} ${userInfo.lastName} (${userInfo.role})`,
+        title: `${userInfo.firstName} ${userInfo.lastName}`,
         icon: <PersonIcon />,
         path: Pathes.USER,
         redirectPath: Pathes.USERS,

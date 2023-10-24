@@ -6,6 +6,8 @@ interface GetDynamicPathOptions {
 
 const Bill = lazy(() => import('../../pages/Bill'));
 const Bills = lazy(() => import('../../pages/Bills'));
+const Notification = lazy(() => import('../../pages/Notification'));
+const Notifications = lazy(() => import('../../pages/Notifications'));
 const CreateBill = lazy(() => import('../../pages/CreateBill'));
 const CreateUser = lazy(() => import('../../pages/CreateUser'));
 const UpdateBill = lazy(() => import('../../pages/UpdateBill'));
@@ -26,6 +28,7 @@ export enum Pathes {
   BILLS = '/bank/bills',
   DELETED_bILLS = '/bank/bills/deleted',
   USERS = '/bank/users',
+  NOTIFICATIONS = '/bank/notifications',
   DELETED_USERS = '/bank/users/deleted',
   CREATE_BILL = '/bank/create-bill',
   CREATE_USER = '/bank/create-user',
@@ -34,6 +37,7 @@ export enum Pathes {
   UPDATE_BILL = '/bank/update-bill/:id',
   USER = '/bank/users/:id',
   BILL = '/bank/bills/:id',
+  NOTIFICATION = '/bank/notifications/:id',
   DELETED_USER = '/bank/users/:id/deleted',
   DELETED_BILL = '/bank/bills/:id/deleted',
 }
@@ -44,6 +48,7 @@ export const routes = [
   { title: 'Deleted bills', path: Pathes.DELETED_bILLS, element: <DeletedBills />, needAuth: true },
   { title: 'Users', path: Pathes.USERS, element: <Users />, needAuth: true },
   { title: 'Deleted users', path: Pathes.DELETED_USERS, element: <DeletedUsers />, needAuth: true },
+  { title: 'Notifications', path: Pathes.NOTIFICATIONS, element: <Notifications />, needAuth: true },
   { title: 'Create bill', path: Pathes.CREATE_BILL, element: <CreateBill />, needAuth: true },
   { title: 'Create user', path: Pathes.CREATE_USER, element: <CreateUser />, needAuth: true },
   { title: 'Update user by owner', path: Pathes.UPDATE_USER_BY_OWNER, element: <UpdateUserByOwner />, needAuth: true },
@@ -51,6 +56,7 @@ export const routes = [
   { title: 'Update bill', path: Pathes.UPDATE_BILL, element: <UpdateBill />, needAuth: true },
   { title: 'User', path: Pathes.USER, element: <User />, needAuth: true },
   { title: 'Bill', path: Pathes.BILL, element: <Bill />, needAuth: true },
+  { title: 'Notification', path: Pathes.NOTIFICATION, element: <Notification />, needAuth: true },
   { title: 'Deleted User', path: Pathes.DELETED_USER, element: <DeletedUser />, needAuth: true },
   { title: 'Deleted Bill', path: Pathes.DELETED_BILL, element: <DeletedBill />, needAuth: true },
 ];

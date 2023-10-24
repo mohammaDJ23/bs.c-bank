@@ -7,6 +7,7 @@ import { UserListFilters } from './userListFilters';
 import { BillListFilters } from './billListFilters';
 import { DeletedUserListFilters } from './deletedUserListFilters';
 import { DeletedBillListFilters } from './deletedBillListFilters';
+import { NotificationListFilters } from './notificationListFilters';
 
 export * from './createUser';
 export * from './formConstructor';
@@ -17,6 +18,7 @@ export * from './userListFilters';
 export * from './billListFilters';
 export * from './deletedUserListFilters';
 export * from './deletedBillListFilters';
+export * from './notificationListFilters';
 
 export const forms = {
   CreateUser,
@@ -28,4 +30,5 @@ export const forms = {
   DeletedUserListFilters,
   BillListFilters,
   DeletedBillListFilters,
+  NotificationListFilters,
 };
