@@ -465,3 +465,15 @@ export class NotificationsApi<T = any> extends RootApi {
 
 export type NotificationsApiConstructorType = ConstructorParameters<typeof NotificationsApi>[0] &
   Pick<RootApi, 'isInitialApi'>;
+
+export class NotificationApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: `/api/v1/notification/${id}`,
+        method: 'get',
+      },
+      { baseURL: process.env.NOTIFICATION_SERVICE }
+    );
+  }
+}

@@ -6,7 +6,7 @@ interface GetDynamicPathOptions {
 
 const Bill = lazy(() => import('../../pages/Bill'));
 const Bills = lazy(() => import('../../pages/Bills'));
-// const Notification = lazy(() => import('../../pages/Notification'));
+const Notification = lazy(() => import('../../pages/Notification'));
 const Notifications = lazy(() => import('../../pages/Notifications'));
 const CreateBill = lazy(() => import('../../pages/CreateBill'));
 const CreateUser = lazy(() => import('../../pages/CreateUser'));
@@ -56,7 +56,7 @@ export const routes = [
   { title: 'Update bill', path: Pathes.UPDATE_BILL, element: <UpdateBill />, needAuth: true },
   { title: 'User', path: Pathes.USER, element: <User />, needAuth: true },
   { title: 'Bill', path: Pathes.BILL, element: <Bill />, needAuth: true },
-  // { title: 'Notification', path: Pathes.NOTIFICATION, element: <Notification />, needAuth: true },
+  { title: 'Notification', path: Pathes.NOTIFICATION, element: <Notification />, needAuth: true },
   { title: 'Deleted User', path: Pathes.DELETED_USER, element: <DeletedUser />, needAuth: true },
   { title: 'Deleted Bill', path: Pathes.DELETED_BILL, element: <DeletedBill />, needAuth: true },
 ];

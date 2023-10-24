@@ -50,7 +50,7 @@ const NotificationCard: FC<NotificationCardImportation> = ({ notification, index
                 secondary={
                   <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
                     <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
-                      device description:{' '}
+                      Device description:{' '}
                     </Typography>
                     {notification.deviceDescription}
                   </Typography>
@@ -64,7 +64,7 @@ const NotificationCard: FC<NotificationCardImportation> = ({ notification, index
                 secondary={
                   <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
                     <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
-                      endpoint url:{' '}
+                      Endpoint url:{' '}
                     </Typography>
                     {notification.endpoint}
                   </Typography>
@@ -78,7 +78,7 @@ const NotificationCard: FC<NotificationCardImportation> = ({ notification, index
                 secondary={
                   <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
                     <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
-                      visitor id:{' '}
+                      Visitor id:{' '}
                     </Typography>
                     {notification.visitorId}
                   </Typography>
