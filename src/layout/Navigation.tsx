@@ -21,7 +21,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import CloseIcon from '@mui/icons-material/Close';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
-import NotificationIcon from '@mui/icons-material/notifications';
+import NotificationIcon from '@mui/icons-material/Notifications';
 import { styled } from '@mui/material/styles';
 import { LocalStorage, Pathes, routes, UserRoles } from '../lib';
 import { useAuth } from '../hooks';
