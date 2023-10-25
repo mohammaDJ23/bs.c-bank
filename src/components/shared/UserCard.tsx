@@ -3,7 +3,7 @@ import moment from 'moment';
 import { FC, PropsWithChildren } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, usePaginationList } from '../../hooks';
-import { getDynamicPath, getUserRoleColor, Pathes, UserObj } from '../../lib';
+import { getDynamicPath, getUserRoleColor, isOwner, Pathes, UserObj } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
 
@@ -15,8 +15,9 @@ interface UserCardImportion extends PropsWithChildren {
 
 const UserCard: FC<UserCardImportion> = ({ user, index, listInfo }) => {
   const navigate = useNavigate();
-  const { getTokenInfo } = useAuth();
+  const { getTokenInfo, getUserStatusColor } = useAuth();
   const userInfo = getTokenInfo();
+  const isUserOwner = isOwner();
   const isUserExist = !!userInfo;
 
   return (
@@ -36,12 +37,38 @@ const UserCard: FC<UserCardImportion> = ({ user, index, listInfo }) => {
       <ListItemButton>
         <ListItem disablePadding sx={{ my: '10px' }}>
           <Box display="flex" flexDirection="column" alignItems="start" width="100%" gap="10px">
-            <Box component="div">
+            <Box
+              component="div"
+              mb={'8px'}
+              display="flex"
+              alignItems="center"
+              justifyContent="start"
+              gap="10px"
+              flexWrap="wrap"
+            >
+              {isUserOwner && (
+                <ListItemText
+                  sx={{
+                    flex: 'unset',
+                    width: '10px',
+                    height: '10px',
+                    backgroundColor: getUserStatusColor(user.id),
+                    borderRadius: '50%',
+                  }}
+                  secondary={<Box component="span"></Box>}
+                />
+              )}
               <ListItemText
-                primaryTypographyProps={{ fontSize: '14px', mb: '10px' }}
+                primaryTypographyProps={{ fontSize: '14px' }}
                 secondaryTypographyProps={{ fontSize: '12px' }}
                 sx={{ margin: '0' }}
                 primary={`${user.firstName} ${user.lastName}`}
+              />
+            </Box>
+            <Box>
+              <ListItemText
+                secondaryTypographyProps={{ fontSize: '12px' }}
+                sx={{ margin: '0' }}
                 secondary={user.phone}
               />
             </Box>

@@ -1,4 +1,4 @@
-import { BillObj, DeletedUserObj, NotificationObj, UserObj, UserWithBillInfoObj } from '../../lib';
+import { BillObj, DeletedUserObj, NotificationObj, UserObj, UserStatus, UserWithBillInfoObj } from '../../lib';
 import { RootActions, SetSpecificDetailsAction } from '../actions';
 import { ClearState } from './clearState';
 
@@ -90,6 +90,7 @@ export interface SpecificDetailsState {
   deletedUser: DeletedUserObj | null;
   deletedBill: BillObj | null;
   notification: NotificationObj | null;
+  usersStatus: Record<number, UserStatus>;
 }
 
 const initialState: SpecificDetailsState = {
@@ -107,6 +108,7 @@ const initialState: SpecificDetailsState = {
   deletedUser: null,
   deletedBill: null,
   notification: null,
+  usersStatus: {},
 };
 
 function setSpecificDetails(state: SpecificDetailsState, action: SetSpecificDetailsAction): SpecificDetailsState {

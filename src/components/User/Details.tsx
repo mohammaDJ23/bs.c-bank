@@ -20,7 +20,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const { showModal, hideModal } = useAction();
   const { modals } = useSelector();
   const { isApiProcessing, request } = useRequest();
-  const { isOwner, getTokenInfo, hasUserAuthorized } = useAuth();
+  const { isOwner, getTokenInfo, hasUserAuthorized, getUserStatusColor } = useAuth();
   const isUserOwner = isOwner();
   const isCurrentUserOwner = isOwner(user.role);
   const isAuthorized = hasUserAuthorized(user);
@@ -97,9 +97,23 @@ const Details: FC<DetailsImporation> = ({ user }) => {
     <>
       <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px">
         <Box width="100%" mb="15px" display="flex" gap="8px" justifyContent="space-between" alignItems="center">
-          <Typography fontWeight="700" fontSize="16px">
-            {user.firstName} {user.lastName}
-          </Typography>
+          <Box component={'div'} display="flex" alignItems="center" justifyContent="start" gap="10px" flexWrap="wrap">
+            {isUserOwner && (
+              <Box
+                sx={{
+                  flex: 'unset',
+                  width: '10px',
+                  height: '10px',
+                  backgroundColor: getUserStatusColor(user.id),
+                  borderRadius: '50%',
+                }}
+                component={'span'}
+              ></Box>
+            )}
+            <Typography fontWeight="700" fontSize="16px">
+              {user.firstName} {user.lastName}
+            </Typography>
+          </Box>
           {options.length > 0 && isAuthorized && (
             <>
               <IconButton onClick={onMenuOpen}>

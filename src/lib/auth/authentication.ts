@@ -16,6 +16,10 @@ export interface TokenInfo {
   expiration: number;
 }
 
+export interface UserStatus extends TokenInfo {
+  lastConnection: Date | null;
+}
+
 export interface AccessTokenObj {
   accessToken: string;
 }
