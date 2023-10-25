@@ -1,17 +1,28 @@
 import { Box, Typography } from '@mui/material';
 import moment from 'moment';
 import { FC } from 'react';
-import { NotificationObj } from '../../lib';
+import { NotificationObj, Pathes, getDynamicPath } from '../../lib';
+import { useNavigate } from 'react-router-dom';
 
 interface DetailsImporation {
   notification: NotificationObj;
 }
 
 const Details: FC<DetailsImporation> = ({ notification }) => {
+  const navigate = useNavigate();
   return (
     <>
       <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px">
-        <Typography component={'p'} fontSize="14px" fontWeight={'bold'} mb={'15px'}>
+        <Typography
+          component={'p'}
+          fontSize="14px"
+          fontWeight={'bold'}
+          mb={'15px'}
+          sx={{ cursor: 'pointer' }}
+          onClick={() => {
+            navigate(getDynamicPath(Pathes.USER, { id: notification.user.id }));
+          }}
+        >
           {notification.user.firstName} {notification.user.lastName}
         </Typography>
         <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">

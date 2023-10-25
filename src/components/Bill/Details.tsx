@@ -51,42 +51,57 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
         hideModal(ModalNames.CONFIRMATION);
         navigate(Pathes.BILLS);
       })
-      .catch(err => hideModal(ModalNames.CONFIRMATION));
+      .catch((err) => hideModal(ModalNames.CONFIRMATION));
   }, [bill, request, hideModal, navigate]);
 
   return (
     <>
       <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px">
         <Box width="100%" mb="15px" display="flex" gap="8px" justifyContent="space-between" alignItems="center">
-          <Typography fontWeight="700" fontSize="14px">
+          <Typography component={'p'} fontSize="14px" fontWeight={'bold'}>
             {bill.amount}
           </Typography>
           <IconButton onClick={onMenuOpen}>
             <MoreVert />
           </IconButton>
           <Menu anchorEl={anchorEl} open={open} onClick={onMenuClose}>
-            {options.map(option => (
+            {options.map((option) => (
               <MenuItem key={option.path} onClick={onMenuClick(option)}>
                 {option.label}
               </MenuItem>
             ))}
           </Menu>
         </Box>
-        <Typography fontSize="12px" color="">
-          receiver: {bill.receiver}
+        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
+          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+            Receiver:
+          </Typography>{' '}
+          {bill.receiver}
         </Typography>
-        <Typography fontSize="12px" color="">
-          description: {bill.description}
+        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
+          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+            Description:
+          </Typography>{' '}
+          {bill.description}
         </Typography>
-        <Typography fontSize="12px" color="">
-          received at: {moment(bill.date).format('LL')}
+        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
+          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+            Received at:
+          </Typography>{' '}
+          {moment(bill.date).format('LL')}
         </Typography>
-        <Typography fontSize="12px" color="">
-          created at: {moment(bill.createdAt).format('LLLL')}
+        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
+          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+            Created at:
+          </Typography>{' '}
+          {moment(bill.createdAt).format('LLLL')}
         </Typography>
         {new Date(bill.updatedAt) > new Date(bill.createdAt) && (
-          <Typography fontSize="12px" color="">
-            last update: {moment(bill.updatedAt).format('LLLL')}
+          <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
+            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+              Last update:
+            </Typography>{' '}
+            {moment(bill.updatedAt).format('LLLL')}
           </Typography>
         )}
         <Box mt="30px">

@@ -32,10 +32,16 @@ const BillCard: FC<BillCardImportation> = ({ bill, index, listInfo }) => {
           <Box display="flex" flexDirection="column" alignItems="start" width="100%" gap="10px">
             <Box component="div">
               <ListItemText
-                primaryTypographyProps={{ fontSize: '14px', mb: '10px' }}
-                secondaryTypographyProps={{ fontSize: '12px' }}
+                primaryTypographyProps={{ fontSize: '14px', fontWeight: 'bold' }}
                 sx={{ margin: '0' }}
                 primary={`${bill.receiver} received ${bill.amount} at ${moment(bill.date).format('ll')}`}
+              />
+            </Box>
+
+            <Box component="div">
+              <ListItemText
+                secondaryTypographyProps={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}
+                sx={{ margin: '0' }}
                 secondary={bill.description}
               />
             </Box>
