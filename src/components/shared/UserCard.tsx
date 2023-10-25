@@ -1,4 +1,4 @@
-import { Box, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Box, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 import moment from 'moment';
 import { FC, PropsWithChildren } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -59,52 +59,52 @@ const UserCard: FC<UserCardImportion> = ({ user, index, listInfo }) => {
                 />
               )}
               <ListItemText
-                primaryTypographyProps={{ fontSize: '14px' }}
-                secondaryTypographyProps={{ fontSize: '12px' }}
+                primaryTypographyProps={{ fontSize: '14px', fontWeight: 'bold' }}
                 sx={{ margin: '0' }}
                 primary={`${user.firstName} ${user.lastName}`}
               />
             </Box>
-            <Box>
+            <Box component="div">
               <ListItemText
-                secondaryTypographyProps={{ fontSize: '12px' }}
                 sx={{ margin: '0' }}
-                secondary={user.phone}
+                secondary={
+                  <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                    <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+                      Email:{' '}
+                    </Typography>
+                    {user.email}
+                  </Typography>
+                }
               />
             </Box>
-            <Box
-              component="div"
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              gap="10px"
-              width="100%"
-              flexWrap="wrap"
-            >
-              <Box
-                component="div"
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                gap="10px"
-                flexWrap="wrap"
-              >
-                <ListItemText
-                  sx={{
-                    flex: 'unset',
-                    width: '8px',
-                    height: '8px',
-                    backgroundColor: getUserRoleColor(user.role),
-                    borderRadius: '50%',
-                  }}
-                  secondary={<Box component="span"></Box>}
-                />
-                <ListItemText
-                  sx={{ flex: 'unset' }}
-                  secondaryTypographyProps={{ fontSize: '10px' }}
-                  secondary={user.role}
-                />
-              </Box>
+            <Box component="div">
+              <ListItemText
+                sx={{ margin: '0' }}
+                secondary={
+                  <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                    <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+                      Phone:{' '}
+                    </Typography>
+                    {user.phone}
+                  </Typography>
+                }
+              />
+            </Box>
+            <Box component="div">
+              <ListItemText
+                sx={{ margin: '0' }}
+                secondary={
+                  <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                    <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+                      Role:{' '}
+                    </Typography>
+                    {user.role}
+                  </Typography>
+                }
+              />
+            </Box>
+
+            <Box component="div" display="flex" alignItems="center" justifyContent="end" width="100%" flexWrap="wrap">
               <ListItemText
                 sx={{ flex: 'unset' }}
                 secondaryTypographyProps={{ fontSize: '10px' }}
