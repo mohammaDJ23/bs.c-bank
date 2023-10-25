@@ -303,20 +303,36 @@ const Dashboard: FC = () => {
                   <CardContent>
                     <Box display="flex" gap="20px" flexDirection="column">
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap">Total Users: </Typography>
-                        <Typography>{specificDetails.userQuantities.quantities}</Typography>
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Total Users:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {specificDetails.userQuantities.quantities}
+                        </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap">Owners: </Typography>
-                        <Typography>{specificDetails.userQuantities.ownerQuantities}</Typography>
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Owners:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {specificDetails.userQuantities.ownerQuantities}
+                        </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap">Admins: </Typography>
-                        <Typography>{specificDetails.userQuantities.adminQuantities}</Typography>
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Admins:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {specificDetails.userQuantities.adminQuantities}
+                        </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap">Users: </Typography>
-                        <Typography>{specificDetails.userQuantities.userQuantities}</Typography>
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Users:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {specificDetails.userQuantities.userQuantities}
+                        </Typography>
                       </Box>
                     </Box>
                   </CardContent>
@@ -333,20 +349,36 @@ const Dashboard: FC = () => {
                   <CardContent>
                     <Box display="flex" gap="20px" flexDirection="column">
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap">Total Deleted Users: </Typography>
-                        <Typography>{specificDetails.deletedUserQuantities.quantities}</Typography>
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Total Deleted Users:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {specificDetails.deletedUserQuantities.quantities}
+                        </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap">Deleted Owners: </Typography>
-                        <Typography>{specificDetails.deletedUserQuantities.ownerQuantities}</Typography>
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Deleted Owners:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {specificDetails.deletedUserQuantities.ownerQuantities}
+                        </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap">Deleted Admins: </Typography>
-                        <Typography>{specificDetails.deletedUserQuantities.adminQuantities}</Typography>
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Deleted Admins:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {specificDetails.deletedUserQuantities.adminQuantities}
+                        </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap">Deleted Users: </Typography>
-                        <Typography>{specificDetails.deletedUserQuantities.userQuantities}</Typography>
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Deleted Users:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {specificDetails.deletedUserQuantities.userQuantities}
+                        </Typography>
                       </Box>
                     </Box>
                   </CardContent>
@@ -363,8 +395,12 @@ const Dashboard: FC = () => {
                   <CardContent>
                     <Box display="flex" gap="20px" flexDirection="column">
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap">Total Bills: </Typography>
-                        <Typography>{specificDetails.billQuantities.quantities}</Typography>
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Total bill quantities of the users:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {specificDetails.billQuantities.quantities}
+                        </Typography>
                       </Box>
                     </Box>
                   </CardContent>
@@ -408,7 +444,7 @@ const Dashboard: FC = () => {
                               position="relative"
                             >
                               <Box display="flex" alignItems="center" gap="5px">
-                                <Typography fontSize="10px" whiteSpace="nowrap">
+                                <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
                                   {moment(specificDetails.periodAmountFilter.start).format('ll')}
                                 </Typography>
                                 <DateRange fontSize="small" sx={{ color: grey[600] }} />
@@ -427,7 +463,7 @@ const Dashboard: FC = () => {
                               />
                               <LargSliderWrapper>{slider}</LargSliderWrapper>
                               <Box display="flex" alignItems="center" gap="5px">
-                                <Typography fontSize="10px" whiteSpace="nowrap">
+                                <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
                                   {moment(specificDetails.periodAmountFilter.end).format('ll')}
                                 </Typography>
                                 <DateRange fontSize="small" sx={{ color: grey[600] }} />
@@ -450,12 +486,20 @@ const Dashboard: FC = () => {
                         );
                       })()}
                     <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
-                      <Typography whiteSpace="nowrap">Total Amount: </Typography>
-                      <Typography>{specificDetails.totalAmount.totalAmount}</Typography>
+                      <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                        Total bill quantities:{' '}
+                      </Typography>
+                      <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                        {specificDetails.totalAmount.quantities}
+                      </Typography>
                     </Box>
                     <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
-                      <Typography whiteSpace="nowrap">Bill quantities: </Typography>
-                      <Typography>{specificDetails.totalAmount.quantities}</Typography>
+                      <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                        Total bill Amount:{' '}
+                      </Typography>
+                      <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                        {specificDetails.totalAmount.totalAmount}
+                      </Typography>
                     </Box>
                   </Box>
                 </CardContent>
