@@ -46,7 +46,7 @@ const UserCard: FC<UserCardImportion> = ({ user, index, listInfo }) => {
               gap="10px"
               flexWrap="wrap"
             >
-              {isUserOwner && (
+              {isUserOwner && !user.deletedAt && (
                 <ListItemText
                   sx={{
                     flex: 'unset',
