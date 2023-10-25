@@ -75,6 +75,8 @@ export class DeletedUserQuantities {
   }
 }
 
+export type UsersStatusType = Record<number, UserStatus>;
+
 export interface SpecificDetailsState {
   user: UserObj | null;
   userWithBillInfo: UserWithBillInfoObj | null;
@@ -90,7 +92,7 @@ export interface SpecificDetailsState {
   deletedUser: DeletedUserObj | null;
   deletedBill: BillObj | null;
   notification: NotificationObj | null;
-  usersStatus: Record<number, UserStatus>;
+  usersStatus: UsersStatusType;
 }
 
 const initialState: SpecificDetailsState = {

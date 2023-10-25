@@ -1,19 +1,15 @@
 import { FC, Fragment, PropsWithChildren, useEffect } from 'react';
 import { useAction } from '../../hooks';
-import { getUserServiceSocket } from '../utilFunctions';
+import { UsersStatusType } from '../../store';
 
 const UsersStatusProvider: FC<PropsWithChildren> = ({ children }) => {
   const { setSpecificDetails } = useAction();
 
   useEffect(() => {
-    const socket = getUserServiceSocket();
-    socket.emit('users_status');
-    socket.on('users_status', (data) => {
-      setSpecificDetails('usersStatus', data);
+    // @ts-ignore
+    window.addEventListener('users-status', (event: CustomEvent<UsersStatusType>) => {
+      setSpecificDetails('usersStatus', event.detail);
     });
-    return () => {
-      socket.removeListener('users_status');
-    };
   }, []);
 
   return <Fragment>{children}</Fragment>;
