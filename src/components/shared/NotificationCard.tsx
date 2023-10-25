@@ -100,8 +100,8 @@ const NotificationCard: FC<NotificationCardImportation> = ({ notification, index
                 secondaryTypographyProps={{ fontSize: '10px' }}
                 secondary={
                   notification.updatedAt
-                    ? `was updated ${moment(notification.updatedAt).fromNow()}`
-                    : `${moment(notification.createdAt).fromNow()}`
+                    ? `${moment(notification.updatedAt).fromNow()}`
+                    : `${moment(notification.createdAt).fromNow()} was updated`
                 }
               />
             </Box>
