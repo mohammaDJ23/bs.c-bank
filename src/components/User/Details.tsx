@@ -20,7 +20,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const { showModal, hideModal } = useAction();
   const { modals } = useSelector();
   const { isApiProcessing, request } = useRequest();
-  const { isOwner, getTokenInfo, hasUserAuthorized, getUserStatusColor } = useAuth();
+  const { isOwner, getTokenInfo, hasUserAuthorized, getUserStatusColor, getUserLastConnection } = useAuth();
   const isUserOwner = isOwner();
   const isCurrentUserOwner = isOwner(user.role);
   const isAuthorized = hasUserAuthorized(user);
@@ -153,6 +153,24 @@ const Details: FC<DetailsImporation> = ({ user }) => {
         <Typography fontSize="12px" color="">
           total bill amounts: {user.bill.amounts}
         </Typography>
+        {isUserOwner &&
+          (() => {
+            const userLastConnection = getUserLastConnection(user.id);
+            if (userLastConnection) {
+              return (
+                <Typography fontSize="12px" color="">
+                  last connection: {moment(userLastConnection).format('LLLL')}
+                </Typography>
+              );
+            } else if (userLastConnection === undefined) {
+              return (
+                <Typography fontSize="12px" color="">
+                  last connection: long time ago
+                </Typography>
+              );
+            }
+            return <></>;
+          })()}
         <Typography fontSize="12px" color="">
           created at: {moment(user.createdAt).format('LLLL')}
         </Typography>

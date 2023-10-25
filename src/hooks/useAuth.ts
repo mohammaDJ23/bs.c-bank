@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import {
   getToken,
   getTokenInfo,
@@ -16,16 +16,40 @@ import { useSelector } from './useSelector';
 export function useAuth() {
   const { specificDetails } = useSelector();
 
+  const getUserStatus = useCallback(
+    (id: number) => {
+      return specificDetails.usersStatus[id];
+    },
+    [specificDetails]
+  );
+
   const isUserStatusExit = useCallback(
     (id: number) => {
-      return !!specificDetails.usersStatus[id];
+      return !!getUserStatus(id);
+    },
+    [specificDetails]
+  );
+
+  const isUserOnline = useCallback(
+    (id: number) => {
+      return isUserStatusExit(id) && !getUserStatus(id).lastConnection;
+    },
+    [specificDetails]
+  );
+
+  const getUserLastConnection = useCallback(
+    (id: number) => {
+      if (!isUserStatusExit(id)) {
+        return undefined;
+      }
+      return getUserStatus(id).lastConnection;
     },
     [specificDetails]
   );
 
   const getUserStatusColor = useCallback(
     (id: number) => {
-      return isUserStatusExit(id) ? '#00e81b' : '#e80000';
+      return isUserOnline(id) ? '#00e81b' : '#e80000';
     },
     [isUserStatusExit]
   );
@@ -42,5 +66,7 @@ export function useAuth() {
     hasRole,
     hasUserAuthorized,
     getUserStatusColor,
+    isUserOnline,
+    getUserLastConnection,
   };
 }
