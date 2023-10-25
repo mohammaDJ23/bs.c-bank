@@ -68,7 +68,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
         </Typography>
         <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
           <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Created at:
+            Deleted at:
           </Typography>{' '}
           {moment(bill.deletedAt).format('LLLL')}
         </Typography>
