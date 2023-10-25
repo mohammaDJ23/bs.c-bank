@@ -3,7 +3,7 @@ import { ListItem, ListItemButton, ListItemText, Typography } from '@mui/materia
 import { Box } from '@mui/system';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
-import { getDynamicPath, getUserRoleColor, NotificationObj, Pathes } from '../../lib';
+import { getDynamicPath, NotificationObj, Pathes } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
 import { useAuth, usePaginationList } from '../../hooks';
@@ -90,39 +90,19 @@ const NotificationCard: FC<NotificationCardImportation> = ({ notification, index
               component="div"
               display="flex"
               alignItems="center"
-              justifyContent="space-between"
+              justifyContent="end"
               gap="10px"
               width="100%"
               flexWrap="wrap"
             >
-              <Box
-                component="div"
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                gap="10px"
-                flexWrap="wrap"
-              >
-                <ListItemText
-                  sx={{
-                    flex: 'unset',
-                    width: '8px',
-                    height: '8px',
-                    backgroundColor: getUserRoleColor(notification.user.role),
-                    borderRadius: '50%',
-                  }}
-                  secondary={<Box component="span"></Box>}
-                />
-                <ListItemText
-                  sx={{ flex: 'unset' }}
-                  secondaryTypographyProps={{ fontSize: '10px' }}
-                  secondary={notification.user.role}
-                />
-              </Box>
               <ListItemText
                 sx={{ flex: 'unset' }}
                 secondaryTypographyProps={{ fontSize: '10px' }}
-                secondary={`${moment(notification.createdAt).fromNow()}`}
+                secondary={
+                  notification.updatedAt
+                    ? `was updated ${moment(notification.updatedAt).fromNow()}`
+                    : `${moment(notification.createdAt).fromNow()}`
+                }
               />
             </Box>
           </Box>
