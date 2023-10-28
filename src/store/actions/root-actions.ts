@@ -7,6 +7,7 @@ import {
   RequestProcessActions,
   FormActions,
   ClearStateActions,
+  UserServiceSocketActions,
 } from './';
 
 export type RootActions =
@@ -17,4 +18,5 @@ export type RootActions =
   | SpecificDetailsActions
   | PaginationListActions
   | FormActions
-  | ClearStateActions;
+  | ClearStateActions
+  | UserServiceSocketActions;
