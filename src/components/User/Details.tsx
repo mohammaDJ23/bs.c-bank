@@ -18,10 +18,20 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
   const { showModal, hideModal } = useAction();
-  const { modals } = useSelector();
+  const { modals, userServiceSocket } = useSelector();
   const { isApiProcessing, request } = useRequest();
-  const { isOwner, getTokenInfo, hasUserAuthorized, getUserStatusColor, getUserLastConnection } = useAuth();
+  const {
+    isOwner,
+    getTokenInfo,
+    hasUserAuthorized,
+    getUserStatusColor,
+    getUserLastConnection,
+    isSameUser,
+    isUserOnline,
+  } = useAuth();
   const isUserOwner = isOwner();
+  const isCurrentUserSameUser = isSameUser(user.id);
+  const isCurrentUserOnline = isUserOnline(user.id);
   const isCurrentUserOwner = isOwner(user.role);
   const isAuthorized = hasUserAuthorized(user);
   const userInfo = getTokenInfo();
@@ -59,7 +69,17 @@ const Details: FC<DetailsImporation> = ({ user }) => {
     showModal(ModalNames.CONFIRMATION);
   }, [showModal]);
 
+  const onLogoutUser = useCallback(() => {
+    if (userServiceSocket) {
+      userServiceSocket.emit('logout_user', { id: user.id });
+    }
+  }, [user, userServiceSocket]);
+
   const deleteUser = useCallback(() => {
+    if (isUserOnline(user.id)) {
+      onLogoutUser();
+    }
+
     request<UserObj, number>(new DeleteUserApi(user.id))
       .then((response) => {
         hideModal(ModalNames.CONFIRMATION);
@@ -76,7 +96,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
         }
       })
       .catch((err) => hideModal(ModalNames.CONFIRMATION));
-  }, [user, isUserExist, userInfo, request, hideModal, navigate]);
+  }, [user, isUserExist, userInfo, request, hideModal, navigate, onLogoutUser, isSameUser]);
 
   const downloadBillReport = useCallback(() => {
     if (isDownloadBillReportApiProcessing) return;
@@ -240,7 +260,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
           </Box>
         )}
         {isAuthorized && (
-          <Box mt="30px">
+          <Box mt="30px" display={'flex'} alignItems={'center'} gap={'10px'}>
             <Button
               disabled={isDeleteUserApiProcessing}
               onClick={onDeleteAccount}
@@ -251,6 +271,18 @@ const Details: FC<DetailsImporation> = ({ user }) => {
             >
               Delete the account
             </Button>
+            {!isCurrentUserSameUser && isCurrentUserOnline && (
+              <Button
+                disabled={isDeleteUserApiProcessing}
+                onClick={onLogoutUser}
+                variant="outlined"
+                color="primary"
+                size="small"
+                sx={{ textTransform: 'capitalize' }}
+              >
+                Logout the user
+              </Button>
+            )}
           </Box>
         )}
       </Box>
