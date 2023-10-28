@@ -13,7 +13,6 @@ import AuthProtectionProvider from './lib/providers/AuthProtectionProvider';
 import RedirectionProvider from './lib/providers/RedirectionProvider';
 import { createBrowserHistory } from 'history';
 import { SnackbarProvider } from 'notistack';
-import UsersStatusProvider from './lib/providers/UsersStatusProvider';
 
 export const history = createBrowserHistory();
 
@@ -22,40 +21,38 @@ const App: FC = () => {
     /**@ts-ignore */
     <HistoryRouter history={history}>
       <Provider store={store}>
-        <UsersStatusProvider>
-          <RedirectionProvider>
-            <SnackbarProvider
-              dense
-              maxSnack={Infinity}
-              anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-              style={{ maxWidth: '300px' }}
-            >
-              <HistoryProvider history={history}>
-                <Routes>
-                  {routes.map((route) => (
-                    <Route
-                      key={route.path}
-                      path={route.path}
-                      element={
-                        route.needAuth ? (
-                          <AuthProtectionProvider>
-                            <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
-                          </AuthProtectionProvider>
-                        ) : (
-                          <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
-                        )
-                      }
-                    />
-                  ))}
+        <RedirectionProvider>
+          <SnackbarProvider
+            dense
+            maxSnack={Infinity}
+            anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+            style={{ maxWidth: '300px' }}
+          >
+            <HistoryProvider history={history}>
+              <Routes>
+                {routes.map((route) => (
                   <Route
-                    path={Pathes.BANK}
-                    element={<Navigate to={isUserAuthenticated() ? Pathes.DASHBOARD : Pathes.LOGIN} />}
+                    key={route.path}
+                    path={route.path}
+                    element={
+                      route.needAuth ? (
+                        <AuthProtectionProvider>
+                          <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
+                        </AuthProtectionProvider>
+                      ) : (
+                        <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
+                      )
+                    }
                   />
-                </Routes>
-              </HistoryProvider>
-            </SnackbarProvider>
-          </RedirectionProvider>
-        </UsersStatusProvider>
+                ))}
+                <Route
+                  path={Pathes.BANK}
+                  element={<Navigate to={isUserAuthenticated() ? Pathes.DASHBOARD : Pathes.LOGIN} />}
+                />
+              </Routes>
+            </HistoryProvider>
+          </SnackbarProvider>
+        </RedirectionProvider>
       </Provider>
     </HistoryRouter>
   );
