@@ -26,6 +26,7 @@ const UserServiceSocketProvider: FC<PropsWithChildren> = ({ children }) => {
       if (userInfo.role === UserRoles.OWNER) {
         userServiceSocket.emit('users_status');
         userServiceSocket.on('users_status', (data: UsersStatusType) => {
+          console.log(data);
           setSpecificDetails('usersStatus', data);
         });
       }
