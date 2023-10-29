@@ -26,7 +26,7 @@ const App: FC = () => {
           <SnackbarProvider
             dense
             maxSnack={Infinity}
-            anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
             style={{ maxWidth: '300px' }}
           >
             <HistoryProvider history={history}>
