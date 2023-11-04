@@ -6,3 +6,4 @@ export * from './forms';
 export * from './auth';
 export * from './lists';
 export * from './utilFunctions';
+export * from './firebase';
