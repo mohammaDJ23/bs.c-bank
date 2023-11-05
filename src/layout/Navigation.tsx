@@ -22,6 +22,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import NotificationIcon from '@mui/icons-material/Notifications';
+import ChatIcon from '@mui/icons-material/Chat';
 import { styled } from '@mui/material/styles';
 import { LocalStorage, onLogoutEvent, Pathes, routes, UserRoles } from '../lib';
 import { useAuth } from '../hooks';
@@ -107,7 +108,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
-  const { isUserAuthenticated, getTokenInfo } = useAuth();
+  const { isUserAuthenticated, getTokenInfo, isOwner } = useAuth();
   const userInfo = getTokenInfo();
   const isUserInfoExist = !!userInfo;
   const isUserLoggedIn = isUserAuthenticated();
@@ -202,6 +203,25 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         navigateOptions: { state: { previousUserId: userInfo.id } },
         activationOptions: [userInfo.id === +(params.id as string)],
       });
+    }
+
+    if (isUserInfoExist) {
+      const isUserOwner = isOwner();
+      if (isUserOwner) {
+        navigationItems.splice(-2, 0, {
+          title: 'Conversations',
+          icon: <ChatIcon />,
+          path: Pathes.CHAT,
+          redirectPath: Pathes.CHAT,
+        });
+      } else {
+        navigationItems.splice(-2, 0, {
+          title: 'Contact support',
+          icon: <ChatIcon />,
+          path: Pathes.CHAT,
+          redirectPath: Pathes.CHAT,
+        });
+      }
     }
 
     return navigationItems;

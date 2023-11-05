@@ -40,6 +40,7 @@ export enum Pathes {
   NOTIFICATION = '/bank/notifications/:id',
   DELETED_USER = '/bank/users/:id/deleted',
   DELETED_BILL = '/bank/bills/:id/deleted',
+  CHAT = '/bank/chat',
 }
 
 export const routes = [
