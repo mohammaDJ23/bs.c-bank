@@ -20,6 +20,7 @@ const Dashboard = lazy(() => import('../../pages/Dashboard'));
 const DeletedUser = lazy(() => import('../../pages/DeletedUser'));
 const DeletedBills = lazy(() => import('../../pages/DeletedBills'));
 const DeletedBill = lazy(() => import('../../pages/DeletedBill'));
+const Chat = lazy(() => import('../../pages/Chat'));
 
 export enum Pathes {
   BANK = '/bank/*',
@@ -48,6 +49,7 @@ export const routes = [
   { title: 'Bills', path: Pathes.BILLS, element: <Bills />, needAuth: true },
   { title: 'Deleted bills', path: Pathes.DELETED_bILLS, element: <DeletedBills />, needAuth: true },
   { title: 'Users', path: Pathes.USERS, element: <Users />, needAuth: true },
+  { path: Pathes.CHAT, element: <Chat />, needAuth: true },
   { title: 'Deleted users', path: Pathes.DELETED_USERS, element: <DeletedUsers />, needAuth: true },
   { title: 'Notifications', path: Pathes.NOTIFICATIONS, element: <Notifications />, needAuth: true },
   { title: 'Create bill', path: Pathes.CREATE_BILL, element: <CreateBill />, needAuth: true },

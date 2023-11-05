@@ -88,6 +88,9 @@ module.exports = {
       name: 'bank',
       filename: 'remoteEntry.js',
       exposes: { './BankApp': './src/bootstrap.tsx' },
+      remotes: {
+        chat: `chat@${process.env.CHAT_APP}/remoteEntry.js`,
+      },
       shared: packageJson.dependencies,
     }),
   ],
