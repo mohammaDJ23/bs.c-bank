@@ -1,6 +1,6 @@
 import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorators';
 import { getTime } from '../utilFunctions';
-import { isReceiver, isAmount, isDescription, isDate } from '../validations';
+import { isReceiver, isAmount, isDescription, isDate, isConsumer } from '../validations';
 import { Form } from './formConstructor';
 
 export class CreateBill extends Form {
@@ -15,6 +15,12 @@ export class CreateBill extends Form {
   @CacheInput()
   @DefineValidation()
   receiver: string = '';
+
+  @DefineRules([isConsumer])
+  @DefineVal()
+  @CacheInput()
+  @DefineValidation()
+  consumers: string[] = [];
 
   @DefineRules([isDescription])
   @DefineVal()
@@ -32,6 +38,7 @@ export class CreateBill extends Form {
     super();
     this.amount = this.getCachedInput('amount');
     this.receiver = this.getCachedInput('receiver');
+    this.consumers = this.getCachedInput('consumers');
     this.description = this.getCachedInput('description');
     this.date = +this.getCachedInput('date');
   }
