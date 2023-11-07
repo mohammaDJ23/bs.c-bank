@@ -81,7 +81,7 @@ const Dashboard: FC = () => {
   const isInitialBillQuantitiesApiProcessing = isInitialApiProcessing(BillQuantitiesApi);
 
   const periodAmountChangeRequest = useRef(
-    debounce(500, (previousPeriodAmountFilter: PeriodAmountFilter, newPeriodAmountFilter: PeriodAmountFilter) => {
+    debounce((previousPeriodAmountFilter: PeriodAmountFilter, newPeriodAmountFilter: PeriodAmountFilter) => {
       request<TotalAmount, PeriodAmountFilter>(new PeriodAmountApi(newPeriodAmountFilter))
         .then((response) => {
           const { totalAmount, quantities } = response.data;
