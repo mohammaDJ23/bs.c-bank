@@ -11,6 +11,7 @@ import {
   DeletedUserListFilters,
   DeletedBillListFilters,
   NotificationListFilters,
+  ConsumerListFilters,
 } from '../lib';
 import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
@@ -474,6 +475,25 @@ export class NotificationApi extends RootApi {
         method: 'get',
       },
       { baseURL: process.env.NOTIFICATION_SERVICE }
+    );
+  }
+}
+
+export class ConsumersApi<T = any> extends RootApi {
+  constructor(data: ListParams<T> & Pick<ConsumerListFilters, 'q'>) {
+    super(
+      {
+        url: '/api/v1/bank/consumer/all',
+        method: 'get',
+        params: {
+          page: data.page,
+          take: data.take,
+          filters: {
+            q: data.q,
+          },
+        },
+      },
+      { baseURL: process.env.BANK_SERVICE }
     );
   }
 }

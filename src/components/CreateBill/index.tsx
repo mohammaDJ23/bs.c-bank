@@ -1,42 +1,70 @@
 import FormContainer from '../../layout/FormContainer';
-import { Box, TextField, Button, Autocomplete } from '@mui/material';
-import { CreateBill, debounce, getTime, isoDate } from '../../lib';
-import { useForm, useRequest, useFocus } from '../../hooks';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { CreateBillApi } from '../../apis';
+import { Box, TextField, Button, Autocomplete, CircularProgress } from '@mui/material';
+import { ConsumerList, ConsumerListFilters, ConsumerObj, CreateBill, debounce, getTime, isoDate } from '../../lib';
+import { useForm, useRequest, useFocus, usePaginationList } from '../../hooks';
+import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
+import { ConsumersApi, CreateBillApi } from '../../apis';
 import { useSnackbar } from 'notistack';
 import Navigation from '../../layout/Navigation';
 
 const CreateBillContent: FC = () => {
-  const [consumer, setConsumer] = useState<string>('');
+  const [consumers, setConsumers] = useState<string[]>([]);
+  const [isConsumerAutocompleteOpen, setIsConsumerAutocompleteOpen] = useState(false);
   const createBillFromInstance = useForm(CreateBill);
+  const consumerListFiltersFormInstance = useForm(ConsumerListFilters);
   const { isApiProcessing, request } = useRequest();
   const { focus } = useFocus();
   const isCreateBillApiProcessing = isApiProcessing(CreateBillApi);
-  const form = createBillFromInstance.getForm();
+  const isConsumersApiProcessing = isApiProcessing(ConsumersApi);
+  const createBillFrom = createBillFromInstance.getForm();
+  const consumerListFiltersForm = consumerListFiltersFormInstance.getForm();
+  const consumerListInstance = usePaginationList(ConsumerList);
+  const consumerListInfo = consumerListInstance.getFullInfo();
   const { enqueueSnackbar } = useSnackbar();
-
-  const onConsumerChange = useRef(
-    debounce((previousState: string[], newValue: string[]) => {
-      const newConsumers = ([] as string[]).concat(...previousState);
-      newConsumers.push(...newValue);
-      createBillFromInstance.onChange('consumers', newConsumers);
-      setConsumer('');
-    }, 1000)
-  );
+  const oneSecDebounce = useRef(debounce(1000));
 
   const formSubmition = useCallback(() => {
     createBillFromInstance.onSubmit(() => {
-      request<CreateBill, CreateBill>(new CreateBillApi(form)).then((response) => {
+      request<CreateBill, CreateBill>(new CreateBillApi(createBillFrom)).then((response) => {
         createBillFromInstance.resetForm();
         enqueueSnackbar({ message: 'Your bill was created successfully.', variant: 'success' });
       });
     });
-  }, [createBillFromInstance, form, request]);
+  }, [createBillFromInstance, createBillFrom, request]);
 
   useEffect(() => {
     focus('amount');
   }, []);
+
+  const onConsumerChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const q = event.target.value.trim();
+      consumerListFiltersFormInstance.onChange('q', q);
+
+      oneSecDebounce.current(() => {
+        consumerListFiltersFormInstance.onSubmit(() => {
+          setIsConsumerAutocompleteOpen(true);
+          const consumersApi = new ConsumersApi<ConsumerObj>({
+            take: consumerListInfo.take,
+            page: consumerListInfo.page,
+            q,
+          });
+          request<[ConsumerObj[], number], ConsumerObj>(consumersApi).then((response) => {
+            const [list] = response.data;
+            const consumers: string[] = [];
+            if (q.length) {
+              consumers.splice(consumers.length, 0, q);
+            }
+            consumers.splice(consumers.length, 0, ...createBillFrom.consumers);
+            consumers.splice(consumers.length, 0, ...list.map((consumer) => consumer.name));
+            const newConsumers = new Set(consumers);
+            setConsumers(Array.from(newConsumers));
+          });
+        });
+      });
+    },
+    [createBillFrom, consumerListInfo]
+  );
 
   return (
     <Navigation>
@@ -57,7 +85,7 @@ const CreateBillContent: FC = () => {
             label="Amount"
             variant="standard"
             type="number"
-            value={form.amount}
+            value={createBillFrom.amount}
             onChange={(event) => createBillFromInstance.onChange('amount', event.target.value)}
             helperText={createBillFromInstance.getInputErrorMessage('amount')}
             error={createBillFromInstance.isInputInValid('amount')}
@@ -68,39 +96,64 @@ const CreateBillContent: FC = () => {
             label="Receiver"
             variant="standard"
             type="text"
-            value={form.receiver}
+            value={createBillFrom.receiver}
             onChange={(event) => createBillFromInstance.onChange('receiver', event.target.value)}
             helperText={createBillFromInstance.getInputErrorMessage('receiver')}
             error={createBillFromInstance.isInputInValid('receiver')}
             disabled={isCreateBillApiProcessing}
           />
-          <Autocomplete
-            multiple
-            value={form.consumers}
-            onChange={(event, value) => createBillFromInstance.onChange('consumers', value)}
-            disabled={isCreateBillApiProcessing}
-            options={form.consumers}
-            getOptionLabel={(option) => option}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="standard"
-                label="Consumers"
-                value={consumer}
-                onChange={(event) => {
-                  setConsumer(event.target.value);
-                  onConsumerChange.current(form.consumers, event.target.value);
-                }}
-                error={createBillFromInstance.isInputInValid('consumers')}
-                helperText={createBillFromInstance.getInputErrorMessage('consumers')}
-              />
+          <Box position={'relative'}>
+            <Autocomplete
+              multiple
+              freeSolo
+              open={isConsumerAutocompleteOpen}
+              onBlur={() => {
+                consumerListInstance.setList(new ConsumerList());
+                setIsConsumerAutocompleteOpen(false);
+              }}
+              value={createBillFrom.consumers}
+              onChange={(event, value) => {
+                createBillFromInstance.onChange('consumers', value);
+                consumerListInstance.setList(new ConsumerList());
+                setIsConsumerAutocompleteOpen(false);
+              }}
+              disabled={isCreateBillApiProcessing}
+              options={consumers}
+              filterOptions={(options) => options}
+              getOptionLabel={(option) => option}
+              clearIcon={false}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  sx={{}}
+                  onFocus={() => {
+                    consumerListInstance.setList(new ConsumerList());
+                    setIsConsumerAutocompleteOpen(false);
+                  }}
+                  variant="standard"
+                  label="Consumers"
+                  value={consumerListFiltersForm.q}
+                  onChange={onConsumerChange}
+                  error={
+                    createBillFromInstance.isInputInValid('consumers') ||
+                    consumerListFiltersFormInstance.isInputInValid('q')
+                  }
+                  helperText={
+                    createBillFromInstance.getInputErrorMessage('consumers') ||
+                    consumerListFiltersFormInstance.getInputErrorMessage('q')
+                  }
+                />
+              )}
+            />
+            {isConsumersApiProcessing && (
+              <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
             )}
-          />
+          </Box>
           <TextField
             label="Date"
             type="date"
             variant="standard"
-            value={isoDate(form.date)}
+            value={isoDate(createBillFrom.date)}
             onChange={(event) => createBillFromInstance.onChange('date', getTime(event.target.value))}
             helperText={createBillFromInstance.getInputErrorMessage('date')}
             error={createBillFromInstance.isInputInValid('date')}
@@ -113,7 +166,7 @@ const CreateBillContent: FC = () => {
             rows="5"
             multiline
             variant="standard"
-            value={form.description}
+            value={createBillFrom.description}
             onChange={(event) => createBillFromInstance.onChange('description', event.target.value)}
             helperText={createBillFromInstance.getInputErrorMessage('description')}
             error={createBillFromInstance.isInputInValid('description')}

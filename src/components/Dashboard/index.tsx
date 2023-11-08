@@ -79,17 +79,7 @@ const Dashboard: FC = () => {
   const isInitialUserQuantitiesApiProcessing = isInitialApiProcessing(UserQuantitiesApi);
   const isInitialDeletedUserQuantitiesApiProcessing = isInitialApiProcessing(DeletedUserQuantitiesApi);
   const isInitialBillQuantitiesApiProcessing = isInitialApiProcessing(BillQuantitiesApi);
-
-  const periodAmountChangeRequest = useRef(
-    debounce((previousPeriodAmountFilter: PeriodAmountFilter, newPeriodAmountFilter: PeriodAmountFilter) => {
-      request<TotalAmount, PeriodAmountFilter>(new PeriodAmountApi(newPeriodAmountFilter))
-        .then((response) => {
-          const { totalAmount, quantities } = response.data;
-          setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
-        })
-        .catch((err) => setSpecificDetails('periodAmountFilter', previousPeriodAmountFilter));
-    })
-  );
+  const halfSecDebounce = useRef(debounce());
 
   useEffect(() => {
     if (isUserOwnerOrAdmin) {
@@ -190,14 +180,26 @@ const Dashboard: FC = () => {
     return chartData;
   }
 
+  function getNewTotalAmount(
+    previousPeriodAmountFilter: PeriodAmountFilter,
+    newPeriodAmountFilter: PeriodAmountFilter
+  ) {
+    request<TotalAmount, PeriodAmountFilter>(new PeriodAmountApi(newPeriodAmountFilter))
+      .then((response) => {
+        const { totalAmount, quantities } = response.data;
+        setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
+      })
+      .catch((err) => setSpecificDetails('periodAmountFilter', previousPeriodAmountFilter));
+  }
+
   function changeStartDate(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const previousPeriodAmountFilter = specificDetails.periodAmountFilter as PeriodAmountFilter;
+    const previousPeriodAmountFilter = specificDetails.periodAmountFilter!;
     const newPeriodAmountFilter = new PeriodAmountFilter(
       getNewDateValue(event.target.value),
       previousPeriodAmountFilter.end
     );
     setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
-    periodAmountChangeRequest.current(previousPeriodAmountFilter, newPeriodAmountFilter);
+    halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
   }
 
   function changeSlider(evnet: Event, value: number | number[]) {
@@ -210,20 +212,20 @@ const Dashboard: FC = () => {
       setSliderStep(defaultSliderStep + remiderOfEndDates);
     } else setSliderStep(defaultSliderStep);
 
-    const previousPeriodAmountFilter = specificDetails.periodAmountFilter;
+    const previousPeriodAmountFilter = specificDetails.periodAmountFilter!;
     const newPeriodAmountFilter = new PeriodAmountFilter(getTime(start), getTime(end));
     setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
-    periodAmountChangeRequest.current(previousPeriodAmountFilter, newPeriodAmountFilter);
+    halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
   }
 
   function changeEndDate(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const previousPeriodAmountFilter = specificDetails.periodAmountFilter as PeriodAmountFilter;
+    const previousPeriodAmountFilter = specificDetails.periodAmountFilter!;
     const newPeriodAmountFilter = new PeriodAmountFilter(
       previousPeriodAmountFilter.start,
       getNewDateValue(event.target.value)
     );
     setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
-    periodAmountChangeRequest.current(previousPeriodAmountFilter, newPeriodAmountFilter);
+    halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
   }
 
   const chartData = getChartData();

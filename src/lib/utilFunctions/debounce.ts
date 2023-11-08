@@ -1,11 +1,11 @@
-export function debounce(func: (...args: any[]) => void, timeout = 500) {
+export function debounce(timeout = 500) {
   let timer: undefined | NodeJS.Timeout = undefined;
-  return (...args: any[]) => {
+  return (func: () => void) => {
     if (timer) {
       clearTimeout(timer);
     }
     timer = setTimeout(() => {
-      func.call({}, args);
+      func.apply({});
     }, timeout);
   };
 }
