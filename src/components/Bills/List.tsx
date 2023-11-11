@@ -39,7 +39,7 @@ const List: FC = () => {
     (api: BillsApi) => {
       request.build<[BillObj[], number], BillObj>(api).then((response) => {
         const [list, total] = response.data;
-        billListInstance.insertNewList({ list, total, page: billListInfo.page });
+        billListInstance.insertNewList({ list, total, page: api.api.params.page });
       });
     },
     [billListInfo, billListInstance, billListFiltersForm, request]

@@ -40,7 +40,7 @@ const List: FC = () => {
     (api: NotificationsApi) => {
       request.build<[NotificationObj[], number], NotificationObj>(api).then((response) => {
         const [list, total] = response.data;
-        notificationListInstance.insertNewList({ list, total, page: notificationListInfo.page });
+        notificationListInstance.insertNewList({ list, total, page: api.api.params.page });
       });
     },
     [notificationListInfo, notificationListInstance, notificationListFiltersForm, request]

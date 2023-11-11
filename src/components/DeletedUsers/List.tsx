@@ -41,7 +41,7 @@ const List: FC = () => {
     (api: DeletedUsersApi) => {
       request.build<[UserObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
-        deletedUserListInstance.insertNewList({ total, list, page: deletedUserListInfo.page });
+        deletedUserListInstance.insertNewList({ total, list, page: api.api.params.page });
       });
     },
     [deletedUserListInfo, deletedUserListInstance, deletedUserListFiltersForm, request]

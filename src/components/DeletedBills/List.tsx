@@ -40,7 +40,7 @@ const List: FC = () => {
     (api: DeletedBillListApi) => {
       request.build<[BillObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
-        deletedBillListInstance.insertNewList({ list, total, page: deletedBillListInfo.page });
+        deletedBillListInstance.insertNewList({ list, total, page: api.api.params.page });
       });
     },
     [deletedBillListInfo, deletedBillListInstance, deletedBillListFiltersForm, request]

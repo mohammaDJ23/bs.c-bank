@@ -40,7 +40,7 @@ const List: FC = () => {
     (api: UsersApi) => {
       request.build<[UserObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
-        userListInstance.insertNewList({ total, list, page: userListInfo.page });
+        userListInstance.insertNewList({ total, list, page: api.api.params.page });
       });
     },
     [userListInfo, userListInstance, userListFiltersForm, request]
