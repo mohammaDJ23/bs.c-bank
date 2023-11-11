@@ -12,3 +12,4 @@ export * from './isQuery';
 export * from './isUserRoles';
 export * from './isConsumers';
 export * from './isConsumer';
+export * from './isReceiverQuery';
