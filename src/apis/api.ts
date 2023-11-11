@@ -187,6 +187,29 @@ export class BillsApi<T = any> extends RootApi {
 
 export type BillsApiConstructorType = ConstructorParameters<typeof BillsApi>[0] & Pick<RootApi, 'isInitialApi'>;
 
+export class AllBillsApi<T = any> extends RootApi {
+  constructor(data: ListParams<T> & BillListFilters) {
+    super(
+      {
+        url: '/api/v1/bank/owner/bill/all',
+        method: 'get',
+        params: {
+          page: data.page,
+          take: data.take,
+          filters: {
+            q: data.q,
+            fromDate: data.fromDate,
+            toDate: data.toDate,
+          },
+        },
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export type AllBillsApiConstructorType = ConstructorParameters<typeof AllBillsApi>[0] & Pick<RootApi, 'isInitialApi'>;
+
 export class DeletedBillListApi<T = any> extends RootApi {
   constructor(data: ListParams<T> & DeletedBillListFilters) {
     super(
