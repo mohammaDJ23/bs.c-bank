@@ -23,6 +23,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import NotificationIcon from '@mui/icons-material/Notifications';
 import ChatIcon from '@mui/icons-material/Chat';
+import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import { styled } from '@mui/material/styles';
 import { LocalStorage, onLogoutEvent, Pathes, routes, UserRoles } from '../lib';
 import { useAuth } from '../hooks';
@@ -183,6 +184,13 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         icon: <LayersClearIcon />,
         path: Pathes.DELETED_bILLS,
         redirectPath: Pathes.DELETED_bILLS,
+      },
+      {
+        title: 'All bills',
+        icon: <AutoAwesomeMotionIcon />,
+        path: Pathes.ALL_BILLS,
+        redirectPath: Pathes.ALL_BILLS,
+        roles: [UserRoles.OWNER],
       },
       {
         title: 'Notifications',

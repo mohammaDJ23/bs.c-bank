@@ -1,6 +1,7 @@
 import { ListInstance, ListObj } from './list';
+import { UserObj } from './user';
 
-export interface BillObj {
+export interface BillWithUserObj {
   id: string;
   amount: string;
   receiver: string;
@@ -10,19 +11,19 @@ export interface BillObj {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  userId: number;
+  user: UserObj;
 }
 
-export interface BillFiltersObj {
+export interface AllBillFiltersObj {
   q: string;
   date: string;
   fromDate: string;
   toDate: string;
 }
 
-export class BillList implements ListInstance {
+export class AllBillList implements ListInstance {
   constructor(
-    public list: ListObj<BillObj> = {},
+    public list: ListObj<BillWithUserObj> = {},
     public total: number = 0,
     public page: number = 1,
     public take: number = 10

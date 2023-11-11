@@ -6,6 +6,7 @@ interface GetDynamicPathOptions {
 
 const Bill = lazy(() => import('../../pages/Bill'));
 const Bills = lazy(() => import('../../pages/Bills'));
+const AllBills = lazy(() => import('../../pages/AllBills'));
 const Notification = lazy(() => import('../../pages/Notification'));
 const Notifications = lazy(() => import('../../pages/Notifications'));
 const CreateBill = lazy(() => import('../../pages/CreateBill'));
@@ -27,6 +28,7 @@ export enum Pathes {
   LOGIN = '/auth/login',
   DASHBOARD = '/bank/dashboard',
   BILLS = '/bank/bills',
+  ALL_BILLS = '/bank/owner/bills',
   DELETED_bILLS = '/bank/bills/deleted',
   USERS = '/bank/users',
   NOTIFICATIONS = '/bank/notifications',
@@ -47,6 +49,7 @@ export enum Pathes {
 export const routes = [
   { title: 'Dashboard', path: Pathes.DASHBOARD, element: <Dashboard />, needAuth: true },
   { title: 'Bills', path: Pathes.BILLS, element: <Bills />, needAuth: true },
+  { title: 'Bills', path: Pathes.ALL_BILLS, element: <AllBills />, needAuth: true },
   { title: 'Deleted bills', path: Pathes.DELETED_bILLS, element: <DeletedBills />, needAuth: true },
   { title: 'Users', path: Pathes.USERS, element: <Users />, needAuth: true },
   { path: Pathes.CHAT, element: <Chat />, needAuth: true },
