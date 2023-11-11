@@ -46,7 +46,7 @@ const BillWithUserCard: FC<BillCardImportation> = ({ bill, index, listInfo }) =>
         }}
       >
         <ListItem disablePadding sx={{ my: '10px' }}>
-          <Box display="flex" flexDirection="column" alignItems="start" width="100%" gap="10px">
+          <Box display="flex" flexDirection="column" alignItems="start" width="100%" gap="8px">
             <Box component="div" mb={'8px'}>
               <ListItemText
                 primaryTypographyProps={{ fontSize: '14px', fontWeight: 'bold' }}
@@ -84,11 +84,11 @@ const BillWithUserCard: FC<BillCardImportation> = ({ bill, index, listInfo }) =>
                         sx={{
                           backgroundColor: '#e6e6e6',
                           borderRadius: '20px',
-                          padding: '3px 10px',
+                          padding: '1px 10px',
                           minWidth: '50px',
                           display: 'inline-block',
                           textAlign: 'center',
-                          margin: '0 2px',
+                          margin: '1px',
                         }}
                       >
                         <Typography
