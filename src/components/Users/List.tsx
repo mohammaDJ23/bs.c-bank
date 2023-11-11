@@ -19,25 +19,37 @@ const List: FC = () => {
   const isInitialUsersApiProcessing = request.isInitialApiProcessing(UsersApi);
   const isUsersApiProcessing = request.isApiProcessing(UsersApi);
 
-  const getUsersList = useCallback(
+  const getUsersListApi = useCallback(
     (options: Partial<UsersApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: userListInfo.take, page: userListInfo.page, ...options },
-        userListFiltersForm
-      );
-      const userApi = new UsersApi<UserObj>(apiData);
-      userApi.setInitialApi(!!apiData.isInitialApi);
+      return new UsersApi({
+        take: userListInfo.take,
+        page: userListInfo.page,
+        filters: {
+          q: userListFiltersForm.q,
+          roles: userListFiltersForm.roles,
+          fromDate: userListFiltersForm.fromDate,
+          toDate: userListFiltersForm.toDate,
+        },
+        ...options,
+      });
+    },
+    [userListInfo, userListFiltersForm]
+  );
 
-      request.build<[UserObj[], number], UsersApiConstructorType>(userApi).then((response) => {
+  const getUsersList = useCallback(
+    (api: UsersApi) => {
+      request.build<[UserObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
-        userListInstance.insertNewList({ total, list, page: apiData.page });
+        userListInstance.insertNewList({ total, list, page: userListInfo.page });
       });
     },
     [userListInfo, userListInstance, userListFiltersForm, request]
   );
 
   useEffect(() => {
-    getUsersList({ isInitialApi: true });
+    const api = getUsersListApi();
+    api.setInitialApi();
+    getUsersList(api);
   }, []);
 
   const changePage = useCallback(
@@ -46,7 +58,10 @@ const List: FC = () => {
 
       if (userListInstance.isNewPageEqualToCurrentPage(newPage) || isUsersApiProcessing) return;
 
-      if (!userListInstance.isNewPageExist(newPage)) getUsersList({ page: newPage });
+      if (!userListInstance.isNewPageExist(newPage)) {
+        const api = getUsersListApi({ page: newPage });
+        getUsersList(api);
+      }
     },
     [userListInstance, isUsersApiProcessing, getUsersList]
   );
@@ -55,7 +70,8 @@ const List: FC = () => {
     userListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       userListInstance.onPageChange(newPage);
-      getUsersList({ page: newPage });
+      const api = getUsersListApi({ page: newPage });
+      getUsersList(api);
     });
   }, [userListFiltersFormInstance, userListInstance, getUsersList]);
 

@@ -3,7 +3,14 @@ import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorat
 import { isDate, isUserRoles } from '../validations';
 import { Form } from './formConstructor';
 
-export class AllBillListFilters extends Form {
+export interface AllBillListFiltersObj {
+  q: string;
+  roles: UserRoles[];
+  fromDate: number;
+  toDate: number;
+}
+
+export class AllBillListFilters extends Form implements AllBillListFiltersObj {
   @DefineVal()
   @DefineValidation()
   q: string = '';

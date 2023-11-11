@@ -19,25 +19,36 @@ const List: FC = () => {
   const isInitialBillsApiProcessing = request.isInitialApiProcessing(BillsApi);
   const isBillsApiProcessing = request.isApiProcessing(BillsApi);
 
-  const getBillsList = useCallback(
+  const getBillsListApi = useCallback(
     (options: Partial<BillsApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: billListInfo.take, page: billListInfo.page, ...options },
-        billListFiltersForm
-      );
-      const billsApi = new BillsApi<BillObj>(apiData);
-      billsApi.setInitialApi(!!apiData.isInitialApi);
+      return new BillsApi({
+        take: billListInfo.take,
+        page: billListInfo.page,
+        filters: {
+          q: billListFiltersForm.q,
+          fromDate: billListFiltersForm.fromDate,
+          toDate: billListFiltersForm.toDate,
+        },
+        ...options,
+      });
+    },
+    [billListInfo, billListFiltersForm]
+  );
 
-      request.build<[BillObj[], number], BillObj>(billsApi).then((response) => {
+  const getBillsList = useCallback(
+    (api: BillsApi) => {
+      request.build<[BillObj[], number], BillObj>(api).then((response) => {
         const [list, total] = response.data;
-        billListInstance.insertNewList({ list, total, page: apiData.page });
+        billListInstance.insertNewList({ list, total, page: billListInfo.page });
       });
     },
     [billListInfo, billListInstance, billListFiltersForm, request]
   );
 
   useEffect(() => {
-    getBillsList({ isInitialApi: true });
+    const api = getBillsListApi();
+    api.setInitialApi();
+    getBillsList(api);
   }, []);
 
   const changePage = useCallback(
@@ -46,7 +57,10 @@ const List: FC = () => {
 
       if (billListInstance.isNewPageEqualToCurrentPage(newPage) || isBillsApiProcessing) return;
 
-      if (!billListInstance.isNewPageExist(newPage)) getBillsList({ page: newPage });
+      if (!billListInstance.isNewPageExist(newPage)) {
+        const api = getBillsListApi({ page: newPage });
+        getBillsList(api);
+      }
     },
     [isBillsApiProcessing, billListInstance, getBillsList]
   );
@@ -55,7 +69,8 @@ const List: FC = () => {
     billListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       billListInstance.onPageChange(newPage);
-      getBillsList({ page: newPage });
+      const api = getBillsListApi({ page: newPage });
+      getBillsList(api);
     });
   }, [billListFiltersFormInstance, billListInstance, getBillsList]);
 

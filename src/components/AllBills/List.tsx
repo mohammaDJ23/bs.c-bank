@@ -21,16 +21,17 @@ const List: FC = () => {
 
   const getAllBillsApi = useCallback(
     (options: Partial<AllBillsApiConstructorType> = {}) => {
-      return new AllBillsApi<BillWithUserObj>(
-        Object.assign(
-          allBillListFiltersForm,
-          {
-            take: allBillListInfo.take,
-            page: allBillListInfo.page,
-          },
-          options
-        )
-      );
+      return new AllBillsApi({
+        take: allBillListInfo.take,
+        page: allBillListInfo.page,
+        filters: {
+          q: allBillListFiltersForm.q,
+          roles: allBillListFiltersForm.roles,
+          fromDate: allBillListFiltersForm.fromDate,
+          toDate: allBillListFiltersForm.toDate,
+        },
+        ...options,
+      });
     },
     [allBillListFiltersForm, allBillListInfo]
   );

@@ -44,10 +44,10 @@ const CreateBillContent: FC = () => {
       oneSecDebounce.current(() => {
         consumerListFiltersFormInstance.onSubmit(() => {
           setIsConsumerAutocompleteOpen(true);
-          const consumersApi = new ConsumersApi<ConsumerObj>({
+          const consumersApi = new ConsumersApi({
             take: consumerListInfo.take,
             page: consumerListInfo.page,
-            q,
+            filters: { q },
           });
           request.build<[ConsumerObj[], number], ConsumerObj>(consumersApi).then((response) => {
             const [list] = response.data;

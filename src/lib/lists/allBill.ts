@@ -15,14 +15,6 @@ export interface BillWithUserObj {
   user: UserObj;
 }
 
-export interface AllBillFiltersObj {
-  q: string;
-  roles: UserRoles[];
-  date: string;
-  fromDate: string;
-  toDate: string;
-}
-
 export class AllBillList implements ListInstance {
   constructor(
     public list: ListObj<BillWithUserObj> = {},

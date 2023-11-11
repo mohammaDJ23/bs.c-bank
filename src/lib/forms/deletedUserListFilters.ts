@@ -3,7 +3,15 @@ import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorat
 import { isDate, isUserRoles } from '../validations';
 import { Form } from './formConstructor';
 
-export class DeletedUserListFilters extends Form {
+export interface DeletedUserListFiltersObj {
+  q: string;
+  roles: UserRoles[];
+  fromDate: number;
+  toDate: number;
+  deletedDate: number;
+}
+
+export class DeletedUserListFilters extends Form implements DeletedUserListFiltersObj {
   @DefineVal()
   @DefineValidation()
   q: string = '';

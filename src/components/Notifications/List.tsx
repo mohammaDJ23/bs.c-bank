@@ -19,25 +19,37 @@ const List: FC = () => {
   const isInitialNotificationsApiProcessing = request.isInitialApiProcessing(NotificationsApi);
   const isNotificationsApiProcessing = request.isApiProcessing(NotificationsApi);
 
-  const getNotificationList = useCallback(
+  const getNotificationsApi = useCallback(
     (options: Partial<NotificationsApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: notificationListInfo.take, page: notificationListInfo.page, ...options },
-        notificationListFiltersForm
-      );
-      const notificationsApi = new NotificationsApi<NotificationObj>(apiData);
-      notificationsApi.setInitialApi(!!apiData.isInitialApi);
+      return new NotificationsApi({
+        take: notificationListInfo.take,
+        page: notificationListInfo.page,
+        filters: {
+          q: notificationListFiltersForm.q,
+          roles: notificationListFiltersForm.roles,
+          fromDate: notificationListFiltersForm.fromDate,
+          toDate: notificationListFiltersForm.toDate,
+        },
+        ...options,
+      });
+    },
+    [notificationListInfo, notificationListFiltersForm]
+  );
 
-      request.build<[NotificationObj[], number], NotificationObj>(notificationsApi).then((response) => {
+  const getNotificationList = useCallback(
+    (api: NotificationsApi) => {
+      request.build<[NotificationObj[], number], NotificationObj>(api).then((response) => {
         const [list, total] = response.data;
-        notificationListInstance.insertNewList({ list, total, page: apiData.page });
+        notificationListInstance.insertNewList({ list, total, page: notificationListInfo.page });
       });
     },
     [notificationListInfo, notificationListInstance, notificationListFiltersForm, request]
   );
 
   useEffect(() => {
-    getNotificationList({ isInitialApi: true });
+    const api = getNotificationsApi();
+    api.setInitialApi();
+    getNotificationList(api);
   }, []);
 
   const changePage = useCallback(
@@ -46,7 +58,10 @@ const List: FC = () => {
 
       if (notificationListInstance.isNewPageEqualToCurrentPage(newPage) || isNotificationsApiProcessing) return;
 
-      if (!notificationListInstance.isNewPageExist(newPage)) getNotificationList({ page: newPage });
+      if (!notificationListInstance.isNewPageExist(newPage)) {
+        const api = getNotificationsApi({ page: newPage });
+        getNotificationList(api);
+      }
     },
     [isNotificationsApiProcessing, notificationListInstance, getNotificationList]
   );
@@ -55,7 +70,8 @@ const List: FC = () => {
     notificationListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       notificationListInstance.onPageChange(newPage);
-      getNotificationList({ page: newPage });
+      const api = getNotificationsApi({ page: newPage });
+      getNotificationList(api);
     });
   }, [notificationListFiltersFormInstance, notificationListInstance, getNotificationList]);
 

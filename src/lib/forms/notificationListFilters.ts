@@ -3,7 +3,14 @@ import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorat
 import { isDate, isUserRoles } from '../validations';
 import { Form } from './formConstructor';
 
-export class NotificationListFilters extends Form {
+export interface NotificationListFiltersObj {
+  q: string;
+  roles: UserRoles[];
+  fromDate: number;
+  toDate: number;
+}
+
+export class NotificationListFilters extends Form implements NotificationListFiltersObj {
   @DefineVal()
   @DefineValidation()
   q: string = '';

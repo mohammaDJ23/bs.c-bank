@@ -19,25 +19,37 @@ const List: FC = () => {
   const isInitialDeletedBillListApiProcessing = request.isInitialApiProcessing(DeletedBillListApi);
   const isDeletedBillListApiProcessing = request.isApiProcessing(DeletedBillListApi);
 
-  const getDeletedBillList = useCallback(
+  const getDeletedBillListApi = useCallback(
     (options: Partial<DeletedBillListApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: deletedBillListInfo.take, page: deletedBillListInfo.page, ...options },
-        deletedBillListFiltersForm
-      );
-      const deletedBillListApi = new DeletedBillListApi<BillObj>(apiData);
-      deletedBillListApi.setInitialApi(!!apiData.isInitialApi);
+      return new DeletedBillListApi({
+        take: deletedBillListInfo.take,
+        page: deletedBillListInfo.page,
+        filters: {
+          q: deletedBillListFiltersForm.q,
+          fromDate: deletedBillListFiltersForm.fromDate,
+          toDate: deletedBillListFiltersForm.toDate,
+          deletedDate: deletedBillListFiltersForm.deletedDate,
+        },
+        ...options,
+      });
+    },
+    [deletedBillListInfo, deletedBillListFiltersForm]
+  );
 
-      request.build<[BillObj[], number]>(deletedBillListApi).then((response) => {
+  const getDeletedBillList = useCallback(
+    (api: DeletedBillListApi) => {
+      request.build<[BillObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
-        deletedBillListInstance.insertNewList({ list, total, page: apiData.page });
+        deletedBillListInstance.insertNewList({ list, total, page: deletedBillListInfo.page });
       });
     },
     [deletedBillListInfo, deletedBillListInstance, deletedBillListFiltersForm, request]
   );
 
   useEffect(() => {
-    getDeletedBillList({ isInitialApi: true });
+    const api = getDeletedBillListApi();
+    api.setInitialApi();
+    getDeletedBillList(api);
   }, []);
 
   const changePage = useCallback(
@@ -46,7 +58,10 @@ const List: FC = () => {
 
       if (deletedBillListInstance.isNewPageEqualToCurrentPage(newPage) || isDeletedBillListApiProcessing) return;
 
-      if (!deletedBillListInstance.isNewPageExist(newPage)) getDeletedBillList({ page: newPage });
+      if (!deletedBillListInstance.isNewPageExist(newPage)) {
+        const api = getDeletedBillListApi({ page: newPage });
+        getDeletedBillList(api);
+      }
     },
     [isDeletedBillListApiProcessing, deletedBillListInstance, getDeletedBillList]
   );
@@ -55,7 +70,8 @@ const List: FC = () => {
     deletedBillListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       deletedBillListInstance.onPageChange(newPage);
-      getDeletedBillList({ page: newPage });
+      const api = getDeletedBillListApi({ page: newPage });
+      getDeletedBillList(api);
     });
   }, [deletedBillListFiltersFormInstance, deletedBillListInstance, getDeletedBillList]);
 
