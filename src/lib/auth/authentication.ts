@@ -7,7 +7,7 @@ export enum UserRoles {
   USER = 'user',
 }
 
-export interface TokenInfo {
+export interface DecodedToken {
   id: number;
   email: string;
   firstName: string;
@@ -16,7 +16,7 @@ export interface TokenInfo {
   expiration: number;
 }
 
-export interface UserStatus extends TokenInfo {
+export interface UserStatus extends DecodedToken {
   lastConnection: Date | null;
 }
 
@@ -41,12 +41,12 @@ export function getToken(): string {
   return '';
 }
 
-export function getTokenInfo(token: string = '') {
-  return decodeToken<TokenInfo>(token || getToken());
+export function getDecodedToken(token: string = ''): DecodedToken | null {
+  return decodeToken<DecodedToken>(token || getToken());
 }
 
-export function reInitializeToken(token: string) {
-  const decodedToken = getTokenInfo(token);
+export function reInitializeToken(token: string): void {
+  const decodedToken = getDecodedToken(token);
 
   if (decodedToken) {
     LocalStorage.removeItem('access_token');
@@ -61,68 +61,89 @@ export function reInitializeToken(token: string) {
   }
 }
 
-export function isUserAuthenticated() {
+export function isUserAuthenticated(): boolean {
   return !!getToken();
 }
 
 export function hasRole(...roles: UserRoles[]): boolean {
   roles = roles || Object.values(UserRoles);
 
-  const userInfo = getTokenInfo();
+  const userInfo = getDecodedToken();
 
   if (!userInfo) return false;
   else return roles.some((role) => userInfo.role === role);
 }
 
-export function isUser(role?: UserRoles) {
-  return role ? role === UserRoles.USER : hasRole(UserRoles.USER);
+export function onLogoutEvent(): void {
+  const event = new CustomEvent('on-logout', {
+    cancelable: true,
+    detail: getDecodedToken(),
+  });
+  window.dispatchEvent(event);
 }
 
-export function isAdmin(role?: UserRoles) {
-  return role ? role === UserRoles.ADMIN : hasRole(UserRoles.ADMIN);
+export function isCurrentUser(): boolean {
+  const userInfo = getDecodedToken()!;
+  return userInfo.role === UserRoles.USER;
 }
 
-export function isOwner(role?: UserRoles) {
-  return role ? role === UserRoles.OWNER : hasRole(UserRoles.OWNER);
+export function isCurrentAdmin(): boolean {
+  const userInfo = getDecodedToken()!;
+  return userInfo.role === UserRoles.ADMIN;
 }
 
-export function isSameUser(id: number) {
-  const userInfo = getTokenInfo();
-  return id === userInfo?.id;
+export function isCurrentOwner(): boolean {
+  const userInfo = getDecodedToken()!;
+  return userInfo.role === UserRoles.OWNER;
 }
 
-export function hasUserRoleAuthorized(user: UserObj): boolean {
-  if (isUser()) {
-    return isSameUser(user.id);
+export function isUser(user: UserObj): boolean {
+  return user.role === UserRoles.USER;
+}
+
+export function isAdmin(user: UserObj): boolean {
+  return user.role === UserRoles.ADMIN;
+}
+
+export function isOwner(user: UserObj): boolean {
+  return user.role === UserRoles.OWNER;
+}
+
+export function isUserEqualToCurrentUser(data: UserObj | number): boolean {
+  const userInfo = getDecodedToken()!;
+  if (typeof data === 'number') {
+    return data === userInfo.id;
+  } else {
+    return data.id === userInfo.id;
   }
-  return false;
+}
+
+export function isUserCreatedByCurrentUser(user: UserObj): boolean {
+  const userInfo = getDecodedToken()!;
+  return user.parent.id === userInfo.id;
+}
+
+export function hasUserRoleAuthroized(user: UserObj): boolean {
+  return isUserEqualToCurrentUser(user) && isCurrentUser();
 }
 
 export function hasAdminRoleAuthorized(user: UserObj): boolean {
-  if (isAdmin()) {
-    return isSameUser(user.id);
-  }
-  return false;
+  return isUserEqualToCurrentUser(user) && isCurrentAdmin();
 }
 
 export function hasOwnerRoleAuthorized(user: UserObj): boolean {
-  if (isOwner()) {
-    if (isOwner(user.role)) {
-      return isSameUser(user.id);
-    }
-    return isSameUser(user.parent.id);
-  }
-  return false;
+  return isUserEqualToCurrentUser(user) && isCurrentOwner();
 }
 
-export function hasUserAuthorized(user: UserObj): boolean {
-  return hasUserRoleAuthorized(user) || hasAdminRoleAuthorized(user) || hasOwnerRoleAuthorized(user) || false;
+export function hasCreatedByOwnerRoleAuthorized(user: UserObj): boolean {
+  return isUserCreatedByCurrentUser(user) && !isOwner(user) && isCurrentOwner();
 }
 
-export function onLogoutEvent() {
-  const event = new CustomEvent('on-logout', {
-    cancelable: true,
-    detail: getTokenInfo(),
-  });
-  window.dispatchEvent(event);
+export function hasRoleAuthorized(user: UserObj): boolean {
+  return (
+    hasUserRoleAuthroized(user) ||
+    hasAdminRoleAuthorized(user) ||
+    hasOwnerRoleAuthorized(user) ||
+    hasCreatedByOwnerRoleAuthorized(user)
+  );
 }

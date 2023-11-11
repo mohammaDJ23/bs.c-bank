@@ -14,23 +14,23 @@ interface DetailsImporation {
 
 const Details: FC<DetailsImporation> = ({ user }) => {
   const navigate = useNavigate();
-  const { hideModal, showModal } = useAction();
-  const { modals } = useSelector();
-  const { isApiProcessing, request } = useRequest();
-  const { hasUserAuthorized } = useAuth();
-  const isRestoreUserApiProcessing = isApiProcessing(RestoreUserApi);
-  const isAuthorized = hasUserAuthorized(user);
+  const actions = useAction();
+  const selectors = useSelector();
+  const request = useRequest();
+  const auth = useAuth();
+  const isUserCreatedByCurrentUser = auth.isUserCreatedByCurrentUser(user);
+  const isRestoreUserApiProcessing = request.isApiProcessing(RestoreUserApi);
 
   const showRestoreUserModal = useCallback(() => {
-    showModal(ModalNames.RESTORE_USER);
+    actions.showModal(ModalNames.RESTORE_USER);
   }, []);
 
   const hideRestoreUserModal = useCallback(() => {
-    hideModal(ModalNames.RESTORE_USER);
+    actions.hideModal(ModalNames.RESTORE_USER);
   }, []);
 
   const restoreUser = useCallback(() => {
-    request(new RestoreUserApi(user.id)).then((response) => {
+    request.build(new RestoreUserApi(user.id)).then((response) => {
       navigate(Pathes.USERS);
     });
   }, [user]);
@@ -80,7 +80,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
           </Typography>{' '}
           {moment(user.deletedAt).format('LLLL')}
         </Typography>
-        {isAuthorized && (
+        {isUserCreatedByCurrentUser && (
           <Box mt="30px">
             <Button
               disabled={isRestoreUserApiProcessing}
@@ -100,7 +100,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
         title="Restoring the user"
         body="Are you sure to restore the user?"
         isLoading={isRestoreUserApiProcessing}
-        isActive={modals[ModalNames.RESTORE_USER]}
+        isActive={selectors.modals[ModalNames.RESTORE_USER]}
         onCancel={hideRestoreUserModal}
         onConfirm={restoreUser}
       />

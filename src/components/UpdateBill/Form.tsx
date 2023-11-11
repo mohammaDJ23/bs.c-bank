@@ -14,26 +14,27 @@ interface FormImportation {
 
 const Form: FC<FormImportation> = ({ formInstance }) => {
   const params = useParams();
-  const { hideModal } = useAction();
+  const actions = useAction();
   const navigate = useNavigate();
-  const { isApiProcessing, request } = useRequest();
-  const isUpdateBillApiProcessing = isApiProcessing(UpdateBillApi);
+  const request = useRequest();
+  const isUpdateBillApiProcessing = request.isApiProcessing(UpdateBillApi);
   const form = formInstance.getForm();
-  const { enqueueSnackbar } = useSnackbar();
+  const snackbar = useSnackbar();
 
   const formSubmition = useCallback(() => {
     formInstance.onSubmit(() => {
-      request<UpdateBill, UpdateBill>(new UpdateBillApi(form))
-        .then(response => {
+      request
+        .build<UpdateBill, UpdateBill>(new UpdateBillApi(form))
+        .then((response) => {
           const billId = params.id as string;
-          hideModal(ModalNames.CONFIRMATION);
+          actions.hideModal(ModalNames.CONFIRMATION);
           formInstance.resetForm();
-          enqueueSnackbar({ message: 'You have updated the bill successfully.', variant: 'success' });
+          snackbar.enqueueSnackbar({ message: 'You have updated the bill successfully.', variant: 'success' });
           navigate(getDynamicPath(Pathes.BILL, { id: billId }));
         })
-        .catch(err => hideModal(ModalNames.CONFIRMATION));
+        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
     });
-  }, [form, formInstance, params, request, hideModal, navigate]);
+  }, [form, formInstance, params, request]);
 
   return (
     <>
@@ -44,7 +45,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
         display="flex"
         flexDirection="column"
         gap="20px"
-        onSubmit={event => {
+        onSubmit={(event) => {
           event.preventDefault();
           formInstance.confirmation();
         }}
@@ -54,7 +55,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           variant="standard"
           type="number"
           value={form.amount}
-          onChange={event => formInstance.onChange('amount', event.target.value)}
+          onChange={(event) => formInstance.onChange('amount', event.target.value)}
           helperText={formInstance.getInputErrorMessage('amount')}
           error={formInstance.isInputInValid('amount')}
           disabled={isUpdateBillApiProcessing}
@@ -64,7 +65,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           variant="standard"
           type="text"
           value={form.receiver}
-          onChange={event => formInstance.onChange('receiver', event.target.value)}
+          onChange={(event) => formInstance.onChange('receiver', event.target.value)}
           helperText={formInstance.getInputErrorMessage('receiver')}
           error={formInstance.isInputInValid('receiver')}
           disabled={isUpdateBillApiProcessing}
@@ -74,7 +75,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           type="date"
           variant="standard"
           value={isoDate(form.date)}
-          onChange={event => formInstance.onChange('date', getTime(event.target.value))}
+          onChange={(event) => formInstance.onChange('date', getTime(event.target.value))}
           helperText={formInstance.getInputErrorMessage('date')}
           error={formInstance.isInputInValid('date')}
           InputLabelProps={{ shrink: true }}
@@ -87,7 +88,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           multiline
           variant="standard"
           value={form.description}
-          onChange={event => formInstance.onChange('description', event.target.value)}
+          onChange={(event) => formInstance.onChange('description', event.target.value)}
           helperText={formInstance.getInputErrorMessage('description')}
           error={formInstance.isInputInValid('description')}
           disabled={isUpdateBillApiProcessing}
@@ -117,7 +118,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
       <Modal
         isLoading={isUpdateBillApiProcessing}
         isActive={formInstance.isConfirmationActive()}
-        onCancel={() => hideModal(ModalNames.CONFIRMATION)}
+        onCancel={() => actions.hideModal(ModalNames.CONFIRMATION)}
         onConfirm={formSubmition}
       />
     </>

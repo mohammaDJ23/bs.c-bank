@@ -11,13 +11,13 @@ import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const billListInstance = usePaginationList(BillList);
   const billListFiltersFormInstance = useForm(BillListFilters);
   const billListFiltersForm = billListFiltersFormInstance.getForm();
   const billListInfo = billListInstance.getFullInfo();
-  const isInitialBillsApiProcessing = isInitialApiProcessing(BillsApi);
-  const isBillsApiProcessing = isApiProcessing(BillsApi);
+  const isInitialBillsApiProcessing = request.isInitialApiProcessing(BillsApi);
+  const isBillsApiProcessing = request.isApiProcessing(BillsApi);
 
   const getBillsList = useCallback(
     (options: Partial<BillsApiConstructorType> = {}) => {
@@ -28,7 +28,7 @@ const List: FC = () => {
       const billsApi = new BillsApi<BillObj>(apiData);
       billsApi.setInitialApi(!!apiData.isInitialApi);
 
-      request<[BillObj[], number], BillObj>(billsApi).then(response => {
+      request.build<[BillObj[], number], BillObj>(billsApi).then((response) => {
         const [list, total] = response.data;
         billListInstance.insertNewList({ list, total, page: apiData.page });
       });
@@ -85,7 +85,7 @@ const List: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             billListFilterFormSubmition();
           }}
@@ -96,7 +96,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={billListFiltersForm.q}
-            onChange={event => billListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => billListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={billListFiltersFormInstance.getInputErrorMessage('q')}
             error={billListFiltersFormInstance.isInputInValid('q')}
             name="q"
@@ -108,7 +108,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={billListFiltersForm.fromDate ? isoDate(billListFiltersForm.fromDate) : ''}
-            onChange={event => billListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
+            onChange={(event) => billListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
             helperText={billListFiltersFormInstance.getInputErrorMessage('fromDate')}
             error={billListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
@@ -120,7 +120,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={billListFiltersForm.toDate ? isoDate(billListFiltersForm.toDate) : ''}
-            onChange={event => billListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
+            onChange={(event) => billListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
             helperText={billListFiltersFormInstance.getInputErrorMessage('toDate')}
             error={billListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}

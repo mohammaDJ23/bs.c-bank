@@ -11,13 +11,13 @@ import UserCard from '../shared/UserCard';
 import UserSkeleton from '../shared/UsersSkeleton';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const deletedUserListInstance = usePaginationList(DeletedUserList);
   const deletedUserListFiltersFormInstance = useForm(DeletedUserListFilters);
   const deletedUserListFiltersForm = deletedUserListFiltersFormInstance.getForm();
   const userListInfo = deletedUserListInstance.getFullInfo();
-  const isInitialDeletedUsersApiProcessing = isInitialApiProcessing(DeletedUsersApi);
-  const isDeletedUsersApiProcessing = isApiProcessing(DeletedUsersApi);
+  const isInitialDeletedUsersApiProcessing = request.isInitialApiProcessing(DeletedUsersApi);
+  const isDeletedUsersApiProcessing = request.isApiProcessing(DeletedUsersApi);
 
   const getDeletedUsersList = useCallback(
     (options: Partial<DeletedUsersApiConstructorType> = {}) => {
@@ -28,7 +28,7 @@ const List: FC = () => {
       const userApi = new DeletedUsersApi<UserObj>(apiData);
       userApi.setInitialApi(!!apiData.isInitialApi);
 
-      request<[UserObj[], number], UsersApiConstructorType>(userApi).then(response => {
+      request.build<[UserObj[], number], UsersApiConstructorType>(userApi).then((response) => {
         const [list, total] = response.data;
         deletedUserListInstance.insertNewList({ total, list, page: apiData.page });
       });
@@ -84,7 +84,7 @@ const List: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             userListFilterFormSubmition();
           }}
@@ -95,7 +95,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={deletedUserListFiltersForm.q}
-            onChange={event => deletedUserListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => deletedUserListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={deletedUserListFiltersFormInstance.getInputErrorMessage('q')}
             error={deletedUserListFiltersFormInstance.isInputInValid('q')}
             name="q"
@@ -129,7 +129,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedUserListFiltersForm.fromDate ? isoDate(deletedUserListFiltersForm.fromDate) : ''}
-            onChange={event => deletedUserListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
+            onChange={(event) => deletedUserListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
             helperText={deletedUserListFiltersFormInstance.getInputErrorMessage('fromDate')}
             error={deletedUserListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
@@ -141,7 +141,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedUserListFiltersForm.toDate ? isoDate(deletedUserListFiltersForm.toDate) : ''}
-            onChange={event => deletedUserListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
+            onChange={(event) => deletedUserListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
             helperText={deletedUserListFiltersFormInstance.getInputErrorMessage('toDate')}
             error={deletedUserListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}
@@ -153,7 +153,9 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedUserListFiltersForm.deletedDate ? isoDate(deletedUserListFiltersForm.deletedDate) : ''}
-            onChange={event => deletedUserListFiltersFormInstance.onChange('deletedDate', getTime(event.target.value))}
+            onChange={(event) =>
+              deletedUserListFiltersFormInstance.onChange('deletedDate', getTime(event.target.value))
+            }
             helperText={deletedUserListFiltersFormInstance.getInputErrorMessage('deletedDate')}
             error={deletedUserListFiltersFormInstance.isInputInValid('deletedDate')}
             InputLabelProps={{ shrink: true }}

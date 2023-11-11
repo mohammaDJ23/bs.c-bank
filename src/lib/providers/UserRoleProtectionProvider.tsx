@@ -13,10 +13,10 @@ const UserRoleProtectionProvider: FC<PropsWithChildren<UserRoleProtectionProvide
   path,
   roles,
 }) => {
-  const { getTokenInfo } = useAuth();
-  const userInfo = getTokenInfo();
+  const auth = useAuth();
+  const decodedToken = auth.getDecodedToken()!;
 
-  if (roles.some(role => role === userInfo?.role)) return <Fragment>{children}</Fragment>;
+  if (roles.some((role) => role === decodedToken.role)) return <Fragment>{children}</Fragment>;
   else return <Navigate to={path} replace />;
 };
 

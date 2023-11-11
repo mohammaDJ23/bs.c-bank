@@ -23,7 +23,7 @@ export function useRequest() {
     else return requestInstance.constructor.name;
   }, []);
 
-  const request = useCallback(
+  const build = useCallback(
     async <R = any, D = any>(requestInstance: RootApi<D>): Promise<AxiosResponse<R, D>> => {
       const requestConstructorName = getRequestConstructorName(requestInstance);
       const isInitialApi = requestInstance.isInitialApi;
@@ -134,7 +134,7 @@ export function useRequest() {
   );
 
   return {
-    request,
+    build,
     isApiProcessing,
     isInitialApiProcessing,
     isProcessingApiLoaded,

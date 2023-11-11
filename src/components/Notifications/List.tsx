@@ -11,13 +11,13 @@ import { ModalNames } from '../../store';
 import NotificationCard from '../shared/NotificationCard';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const notificationListInstance = usePaginationList(NotificationList);
   const notificationListFiltersFormInstance = useForm(NotificationListFilters);
   const notificationListFiltersForm = notificationListFiltersFormInstance.getForm();
   const notificationListInfo = notificationListInstance.getFullInfo();
-  const isInitialNotificationsApiProcessing = isInitialApiProcessing(NotificationsApi);
-  const isNotificationsApiProcessing = isApiProcessing(NotificationsApi);
+  const isInitialNotificationsApiProcessing = request.isInitialApiProcessing(NotificationsApi);
+  const isNotificationsApiProcessing = request.isApiProcessing(NotificationsApi);
 
   const getNotificationList = useCallback(
     (options: Partial<NotificationsApiConstructorType> = {}) => {
@@ -28,7 +28,7 @@ const List: FC = () => {
       const notificationsApi = new NotificationsApi<NotificationObj>(apiData);
       notificationsApi.setInitialApi(!!apiData.isInitialApi);
 
-      request<[NotificationObj[], number], NotificationObj>(notificationsApi).then((response) => {
+      request.build<[NotificationObj[], number], NotificationObj>(notificationsApi).then((response) => {
         const [list, total] = response.data;
         notificationListInstance.insertNewList({ list, total, page: apiData.page });
       });

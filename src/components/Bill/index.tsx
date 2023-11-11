@@ -11,17 +11,17 @@ import Navigation from '../../layout/Navigation';
 
 const BillContent: FC = () => {
   const params = useParams();
-  const { isInitialApiProcessing, request } = useRequest();
-  const { setSpecificDetails } = useAction();
-  const { specificDetails } = useSelector();
-  const isInitialBillApiProcessing = isInitialApiProcessing(BillApi);
-  const bill = specificDetails.bill;
+  const request = useRequest();
+  const actions = useAction();
+  const selectors = useSelector();
+  const isInitialBillApiProcessing = request.isInitialApiProcessing(BillApi);
+  const bill = selectors.specificDetails.bill;
 
   useEffect(() => {
     const billId = params.id;
     if (billId) {
-      request<BillObj, string>(new BillApi(billId).setInitialApi()).then(response => {
-        setSpecificDetails('bill', response.data);
+      request.build<BillObj, string>(new BillApi(billId).setInitialApi()).then((response) => {
+        actions.setSpecificDetails('bill', response.data);
       });
     }
   }, []);

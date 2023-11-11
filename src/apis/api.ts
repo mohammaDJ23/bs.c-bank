@@ -67,10 +67,10 @@ export class CreateBillApi extends RootApi<CreateBill> {
 }
 
 export class UpdateUserByOwnerApi extends RootApi<UpdateUserByOwner> {
-  constructor(data: UpdateUserByOwner) {
+  constructor(data: UpdateUserByOwner, id: number) {
     super(
       {
-        url: '/api/v1/user/owner/update',
+        url: `/api/v1/user/owner/update/${id}`,
         method: 'put',
         data,
         headers: {
@@ -228,7 +228,7 @@ export class DeletedUserApi extends RootApi {
   constructor(id: number) {
     super(
       {
-        url: `/api/v1/user/${id}/deleted`,
+        url: `/api/v1/user/deleted/${id}`,
         method: 'get',
       },
       { baseURL: process.env.USER_SERVICE }
@@ -240,7 +240,7 @@ export class RestoreUserApi extends RootApi {
   constructor(id: number) {
     super(
       {
-        url: `/api/v1/user/${id}/restore`,
+        url: `/api/v1/user/restore/${id}`,
         method: 'post',
       },
       { baseURL: process.env.USER_SERVICE }
@@ -264,7 +264,7 @@ export class DeletedBillApi extends RootApi {
   constructor(id: string) {
     super(
       {
-        url: `/api/v1/bank/bill/${id}/deleted`,
+        url: `/api/v1/bank/bill/deleted/${id}`,
         method: 'get',
       },
       { baseURL: process.env.BANK_SERVICE }
@@ -291,7 +291,7 @@ export class RestoreBillApi extends RootApi {
   constructor(id: string) {
     super(
       {
-        url: `/api/v1/bank/bill/${id}/restore`,
+        url: `/api/v1/bank/bill/restore/${id}`,
         method: 'post',
       },
       { baseURL: process.env.BANK_SERVICE }
@@ -300,14 +300,23 @@ export class RestoreBillApi extends RootApi {
 }
 
 export class DeleteUserApi extends RootApi {
-  constructor(id: number) {
+  constructor() {
     super(
       {
         url: '/api/v1/user/delete',
         method: 'delete',
-        params: {
-          id,
-        },
+      },
+      { baseURL: process.env.USER_SERVICE }
+    );
+  }
+}
+
+export class DeleteUserByOwnerApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: `/api/v1/user/owner/delete/${id}`,
+        method: 'delete',
       },
       { baseURL: process.env.USER_SERVICE }
     );

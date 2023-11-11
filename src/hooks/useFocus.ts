@@ -4,5 +4,5 @@ export function useFocus() {
     if (el.length) el[0]?.focus();
   }
 
-  return { focus };
+  return focus;
 }

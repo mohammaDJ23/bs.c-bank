@@ -11,13 +11,13 @@ import UserSkeleton from '../shared/UsersSkeleton';
 import UserCard from '../shared/UserCard';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const userListInstance = usePaginationList(UserList);
   const userListFiltersFormInstance = useForm(UserListFilters);
   const userListFiltersForm = userListFiltersFormInstance.getForm();
   const userListInfo = userListInstance.getFullInfo();
-  const isInitialUsersApiProcessing = isInitialApiProcessing(UsersApi);
-  const isUsersApiProcessing = isApiProcessing(UsersApi);
+  const isInitialUsersApiProcessing = request.isInitialApiProcessing(UsersApi);
+  const isUsersApiProcessing = request.isApiProcessing(UsersApi);
 
   const getUsersList = useCallback(
     (options: Partial<UsersApiConstructorType> = {}) => {
@@ -28,7 +28,7 @@ const List: FC = () => {
       const userApi = new UsersApi<UserObj>(apiData);
       userApi.setInitialApi(!!apiData.isInitialApi);
 
-      request<[UserObj[], number], UsersApiConstructorType>(userApi).then(response => {
+      request.build<[UserObj[], number], UsersApiConstructorType>(userApi).then((response) => {
         const [list, total] = response.data;
         userListInstance.insertNewList({ total, list, page: apiData.page });
       });
@@ -84,7 +84,7 @@ const List: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             userListFilterFormSubmition();
           }}
@@ -95,7 +95,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={userListFiltersForm.q}
-            onChange={event => userListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => userListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={userListFiltersFormInstance.getInputErrorMessage('q')}
             error={userListFiltersFormInstance.isInputInValid('q')}
             name="q"
@@ -129,7 +129,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={userListFiltersForm.fromDate ? isoDate(userListFiltersForm.fromDate) : ''}
-            onChange={event => userListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
+            onChange={(event) => userListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
             helperText={userListFiltersFormInstance.getInputErrorMessage('fromDate')}
             error={userListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
@@ -141,7 +141,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={userListFiltersForm.toDate ? isoDate(userListFiltersForm.toDate) : ''}
-            onChange={event => userListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
+            onChange={(event) => userListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
             helperText={userListFiltersFormInstance.getInputErrorMessage('toDate')}
             error={userListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}

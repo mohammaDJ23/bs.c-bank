@@ -65,24 +65,24 @@ function getDefaultSliderStep() {
 const Dashboard: FC = () => {
   const defaultSliderStep = getDefaultSliderStep();
   const [sliderStep, setSliderStep] = useState(defaultSliderStep);
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
-  const { isOwner, isAdmin } = useAuth();
-  const { setSpecificDetails } = useAction();
-  const { specificDetails } = useSelector();
-  const isUserAdmin = isAdmin();
-  const isUserOwner = isOwner();
-  const isUserOwnerOrAdmin = isUserOwner || isUserAdmin;
-  const { enqueueSnackbar } = useSnackbar();
-  const isInitialTotalAmountApiProcessing = isInitialApiProcessing(TotalAmountApi);
-  const isInitialLastWeekBillsApiProcessing = isInitialApiProcessing(LastWeekBillsApi);
-  const isPeriodAmountApiProcessing = isApiProcessing(PeriodAmountApi);
-  const isInitialUserQuantitiesApiProcessing = isInitialApiProcessing(UserQuantitiesApi);
-  const isInitialDeletedUserQuantitiesApiProcessing = isInitialApiProcessing(DeletedUserQuantitiesApi);
-  const isInitialBillQuantitiesApiProcessing = isInitialApiProcessing(BillQuantitiesApi);
+  const request = useRequest();
+  const auth = useAuth();
+  const actions = useAction();
+  const selectors = useSelector();
+  const isCurrentAdmin = auth.isCurrentAdmin();
+  const isCurrentOwner = auth.isCurrentOwner();
+  const isCurrentOwnerOrAdmin = isCurrentOwner || isCurrentAdmin;
+  const snackbar = useSnackbar();
+  const isInitialTotalAmountApiProcessing = request.isInitialApiProcessing(TotalAmountApi);
+  const isInitialLastWeekBillsApiProcessing = request.isInitialApiProcessing(LastWeekBillsApi);
+  const isPeriodAmountApiProcessing = request.isApiProcessing(PeriodAmountApi);
+  const isInitialUserQuantitiesApiProcessing = request.isInitialApiProcessing(UserQuantitiesApi);
+  const isInitialDeletedUserQuantitiesApiProcessing = request.isInitialApiProcessing(DeletedUserQuantitiesApi);
+  const isInitialBillQuantitiesApiProcessing = request.isInitialApiProcessing(BillQuantitiesApi);
   const halfSecDebounce = useRef(debounce());
 
   useEffect(() => {
-    if (isUserOwnerOrAdmin) {
+    if (isCurrentOwnerOrAdmin) {
       Promise.allSettled<
         [
           Promise<AxiosResponse<UserQuantities>>,
@@ -91,62 +91,62 @@ const Dashboard: FC = () => {
           Promise<AxiosResponse<BillQuantities>>
         ]
       >([
-        request(new UserQuantitiesApi().setInitialApi()),
-        request(new DeletedUserQuantitiesApi().setInitialApi()),
-        request(new LastWeekUsersApi().setInitialApi()),
-        request(new BillQuantitiesApi().setInitialApi()),
+        request.build(new UserQuantitiesApi().setInitialApi()),
+        request.build(new DeletedUserQuantitiesApi().setInitialApi()),
+        request.build(new LastWeekUsersApi().setInitialApi()),
+        request.build(new BillQuantitiesApi().setInitialApi()),
       ]).then(
         ([userQuantitiesResponse, deletedUserQuantitiesResponse, lastWeekUsersResponse, billQuantitiesResponse]) => {
           if (userQuantitiesResponse.status === 'fulfilled')
-            setSpecificDetails('userQuantities', new UserQuantities(userQuantitiesResponse.value.data));
+            actions.setSpecificDetails('userQuantities', new UserQuantities(userQuantitiesResponse.value.data));
 
           if (deletedUserQuantitiesResponse.status === 'fulfilled')
-            setSpecificDetails(
+            actions.setSpecificDetails(
               'deletedUserQuantities',
               new DeletedUserQuantities(deletedUserQuantitiesResponse.value.data)
             );
 
           if (lastWeekUsersResponse.status === 'fulfilled')
-            setSpecificDetails('lastWeekUsers', lastWeekUsersResponse.value.data);
+            actions.setSpecificDetails('lastWeekUsers', lastWeekUsersResponse.value.data);
 
           if (billQuantitiesResponse.status === 'fulfilled') {
             const { quantities, amount } = billQuantitiesResponse.value.data;
-            setSpecificDetails('billQuantities', new BillQuantities(quantities, amount));
+            actions.setSpecificDetails('billQuantities', new BillQuantities(quantities, amount));
           }
         }
       );
     }
 
     Promise.allSettled<[Promise<AxiosResponse<TotalAmount & BillDates>>, Promise<AxiosResponse<LastWeekBillsObj[]>>]>([
-      request(new TotalAmountApi().setInitialApi()),
-      request(new LastWeekBillsApi().setInitialApi()),
+      request.build(new TotalAmountApi().setInitialApi()),
+      request.build(new LastWeekBillsApi().setInitialApi()),
     ]).then(([totalAmountResponse, lastWeekBillsResponse]) => {
       if (totalAmountResponse.status === 'fulfilled') {
         const { start, end, totalAmount, quantities } = totalAmountResponse.value.data;
-        setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
-        setSpecificDetails('billDates', new BillDates(start, end));
-        setSpecificDetails('periodAmountFilter', new PeriodAmountFilter(start, end));
+        actions.setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
+        actions.setSpecificDetails('billDates', new BillDates(start, end));
+        actions.setSpecificDetails('periodAmountFilter', new PeriodAmountFilter(start, end));
       }
 
       if (lastWeekBillsResponse.status === 'fulfilled')
-        setSpecificDetails('lastWeekBills', lastWeekBillsResponse.value.data);
+        actions.setSpecificDetails('lastWeekBills', lastWeekBillsResponse.value.data);
     });
   }, []);
 
   function getNewDateValue(value: string) {
     let newDate = getTime(value);
-    const billDates = specificDetails.billDates as BillDates;
+    const billDates = selectors.specificDetails.billDates as BillDates;
     const startDate = billDates.start;
     const endDate = billDates.end;
     if (newDate < startDate) {
-      enqueueSnackbar({
+      snackbar.enqueueSnackbar({
         message: `The minimum date is equal to ${moment(startDate).format('ll')}`,
         variant: 'warning',
         autoHideDuration: 7000,
       });
       newDate = startDate;
     } else if (newDate > endDate) {
-      enqueueSnackbar({
+      snackbar.enqueueSnackbar({
         message: `The maximum date is equal to ${moment(endDate).format('ll')}`,
         variant: 'warning',
         autoHideDuration: 7000,
@@ -159,20 +159,21 @@ const Dashboard: FC = () => {
   function getChartData() {
     let chartData: LastWeekReport[] = [];
 
-    for (let i = 0; i < specificDetails.lastWeekBills.length; i++)
+    for (let i = 0; i < selectors.specificDetails.lastWeekBills.length; i++)
       chartData[i] = new LastWeekReport({
-        date: moment(specificDetails.lastWeekBills[i].date).format('l'),
-        billCounts: specificDetails.lastWeekBills[i].count,
-        billAmount: specificDetails.lastWeekBills[i].amount,
+        date: moment(selectors.specificDetails.lastWeekBills[i].date).format('l'),
+        billCounts: selectors.specificDetails.lastWeekBills[i].count,
+        billAmount: selectors.specificDetails.lastWeekBills[i].amount,
       });
 
-    for (let i = 0; i < chartData.length && isUserOwnerOrAdmin; i++)
-      lastWeekUsersLoop: for (let j = 0; j < specificDetails.lastWeekUsers.length; j++)
+    for (let i = 0; i < chartData.length && isCurrentOwnerOrAdmin; i++)
+      lastWeekUsersLoop: for (let j = 0; j < selectors.specificDetails.lastWeekUsers.length; j++)
         if (
-          moment(new Date(chartData[i].date)).format('l') === moment(specificDetails.lastWeekUsers[j].date).format('l')
+          moment(new Date(chartData[i].date)).format('l') ===
+          moment(selectors.specificDetails.lastWeekUsers[j].date).format('l')
         ) {
           chartData[i] = Object.assign<LastWeekReport, Partial<LastWeekReport>>(chartData[i], {
-            userCounts: specificDetails.lastWeekUsers[i].count,
+            userCounts: selectors.specificDetails.lastWeekUsers[i].count,
           });
           break lastWeekUsersLoop;
         }
@@ -184,27 +185,28 @@ const Dashboard: FC = () => {
     previousPeriodAmountFilter: PeriodAmountFilter,
     newPeriodAmountFilter: PeriodAmountFilter
   ) {
-    request<TotalAmount, PeriodAmountFilter>(new PeriodAmountApi(newPeriodAmountFilter))
+    request
+      .build<TotalAmount, PeriodAmountFilter>(new PeriodAmountApi(newPeriodAmountFilter))
       .then((response) => {
         const { totalAmount, quantities } = response.data;
-        setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
+        actions.setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
       })
-      .catch((err) => setSpecificDetails('periodAmountFilter', previousPeriodAmountFilter));
+      .catch((err) => actions.setSpecificDetails('periodAmountFilter', previousPeriodAmountFilter));
   }
 
   function changeStartDate(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const previousPeriodAmountFilter = specificDetails.periodAmountFilter!;
+    const previousPeriodAmountFilter = selectors.specificDetails.periodAmountFilter!;
     const newPeriodAmountFilter = new PeriodAmountFilter(
       getNewDateValue(event.target.value),
       previousPeriodAmountFilter.end
     );
-    setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
+    actions.setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
     halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
   }
 
   function changeSlider(evnet: Event, value: number | number[]) {
     let [start, end] = value as number[];
-    const BillDates = specificDetails.billDates as BillDates;
+    const BillDates = selectors.specificDetails.billDates as BillDates;
     const remiderOfEndDates = BillDates.end - end;
 
     if (remiderOfEndDates < defaultSliderStep) {
@@ -212,19 +214,19 @@ const Dashboard: FC = () => {
       setSliderStep(defaultSliderStep + remiderOfEndDates);
     } else setSliderStep(defaultSliderStep);
 
-    const previousPeriodAmountFilter = specificDetails.periodAmountFilter!;
+    const previousPeriodAmountFilter = selectors.specificDetails.periodAmountFilter!;
     const newPeriodAmountFilter = new PeriodAmountFilter(getTime(start), getTime(end));
-    setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
+    actions.setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
     halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
   }
 
   function changeEndDate(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const previousPeriodAmountFilter = specificDetails.periodAmountFilter!;
+    const previousPeriodAmountFilter = selectors.specificDetails.periodAmountFilter!;
     const newPeriodAmountFilter = new PeriodAmountFilter(
       previousPeriodAmountFilter.start,
       getNewDateValue(event.target.value)
     );
-    setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
+    actions.setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
     halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
   }
 
@@ -255,7 +257,7 @@ const Dashboard: FC = () => {
                       },
                     ];
 
-                    if (isUserOwnerOrAdmin) {
+                    if (isCurrentOwnerOrAdmin) {
                       series.push({
                         name: 'Users',
                         data: chartData.map((item) => item.userCounts),
@@ -296,11 +298,11 @@ const Dashboard: FC = () => {
             )
           )}
 
-          {isUserOwnerOrAdmin &&
+          {isCurrentOwnerOrAdmin &&
             (isInitialUserQuantitiesApiProcessing ? (
               <Skeleton width="100%" height="196px" />
             ) : (
-              specificDetails.userQuantities && (
+              selectors.specificDetails.userQuantities && (
                 <Card>
                   <CardContent>
                     <Box display="flex" gap="20px" flexDirection="column">
@@ -309,7 +311,7 @@ const Dashboard: FC = () => {
                           Total Users:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {specificDetails.userQuantities.quantities}
+                          {selectors.specificDetails.userQuantities.quantities}
                         </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -317,7 +319,7 @@ const Dashboard: FC = () => {
                           Owners:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {specificDetails.userQuantities.ownerQuantities}
+                          {selectors.specificDetails.userQuantities.ownerQuantities}
                         </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -325,7 +327,7 @@ const Dashboard: FC = () => {
                           Admins:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {specificDetails.userQuantities.adminQuantities}
+                          {selectors.specificDetails.userQuantities.adminQuantities}
                         </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -333,7 +335,7 @@ const Dashboard: FC = () => {
                           Users:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {specificDetails.userQuantities.userQuantities}
+                          {selectors.specificDetails.userQuantities.userQuantities}
                         </Typography>
                       </Box>
                     </Box>
@@ -342,11 +344,11 @@ const Dashboard: FC = () => {
               )
             ))}
 
-          {isUserOwnerOrAdmin &&
+          {isCurrentOwnerOrAdmin &&
             (isInitialDeletedUserQuantitiesApiProcessing ? (
               <Skeleton width="100%" height="196px" />
             ) : (
-              specificDetails.deletedUserQuantities && (
+              selectors.specificDetails.deletedUserQuantities && (
                 <Card>
                   <CardContent>
                     <Box display="flex" gap="20px" flexDirection="column">
@@ -355,7 +357,7 @@ const Dashboard: FC = () => {
                           Total Deleted Users:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {specificDetails.deletedUserQuantities.quantities}
+                          {selectors.specificDetails.deletedUserQuantities.quantities}
                         </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -363,7 +365,7 @@ const Dashboard: FC = () => {
                           Deleted Owners:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {specificDetails.deletedUserQuantities.ownerQuantities}
+                          {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
                         </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -371,7 +373,7 @@ const Dashboard: FC = () => {
                           Deleted Admins:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {specificDetails.deletedUserQuantities.adminQuantities}
+                          {selectors.specificDetails.deletedUserQuantities.adminQuantities}
                         </Typography>
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -379,7 +381,7 @@ const Dashboard: FC = () => {
                           Deleted Users:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {specificDetails.deletedUserQuantities.userQuantities}
+                          {selectors.specificDetails.deletedUserQuantities.userQuantities}
                         </Typography>
                       </Box>
                     </Box>
@@ -388,11 +390,11 @@ const Dashboard: FC = () => {
               )
             ))}
 
-          {isUserOwnerOrAdmin &&
+          {isCurrentOwnerOrAdmin &&
             (isInitialBillQuantitiesApiProcessing ? (
               <Skeleton width="100%" height="64px" />
             ) : (
-              specificDetails.billQuantities && (
+              selectors.specificDetails.billQuantities && (
                 <Card>
                   <CardContent>
                     <Box display="flex" gap="20px" flexDirection="column">
@@ -401,7 +403,7 @@ const Dashboard: FC = () => {
                           Total bill quantities of the users:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {specificDetails.billQuantities.quantities}
+                          {selectors.specificDetails.billQuantities.quantities}
                         </Typography>
                       </Box>
                     </Box>
@@ -413,23 +415,27 @@ const Dashboard: FC = () => {
           {isInitialTotalAmountApiProcessing ? (
             <Skeleton width="100%" height="128px" />
           ) : (
-            specificDetails.totalAmount &&
-            specificDetails.periodAmountFilter &&
-            specificDetails.billDates && (
+            selectors.specificDetails.totalAmount &&
+            selectors.specificDetails.periodAmountFilter &&
+            selectors.specificDetails.billDates && (
               <Card>
                 <CardContent>
                   <Box display="flex" justifyContent="center" flexDirection="column" gap="20px">
-                    {specificDetails.billDates.start > 0 &&
-                      specificDetails.billDates.end > 0 &&
-                      specificDetails.billDates.end - specificDetails.billDates.start > getOneDayDate() &&
+                    {selectors.specificDetails.billDates.start > 0 &&
+                      selectors.specificDetails.billDates.end > 0 &&
+                      selectors.specificDetails.billDates.end - selectors.specificDetails.billDates.start >
+                        getOneDayDate() &&
                       (() => {
                         const slider = (
                           <Slider
                             disabled={isPeriodAmountApiProcessing}
-                            value={[specificDetails.periodAmountFilter.start, specificDetails.periodAmountFilter.end]}
+                            value={[
+                              selectors.specificDetails.periodAmountFilter.start,
+                              selectors.specificDetails.periodAmountFilter.end,
+                            ]}
                             step={sliderStep}
-                            min={specificDetails.billDates.start}
-                            max={specificDetails.billDates.end}
+                            min={selectors.specificDetails.billDates.start}
+                            max={selectors.specificDetails.billDates.end}
                             onChange={changeSlider}
                             valueLabelDisplay="off"
                           />
@@ -447,14 +453,14 @@ const Dashboard: FC = () => {
                             >
                               <Box display="flex" alignItems="center" gap="5px">
                                 <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
-                                  {moment(specificDetails.periodAmountFilter.start).format('ll')}
+                                  {moment(selectors.specificDetails.periodAmountFilter.start).format('ll')}
                                 </Typography>
                                 <DateRange fontSize="small" sx={{ color: grey[600] }} />
                               </Box>
                               <Input
                                 disabled={isPeriodAmountApiProcessing}
                                 type="date"
-                                value={moment(specificDetails.periodAmountFilter.start).format('YYYY-MM-DD')}
+                                value={moment(selectors.specificDetails.periodAmountFilter.start).format('YYYY-MM-DD')}
                                 onChange={changeStartDate}
                                 sx={{
                                   position: 'absolute',
@@ -466,14 +472,14 @@ const Dashboard: FC = () => {
                               <LargSliderWrapper>{slider}</LargSliderWrapper>
                               <Box display="flex" alignItems="center" gap="5px">
                                 <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
-                                  {moment(specificDetails.periodAmountFilter.end).format('ll')}
+                                  {moment(selectors.specificDetails.periodAmountFilter.end).format('ll')}
                                 </Typography>
                                 <DateRange fontSize="small" sx={{ color: grey[600] }} />
                               </Box>
                               <Input
                                 disabled={isPeriodAmountApiProcessing}
                                 type="date"
-                                value={moment(specificDetails.periodAmountFilter.end).format('YYYY-MM-DD')}
+                                value={moment(selectors.specificDetails.periodAmountFilter.end).format('YYYY-MM-DD')}
                                 onChange={changeEndDate}
                                 sx={{
                                   position: 'absolute',
@@ -492,7 +498,7 @@ const Dashboard: FC = () => {
                         Total bill quantities:{' '}
                       </Typography>
                       <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                        {specificDetails.totalAmount.quantities}
+                        {selectors.specificDetails.totalAmount.quantities}
                       </Typography>
                     </Box>
                     <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
@@ -500,7 +506,7 @@ const Dashboard: FC = () => {
                         Total bill Amount:{' '}
                       </Typography>
                       <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                        {specificDetails.totalAmount.totalAmount}
+                        {selectors.specificDetails.totalAmount.totalAmount}
                       </Typography>
                     </Box>
                   </Box>

@@ -11,13 +11,13 @@ import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const deletedBillListInstance = usePaginationList(DeletedBillList);
   const deletedBillListFiltersFormInstance = useForm(DeletedBillListFilters);
   const deletedBillListFiltersForm = deletedBillListFiltersFormInstance.getForm();
   const deletedBillListInfo = deletedBillListInstance.getFullInfo();
-  const isInitialDeletedBillListApiProcessing = isInitialApiProcessing(DeletedBillListApi);
-  const isDeletedBillListApiProcessing = isApiProcessing(DeletedBillListApi);
+  const isInitialDeletedBillListApiProcessing = request.isInitialApiProcessing(DeletedBillListApi);
+  const isDeletedBillListApiProcessing = request.isApiProcessing(DeletedBillListApi);
 
   const getDeletedBillList = useCallback(
     (options: Partial<DeletedBillListApiConstructorType> = {}) => {
@@ -28,7 +28,7 @@ const List: FC = () => {
       const deletedBillListApi = new DeletedBillListApi<BillObj>(apiData);
       deletedBillListApi.setInitialApi(!!apiData.isInitialApi);
 
-      request<[BillObj[], number]>(deletedBillListApi).then(response => {
+      request.build<[BillObj[], number]>(deletedBillListApi).then((response) => {
         const [list, total] = response.data;
         deletedBillListInstance.insertNewList({ list, total, page: apiData.page });
       });
@@ -85,7 +85,7 @@ const List: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             deletedBillListFilterFormSubmition();
           }}
@@ -96,7 +96,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={deletedBillListFiltersForm.q}
-            onChange={event => deletedBillListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => deletedBillListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={deletedBillListFiltersFormInstance.getInputErrorMessage('q')}
             error={deletedBillListFiltersFormInstance.isInputInValid('q')}
             name="q"
@@ -108,7 +108,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedBillListFiltersForm.fromDate ? isoDate(deletedBillListFiltersForm.fromDate) : ''}
-            onChange={event => deletedBillListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
+            onChange={(event) => deletedBillListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
             helperText={deletedBillListFiltersFormInstance.getInputErrorMessage('fromDate')}
             error={deletedBillListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
@@ -120,7 +120,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedBillListFiltersForm.toDate ? isoDate(deletedBillListFiltersForm.toDate) : ''}
-            onChange={event => deletedBillListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
+            onChange={(event) => deletedBillListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
             helperText={deletedBillListFiltersFormInstance.getInputErrorMessage('toDate')}
             error={deletedBillListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}
@@ -132,7 +132,9 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedBillListFiltersForm.deletedDate ? isoDate(deletedBillListFiltersForm.deletedDate) : ''}
-            onChange={event => deletedBillListFiltersFormInstance.onChange('deletedDate', getTime(event.target.value))}
+            onChange={(event) =>
+              deletedBillListFiltersFormInstance.onChange('deletedDate', getTime(event.target.value))
+            }
             helperText={deletedBillListFiltersFormInstance.getInputErrorMessage('deletedDate')}
             error={deletedBillListFiltersFormInstance.isInputInValid('deletedDate')}
             InputLabelProps={{ shrink: true }}

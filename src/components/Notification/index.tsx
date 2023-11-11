@@ -11,17 +11,17 @@ import Navigation from '../../layout/Navigation';
 
 const NotificationContent: FC = () => {
   const params = useParams();
-  const { isInitialApiProcessing, request } = useRequest();
-  const { setSpecificDetails } = useAction();
-  const { specificDetails } = useSelector();
-  const isInitialNotificationApiProcessing = isInitialApiProcessing(NotificationApi);
-  const notification = specificDetails.notification;
+  const request = useRequest();
+  const actions = useAction();
+  const selectors = useSelector();
+  const isInitialNotificationApiProcessing = request.isInitialApiProcessing(NotificationApi);
+  const notification = selectors.specificDetails.notification;
 
   useEffect(() => {
     const notificationId = params.id;
     if (notificationId) {
-      request<NotificationObj, number>(new NotificationApi(+notificationId).setInitialApi()).then((response) => {
-        setSpecificDetails('notification', response.data);
+      request.build<NotificationObj, number>(new NotificationApi(+notificationId).setInitialApi()).then((response) => {
+        actions.setSpecificDetails('notification', response.data);
       });
     }
   }, []);

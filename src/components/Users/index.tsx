@@ -10,11 +10,11 @@ import { ModalNames } from '../../store';
 import { UsersApi } from '../../apis';
 
 const UsersContent: FC = () => {
-  const { showModal } = useAction();
+  const actions = useAction();
   const location = useLocation();
-  const { isInitialApiProcessing } = useRequest();
+  const request = useRequest();
   const userListInstance = usePaginationList(UserList);
-  const isInitialUsersApiProcessing = isInitialApiProcessing(UsersApi);
+  const isInitialUsersApiProcessing = request.isInitialApiProcessing(UsersApi);
   const usersTotal = userListInstance.getTotal();
   const previousUserId: string | undefined = location.state?.previousUserId;
   const isPreviousUserIdExist = !!previousUserId;
@@ -23,7 +23,7 @@ const UsersContent: FC = () => {
     return <Navigate to={getDynamicPath(Pathes.USER, { id: previousUserId })} />;
   }
 
-  const menuOptions = [<Typography onClick={() => showModal(ModalNames.USER_FILTERS)}>Filters</Typography>];
+  const menuOptions = [<Typography onClick={() => actions.showModal(ModalNames.USER_FILTERS)}>Filters</Typography>];
 
   return (
     <Navigation title={`Users ${!isInitialUsersApiProcessing ? `(${usersTotal})` : ''}`} menuOptions={menuOptions}>

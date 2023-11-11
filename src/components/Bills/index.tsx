@@ -9,13 +9,13 @@ import { Typography } from '@mui/material';
 import { ModalNames } from '../../store';
 
 const BillsContent: FC = () => {
-  const { showModal } = useAction();
-  const { isInitialApiProcessing } = useRequest();
+  const actions = useAction();
+  const request = useRequest();
   const billListInstance = usePaginationList(BillList);
-  const isInitialBillsApiProcessing = isInitialApiProcessing(BillsApi);
+  const isInitialBillsApiProcessing = request.isInitialApiProcessing(BillsApi);
   const billsTotal = billListInstance.getTotal();
 
-  const menuOptions = [<Typography onClick={() => showModal(ModalNames.BILL_FILTERS)}>Filters</Typography>];
+  const menuOptions = [<Typography onClick={() => actions.showModal(ModalNames.BILL_FILTERS)}>Filters</Typography>];
 
   return (
     <Navigation title={`Bills ${!isInitialBillsApiProcessing ? `(${billsTotal})` : ''}`} menuOptions={menuOptions}>

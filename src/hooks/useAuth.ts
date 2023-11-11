@@ -1,15 +1,23 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import {
   getToken,
-  getTokenInfo,
+  getDecodedToken,
   isUserAuthenticated,
   isUser,
   isAdmin,
   isOwner,
   getUserRoles,
-  isSameUser,
+  isUserEqualToCurrentUser,
   hasRole,
-  hasUserAuthorized,
+  hasRoleAuthorized,
+  isCurrentUser,
+  isCurrentAdmin,
+  isCurrentOwner,
+  hasAdminRoleAuthorized,
+  hasCreatedByOwnerRoleAuthorized,
+  hasOwnerRoleAuthorized,
+  hasUserRoleAuthroized,
+  isUserCreatedByCurrentUser,
 } from '../lib';
 import { useSelector } from './useSelector';
 
@@ -56,17 +64,25 @@ export function useAuth() {
 
   return {
     getToken,
-    getTokenInfo,
+    getDecodedToken,
     isUserAuthenticated,
     isUser,
     isAdmin,
     isOwner,
     getUserRoles,
-    isSameUser,
+    isUserEqualToCurrentUser,
     hasRole,
-    hasUserAuthorized,
+    hasRoleAuthorized,
     getUserStatusColor,
     isUserOnline,
     getUserLastConnection,
+    isCurrentUser,
+    isCurrentAdmin,
+    isCurrentOwner,
+    hasAdminRoleAuthorized,
+    hasCreatedByOwnerRoleAuthorized,
+    hasOwnerRoleAuthorized,
+    hasUserRoleAuthroized,
+    isUserCreatedByCurrentUser,
   };
 }

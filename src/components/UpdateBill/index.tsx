@@ -11,17 +11,17 @@ import Navigation from '../../layout/Navigation';
 
 const UpdateBillContent: FC = () => {
   const params = useParams();
-  const { setSpecificDetails } = useAction();
-  const { specificDetails } = useSelector();
-  const { request, isInitialApiProcessing } = useRequest();
+  const actions = useAction();
+  const selectors = useSelector();
+  const request = useRequest();
   const updateBillFormInstance = useForm(UpdateBill);
-  const isInitialBillApiProcessing = isInitialApiProcessing(BillApi);
+  const isInitialBillApiProcessing = request.isInitialApiProcessing(BillApi);
 
   useEffect(() => {
     const billId = params.id;
     if (billId) {
-      request<BillObj, string>(new BillApi(billId).setInitialApi()).then(response => {
-        setSpecificDetails('bill', response.data);
+      request.build<BillObj, string>(new BillApi(billId).setInitialApi()).then((response) => {
+        actions.setSpecificDetails('bill', response.data);
         updateBillFormInstance.initializeForm(
           new UpdateBill({
             id: response.data.id,
@@ -40,7 +40,7 @@ const UpdateBillContent: FC = () => {
       <FormContainer>
         {isInitialBillApiProcessing ? (
           <Skeleton />
-        ) : specificDetails.bill ? (
+        ) : selectors.specificDetails.bill ? (
           <Form formInstance={updateBillFormInstance} />
         ) : (
           <NotFound />

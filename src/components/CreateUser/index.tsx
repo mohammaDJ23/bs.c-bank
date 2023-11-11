@@ -8,19 +8,19 @@ import { useSnackbar } from 'notistack';
 import Navigation from '../../layout/Navigation';
 
 const CreateUserContent: FC = () => {
-  const { getUserRoles } = useAuth();
+  const auth = useAuth();
   const createUserFormInstance = useForm(CreateUser);
-  const { isApiProcessing, request } = useRequest();
-  const { focus } = useFocus();
-  const isCreateUserApiProcessing = isApiProcessing(CreateUserApi);
+  const request = useRequest();
+  const focus = useFocus();
+  const isCreateUserApiProcessing = request.isApiProcessing(CreateUserApi);
   const form = createUserFormInstance.getForm();
-  const { enqueueSnackbar } = useSnackbar();
+  const snackbar = useSnackbar();
 
   const formSubmition = useCallback(() => {
     createUserFormInstance.onSubmit(() => {
-      request<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
+      request.build<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
         createUserFormInstance.resetForm();
-        enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
+        snackbar.enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
       });
     });
   }, [createUserFormInstance, form, request]);
@@ -107,7 +107,7 @@ const CreateUserContent: FC = () => {
               label="Role"
               error={createUserFormInstance.isInputInValid('role')}
             >
-              {getUserRoles().map((el) => (
+              {auth.getUserRoles().map((el) => (
                 <MenuItem key={el.value} value={el.value}>
                   {el.label}
                 </MenuItem>

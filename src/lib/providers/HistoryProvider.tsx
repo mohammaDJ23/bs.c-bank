@@ -6,14 +6,11 @@ interface HistoryProviderImportation {
   history: BrowserHistory | MemoryHistory;
 }
 
-const HistoryProvider: FC<PropsWithChildren<HistoryProviderImportation>> = ({
-  children,
-  history,
-}) => {
-  const { setHistory } = useAction();
+const HistoryProvider: FC<PropsWithChildren<HistoryProviderImportation>> = ({ children, history }) => {
+  const actions = useAction();
 
   useEffect(() => {
-    setHistory(history);
+    actions.setHistory(history);
   }, []);
 
   return <Fragment>{children}</Fragment>;

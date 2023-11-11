@@ -12,22 +12,22 @@ const CreateBillContent: FC = () => {
   const [isConsumerAutocompleteOpen, setIsConsumerAutocompleteOpen] = useState(false);
   const createBillFromInstance = useForm(CreateBill);
   const consumerListFiltersFormInstance = useForm(ConsumerListFilters);
-  const { isApiProcessing, request } = useRequest();
-  const { focus } = useFocus();
-  const isCreateBillApiProcessing = isApiProcessing(CreateBillApi);
-  const isConsumersApiProcessing = isApiProcessing(ConsumersApi);
+  const request = useRequest();
+  const focus = useFocus();
+  const isCreateBillApiProcessing = request.isApiProcessing(CreateBillApi);
+  const isConsumersApiProcessing = request.isApiProcessing(ConsumersApi);
   const createBillFrom = createBillFromInstance.getForm();
   const consumerListFiltersForm = consumerListFiltersFormInstance.getForm();
   const consumerListInstance = usePaginationList(ConsumerList);
   const consumerListInfo = consumerListInstance.getFullInfo();
-  const { enqueueSnackbar } = useSnackbar();
+  const snackbar = useSnackbar();
   const oneSecDebounce = useRef(debounce(1000));
 
   const formSubmition = useCallback(() => {
     createBillFromInstance.onSubmit(() => {
-      request<CreateBill, CreateBill>(new CreateBillApi(createBillFrom)).then((response) => {
+      request.build<CreateBill, CreateBill>(new CreateBillApi(createBillFrom)).then((response) => {
         createBillFromInstance.resetForm();
-        enqueueSnackbar({ message: 'Your bill was created successfully.', variant: 'success' });
+        snackbar.enqueueSnackbar({ message: 'Your bill was created successfully.', variant: 'success' });
       });
     });
   }, [createBillFromInstance, createBillFrom, request]);
@@ -49,7 +49,7 @@ const CreateBillContent: FC = () => {
             page: consumerListInfo.page,
             q,
           });
-          request<[ConsumerObj[], number], ConsumerObj>(consumersApi).then((response) => {
+          request.build<[ConsumerObj[], number], ConsumerObj>(consumersApi).then((response) => {
             const [list] = response.data;
             const consumers: string[] = [];
             if (q.length) {

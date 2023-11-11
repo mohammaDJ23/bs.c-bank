@@ -10,18 +10,18 @@ import Details from './Details';
 import Navigation from '../../layout/Navigation';
 
 const UserContent: FC = () => {
-  const { request, isInitialApiProcessing } = useRequest();
+  const request = useRequest();
   const params = useParams();
-  const { setSpecificDetails } = useAction();
-  const { specificDetails } = useSelector();
-  const isUserWithBillInfoApiProcessing = isInitialApiProcessing(UserWithBillInfoApi);
-  const user = specificDetails.userWithBillInfo;
+  const actions = useAction();
+  const selectors = useSelector();
+  const isUserWithBillInfoApiProcessing = request.isInitialApiProcessing(UserWithBillInfoApi);
+  const user = selectors.specificDetails.userWithBillInfo;
 
   useEffect(() => {
     const userId = params.id;
     if (userId) {
-      request<UserWithBillInfoObj, number>(new UserWithBillInfoApi(+userId).setInitialApi()).then(response => {
-        setSpecificDetails('userWithBillInfo', response.data);
+      request.build<UserWithBillInfoObj, number>(new UserWithBillInfoApi(+userId).setInitialApi()).then((response) => {
+        actions.setSpecificDetails('userWithBillInfo', response.data);
       });
     }
   }, []);

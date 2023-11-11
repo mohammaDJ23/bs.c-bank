@@ -9,13 +9,15 @@ import { Typography } from '@mui/material';
 import { ModalNames } from '../../store';
 
 const DeletedBillListContent: FC = () => {
-  const { showModal } = useAction();
-  const { isInitialApiProcessing } = useRequest();
+  const actions = useAction();
+  const request = useRequest();
   const deletedBillListInstance = usePaginationList(DeletedBillList);
-  const isInitialDeletedBillListApiProcessing = isInitialApiProcessing(DeletedBillListApi);
+  const isInitialDeletedBillListApiProcessing = request.isInitialApiProcessing(DeletedBillListApi);
   const billsTotal = deletedBillListInstance.getTotal();
 
-  const menuOptions = [<Typography onClick={() => showModal(ModalNames.DELETED_BILL_FILTERS)}>Filters</Typography>];
+  const menuOptions = [
+    <Typography onClick={() => actions.showModal(ModalNames.DELETED_BILL_FILTERS)}>Filters</Typography>,
+  ];
 
   return (
     <Navigation
