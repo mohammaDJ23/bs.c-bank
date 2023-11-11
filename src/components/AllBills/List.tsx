@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
-import { Box, List as MuiList, TextField, Button } from '@mui/material';
+import { Box, List as MuiList, TextField, Button, Autocomplete } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { AllBillList, AllBillListFilters, getTime, isoDate, BillWithUserObj } from '../../lib';
+import { AllBillList, AllBillListFilters, getTime, isoDate, BillWithUserObj, UserRoles } from '../../lib';
 import { useForm, usePaginationList, useRequest } from '../../hooks';
 import { AllBillsApi, AllBillsApiConstructorType } from '../../apis';
 import BillsSkeleton from '../shared/BillsSkeleton';
@@ -19,25 +19,36 @@ const List: FC = () => {
   const isInitialAllBillsApiProcessing = request.isInitialApiProcessing(AllBillsApi);
   const isAllBillsApiProcessing = request.isApiProcessing(AllBillsApi);
 
-  const getAllBillsList = useCallback(
+  const getAllBillsApi = useCallback(
     (options: Partial<AllBillsApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: allBillListInfo.take, page: allBillListInfo.page, ...options },
-        allBillListFiltersForm
+      return new AllBillsApi<BillWithUserObj>(
+        Object.assign(
+          allBillListFiltersForm,
+          {
+            take: allBillListInfo.take,
+            page: allBillListInfo.page,
+          },
+          options
+        )
       );
-      const allBillsApi = new AllBillsApi<BillWithUserObj>(apiData);
-      allBillsApi.setInitialApi(!!apiData.isInitialApi);
+    },
+    [allBillListFiltersForm, allBillListInfo]
+  );
 
-      request.build<[BillWithUserObj[], number], BillWithUserObj>(allBillsApi).then((response) => {
+  const getAllBillsList = useCallback(
+    (api: AllBillsApi) => {
+      request.build<[BillWithUserObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
-        allBillListInstance.insertNewList({ list, total, page: apiData.page });
+        allBillListInstance.insertNewList({ list, total, page: allBillListInfo.page });
       });
     },
-    [allBillListInfo, allBillListInstance, allBillListFiltersForm, request]
+    [allBillListInfo, allBillListInstance, request]
   );
 
   useEffect(() => {
-    getAllBillsList({ isInitialApi: true });
+    const api = getAllBillsApi();
+    api.setInitialApi();
+    getAllBillsList(api);
   }, []);
 
   const changePage = useCallback(
@@ -46,18 +57,22 @@ const List: FC = () => {
 
       if (allBillListInstance.isNewPageEqualToCurrentPage(newPage) || isAllBillsApiProcessing) return;
 
-      if (!allBillListInstance.isNewPageExist(newPage)) getAllBillsList({ page: newPage });
+      if (!allBillListInstance.isNewPageExist(newPage)) {
+        const api = getAllBillsApi({ page: newPage });
+        getAllBillsList(api);
+      }
     },
-    [isAllBillsApiProcessing, allBillListInstance, getAllBillsList]
+    [isAllBillsApiProcessing, allBillListInstance, getAllBillsList, getAllBillsApi]
   );
 
   const allBillListFilterFormSubmition = useCallback(() => {
     allBillListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       allBillListInstance.onPageChange(newPage);
-      getAllBillsList({ page: newPage });
+      const api = getAllBillsApi({ page: newPage });
+      getAllBillsList(api);
     });
-  }, [allBillListFiltersFormInstance, allBillListInstance, getAllBillsList]);
+  }, [allBillListFiltersFormInstance, allBillListInstance, getAllBillsList, getAllBillsApi]);
 
   return (
     <>
@@ -101,6 +116,27 @@ const List: FC = () => {
             error={allBillListFiltersFormInstance.isInputInValid('q')}
             name="q"
             placeholder="amount, receiver, description, firstname, lastname"
+            disabled={isAllBillsApiProcessing}
+          />
+          <Autocomplete
+            multiple
+            id="size-small-standard-multi"
+            size="small"
+            options={Object.values(UserRoles)}
+            getOptionLabel={(option: (typeof allBillListFiltersForm.roles)[number]) => option}
+            onChange={(event, value) => allBillListFiltersFormInstance.onChange('roles', value)}
+            value={allBillListFiltersForm.roles}
+            renderInput={(params: any) => (
+              <TextField
+                {...params}
+                label="Roles"
+                variant="standard"
+                type="text"
+                error={allBillListFiltersFormInstance.isInputInValid('roles')}
+                helperText={allBillListFiltersFormInstance.getInputErrorMessage('roles')}
+                name="roles"
+              />
+            )}
             disabled={isAllBillsApiProcessing}
           />
           <TextField

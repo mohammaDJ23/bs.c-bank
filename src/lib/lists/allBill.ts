@@ -1,3 +1,4 @@
+import { UserRoles } from '../auth';
 import { ListInstance, ListObj } from './list';
 import { UserObj } from './user';
 
@@ -16,6 +17,7 @@ export interface BillWithUserObj {
 
 export interface AllBillFiltersObj {
   q: string;
+  roles: UserRoles[];
   date: string;
   fromDate: string;
   toDate: string;
