@@ -66,7 +66,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           variant="standard"
           type="text"
           value={form.firstName}
-          onChange={(event) => formInstance.onChange('firstName', event.target.value.trim())}
+          onChange={(event) => formInstance.onChange('firstName', event.target.value)}
           helperText={formInstance.getInputErrorMessage('firstName')}
           error={formInstance.isInputInValid('firstName')}
           disabled={isUpdateUserByOwnerApiProcessing}
@@ -76,7 +76,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           variant="standard"
           type="text"
           value={form.lastName}
-          onChange={(event) => formInstance.onChange('lastName', event.target.value.trim())}
+          onChange={(event) => formInstance.onChange('lastName', event.target.value)}
           helperText={formInstance.getInputErrorMessage('lastName')}
           error={formInstance.isInputInValid('lastName')}
           disabled={isUpdateUserByOwnerApiProcessing}

@@ -49,7 +49,7 @@ const CreateUserContent: FC = () => {
             variant="standard"
             type="text"
             value={form.firstName}
-            onChange={(event) => createUserFormInstance.onChange('firstName', event.target.value.trim())}
+            onChange={(event) => createUserFormInstance.onChange('firstName', event.target.value)}
             helperText={createUserFormInstance.getInputErrorMessage('firstName')}
             error={createUserFormInstance.isInputInValid('firstName')}
             disabled={isCreateUserApiProcessing}
@@ -60,7 +60,7 @@ const CreateUserContent: FC = () => {
             variant="standard"
             type="text"
             value={form.lastName}
-            onChange={(event) => createUserFormInstance.onChange('lastName', event.target.value.trim())}
+            onChange={(event) => createUserFormInstance.onChange('lastName', event.target.value)}
             helperText={createUserFormInstance.getInputErrorMessage('lastName')}
             error={createUserFormInstance.isInputInValid('lastName')}
             disabled={isCreateUserApiProcessing}
