@@ -1,7 +1,9 @@
 import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorators';
 import { getTime } from '../utilFunctions';
 import { isReceiver, isAmount, isDescription, isDate, isConsumers } from '../validations';
-import { Form } from './formConstructor';
+import { Form, IgnoreFormConstructor } from './formConstructor';
+
+export interface CreateBillObj extends IgnoreFormConstructor<CreateBill> {}
 
 export class CreateBill extends Form {
   @DefineRules([isAmount])

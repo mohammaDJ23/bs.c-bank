@@ -1,17 +1,11 @@
 import { UserRoles } from '../auth';
 import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorators';
 import { isDate, isUserRoles } from '../validations';
-import { Form } from './formConstructor';
+import { Form, IgnoreFormConstructor } from './formConstructor';
 
-export interface DeletedUserListFiltersObj {
-  q: string;
-  roles: UserRoles[];
-  fromDate: number;
-  toDate: number;
-  deletedDate: number;
-}
+export interface DeletedUserListFiltersObj extends IgnoreFormConstructor<DeletedUserListFilters> {}
 
-export class DeletedUserListFilters extends Form implements DeletedUserListFiltersObj {
+export class DeletedUserListFilters extends Form {
   @DefineVal()
   @DefineValidation()
   q: string = '';

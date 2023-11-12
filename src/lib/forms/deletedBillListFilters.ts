@@ -1,15 +1,10 @@
 import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorators';
 import { isDate } from '../validations';
-import { Form } from './formConstructor';
+import { Form, IgnoreFormConstructor } from './formConstructor';
 
-export interface DeletedBillListFiltersObj {
-  q: string;
-  fromDate: number;
-  toDate: number;
-  deletedDate: number;
-}
+export interface DeletedBillListFiltersObj extends IgnoreFormConstructor<DeletedBillListFilters> {}
 
-export class DeletedBillListFilters extends Form implements DeletedBillListFilters {
+export class DeletedBillListFilters extends Form {
   @DefineVal()
   @DefineValidation()
   q: string = '';

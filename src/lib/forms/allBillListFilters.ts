@@ -1,16 +1,11 @@
 import { UserRoles } from '../auth';
 import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorators';
 import { isDate, isUserRoles } from '../validations';
-import { Form } from './formConstructor';
+import { Form, IgnoreFormConstructor } from './formConstructor';
 
-export interface AllBillListFiltersObj {
-  q: string;
-  roles: UserRoles[];
-  fromDate: number;
-  toDate: number;
-}
+export interface AllBillListFiltersObj extends IgnoreFormConstructor<AllBillListFilters> {}
 
-export class AllBillListFilters extends Form implements AllBillListFiltersObj {
+export class AllBillListFilters extends Form {
   @DefineVal()
   @DefineValidation()
   q: string = '';

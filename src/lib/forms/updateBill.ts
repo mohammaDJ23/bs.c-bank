@@ -1,7 +1,9 @@
 import { DefineRules, DefineVal, DefineValidation } from '../decorators';
 import { getTime } from '../utilFunctions';
 import { isReceiver, isAmount, isDescription, isDate, isConsumers } from '../validations';
-import { Form } from './formConstructor';
+import { Form, IgnoreFormConstructor } from './formConstructor';
+
+export interface UpdateBillObj extends IgnoreFormConstructor<UpdateBill> {}
 
 export class UpdateBill extends Form {
   @DefineVal()

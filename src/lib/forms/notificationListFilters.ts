@@ -1,16 +1,11 @@
 import { UserRoles } from '../auth';
 import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorators';
 import { isDate, isUserRoles } from '../validations';
-import { Form } from './formConstructor';
+import { Form, IgnoreFormConstructor } from './formConstructor';
 
-export interface NotificationListFiltersObj {
-  q: string;
-  roles: UserRoles[];
-  fromDate: number;
-  toDate: number;
-}
+export interface NotificationListFiltersObj extends IgnoreFormConstructor<NotificationListFilters> {}
 
-export class NotificationListFilters extends Form implements NotificationListFiltersObj {
+export class NotificationListFilters extends Form {
   @DefineVal()
   @DefineValidation()
   q: string = '';

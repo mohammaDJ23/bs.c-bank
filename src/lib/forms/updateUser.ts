@@ -9,7 +9,9 @@ import {
   UserRoles,
   DefineValidation,
 } from '../';
-import { Form } from './formConstructor';
+import { Form, IgnoreFormConstructor } from './formConstructor';
+
+export interface UpdateUserByOwnerObj extends IgnoreFormConstructor<UpdateUserByOwner> {}
 
 export class UpdateUserByOwner extends Form {
   @DefineRules([isFirstName])

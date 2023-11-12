@@ -1,14 +1,9 @@
 import { UserRoles } from '../auth';
 import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorators';
 import { isDate, isUserRoles } from '../validations';
-import { Form } from './formConstructor';
+import { Form, IgnoreFormConstructor } from './formConstructor';
 
-export interface UserListFiltersObj {
-  q: string;
-  roles: UserRoles[];
-  fromDate: number;
-  toDate: number;
-}
+export interface UserListFiltersObj extends IgnoreFormConstructor<UserListFilters> {}
 
 export class UserListFilters extends Form implements UserListFiltersObj {
   @DefineVal()
