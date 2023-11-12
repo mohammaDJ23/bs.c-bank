@@ -1,25 +1,43 @@
 import FormContainer from '../../layout/FormContainer';
 import { Box, TextField, Button, Autocomplete, CircularProgress } from '@mui/material';
-import { ConsumerList, ConsumerListFilters, ConsumerObj, CreateBill, debounce, getTime, isoDate } from '../../lib';
+import {
+  ConsumerList,
+  ConsumerListFilters,
+  ReceiverListFilters,
+  ConsumerObj,
+  CreateBill,
+  ReceiverList,
+  debounce,
+  getTime,
+  isoDate,
+  ReceiverObj,
+} from '../../lib';
 import { useForm, useRequest, useFocus, usePaginationList } from '../../hooks';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
-import { ConsumersApi, CreateBillApi } from '../../apis';
+import { ConsumersApi, CreateBillApi, ReceiversApi } from '../../apis';
 import { useSnackbar } from 'notistack';
 import Navigation from '../../layout/Navigation';
 
 const CreateBillContent: FC = () => {
   const [consumers, setConsumers] = useState<string[]>([]);
+  const [receviers, setReceivers] = useState<string[]>([]);
   const [isConsumerAutocompleteOpen, setIsConsumerAutocompleteOpen] = useState(false);
+  const [isReceiverAutocompleteOpen, setIsReceiverAutocompleteOpen] = useState(false);
   const createBillFromInstance = useForm(CreateBill);
   const consumerListFiltersFormInstance = useForm(ConsumerListFilters);
+  const receiverListFiltersFormInstance = useForm(ReceiverListFilters);
   const request = useRequest();
   const focus = useFocus();
   const isCreateBillApiProcessing = request.isApiProcessing(CreateBillApi);
   const isConsumersApiProcessing = request.isApiProcessing(ConsumersApi);
+  const isReceiversApiProcessing = request.isApiProcessing(ReceiversApi);
   const createBillFrom = createBillFromInstance.getForm();
   const consumerListFiltersForm = consumerListFiltersFormInstance.getForm();
+  const receiverListFiltersForm = receiverListFiltersFormInstance.getForm();
   const consumerListInstance = usePaginationList(ConsumerList);
+  const receiverlistInstance = usePaginationList(ReceiverList);
   const consumerListInfo = consumerListInstance.getFullInfo();
+  const receiverListInfo = receiverlistInstance.getFullInfo();
   const snackbar = useSnackbar();
   const oneSecDebounce = useRef(debounce(1000));
 
@@ -36,6 +54,36 @@ const CreateBillContent: FC = () => {
     focus('amount');
   }, []);
 
+  const onReceiverChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const q = event.target.value.trim();
+      receiverListFiltersFormInstance.onChange('q', q);
+      createBillFromInstance.onChange('receiver', q);
+
+      oneSecDebounce.current(() => {
+        receiverListFiltersFormInstance.onSubmit(() => {
+          setIsReceiverAutocompleteOpen(true);
+          const receiverApi = new ReceiversApi({
+            take: receiverListInfo.take,
+            page: receiverListInfo.page,
+            filters: { q },
+          });
+          request.build<[ReceiverObj[], number]>(receiverApi).then((response) => {
+            const [list] = response.data;
+            const receivers: string[] = [];
+            if (q.length) {
+              receivers.splice(receivers.length, 0, q);
+            }
+            receivers.splice(receivers.length, 0, ...list.map((receiver) => receiver.name));
+            const newReceivers = new Set(receivers);
+            setReceivers(Array.from(newReceivers));
+          });
+        });
+      });
+    },
+    [createBillFromInstance, receiverListFiltersFormInstance, receiverListInfo]
+  );
+
   const onConsumerChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const q = event.target.value.trim();
@@ -49,7 +97,7 @@ const CreateBillContent: FC = () => {
             page: consumerListInfo.page,
             filters: { q },
           });
-          request.build<[ConsumerObj[], number], ConsumerObj>(consumersApi).then((response) => {
+          request.build<[ConsumerObj[], number]>(consumersApi).then((response) => {
             const [list] = response.data;
             const consumers: string[] = [];
             if (q.length) {
@@ -63,7 +111,7 @@ const CreateBillContent: FC = () => {
         });
       });
     },
-    [createBillFrom, consumerListInfo]
+    [createBillFrom, consumerListFiltersFormInstance, consumerListInfo]
   );
 
   return (
@@ -86,35 +134,79 @@ const CreateBillContent: FC = () => {
             variant="standard"
             type="number"
             value={createBillFrom.amount}
-            onChange={(event) => createBillFromInstance.onChange('amount', event.target.value)}
+            onChange={(event) => createBillFromInstance.onChange('amount', Number(event.target.value).toString())}
             helperText={createBillFromInstance.getInputErrorMessage('amount')}
             error={createBillFromInstance.isInputInValid('amount')}
             disabled={isCreateBillApiProcessing}
             name="amount"
           />
-          <TextField
-            label="Receiver"
-            variant="standard"
-            type="text"
-            value={createBillFrom.receiver}
-            onChange={(event) => createBillFromInstance.onChange('receiver', event.target.value)}
-            helperText={createBillFromInstance.getInputErrorMessage('receiver')}
-            error={createBillFromInstance.isInputInValid('receiver')}
-            disabled={isCreateBillApiProcessing}
-          />
+          <Box position={'relative'}>
+            <Autocomplete
+              freeSolo
+              open={isReceiverAutocompleteOpen}
+              onBlur={() => {
+                setReceivers([]);
+                setIsReceiverAutocompleteOpen(false);
+              }}
+              value={createBillFrom.receiver}
+              onChange={(event, value) => {
+                value = value || '';
+                createBillFromInstance.onChange('receiver', value);
+                receiverListFiltersFormInstance.onChange('q', '');
+                setReceivers([]);
+                setIsReceiverAutocompleteOpen(false);
+              }}
+              disabled={isCreateBillApiProcessing}
+              options={receviers}
+              filterOptions={(options) => options}
+              getOptionLabel={(option) => option}
+              clearIcon={false}
+              clearOnBlur
+              clearOnEscape
+              blurOnSelect
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  sx={{}}
+                  onBlur={(event) => {
+                    receiverListFiltersFormInstance.onChange('q', '');
+                  }}
+                  onFocus={() => {
+                    setReceivers([]);
+                    setIsReceiverAutocompleteOpen(false);
+                  }}
+                  variant="standard"
+                  label="Receiver"
+                  value={receiverListFiltersForm.q}
+                  onChange={onReceiverChange}
+                  error={
+                    createBillFromInstance.isInputInValid('receiver') ||
+                    receiverListFiltersFormInstance.isInputInValid('q')
+                  }
+                  helperText={
+                    createBillFromInstance.getInputErrorMessage('receiver') ||
+                    receiverListFiltersFormInstance.getInputErrorMessage('q')
+                  }
+                />
+              )}
+            />
+            {isReceiversApiProcessing && (
+              <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
+            )}
+          </Box>
           <Box position={'relative'}>
             <Autocomplete
               multiple
               freeSolo
               open={isConsumerAutocompleteOpen}
               onBlur={() => {
-                consumerListInstance.setList(new ConsumerList());
+                setConsumers([]);
                 setIsConsumerAutocompleteOpen(false);
               }}
               value={createBillFrom.consumers}
               onChange={(event, value) => {
                 createBillFromInstance.onChange('consumers', value);
-                consumerListInstance.setList(new ConsumerList());
+                setConsumers([]);
                 setIsConsumerAutocompleteOpen(false);
               }}
               disabled={isCreateBillApiProcessing}
@@ -122,12 +214,15 @@ const CreateBillContent: FC = () => {
               filterOptions={(options) => options}
               getOptionLabel={(option) => option}
               clearIcon={false}
+              clearOnBlur
+              clearOnEscape
+              blurOnSelect
               renderInput={(params) => (
                 <TextField
                   {...params}
                   sx={{}}
                   onFocus={() => {
-                    consumerListInstance.setList(new ConsumerList());
+                    setConsumers([]);
                     setIsConsumerAutocompleteOpen(false);
                   }}
                   variant="standard"

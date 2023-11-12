@@ -18,9 +18,11 @@ import {
   UserListFiltersObj,
   DeletedUserListFiltersObj,
   ConsumerListFiltersObj,
+  ReceiverObj,
 } from '../lib';
 import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
+import { ReceiverListFiltersObj } from '../lib/forms/receiverListFilters';
 
 export type FilterParams<T = any> = Record<'filters', T>;
 
@@ -468,6 +470,19 @@ export class ConsumersApi extends RootApi {
     super(
       {
         url: '/api/v1/bank/consumer/all',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class ReceiversApi extends RootApi {
+  constructor(params: ListParams<ReceiverObj> & FilterParams<ReceiverListFiltersObj>) {
+    super(
+      {
+        url: '/api/v1/bank/receiver/all',
         method: 'get',
         params,
       },
