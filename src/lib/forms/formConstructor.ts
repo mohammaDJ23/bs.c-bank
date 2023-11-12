@@ -13,6 +13,8 @@ import {
   setInputsValidation,
 } from '../';
 
+export type IgnoreFormConstructor<T extends Form> = Omit<T, keyof Form>;
+
 export abstract class Form {
   getPrototype(): object {
     return this.constructor.prototype;
@@ -34,7 +36,7 @@ export abstract class Form {
     let currentMatchPath: PathMatch<string> | null = null;
     let findedParam: string = '';
 
-    routes.forEach(route => {
+    routes.forEach((route) => {
       currentMatchPath = matchPath(route.path, window.location.pathname);
       if (currentMatchPath && typeof currentMatchPath.params[param] === 'string')
         findedParam = currentMatchPath.params[param] as string;

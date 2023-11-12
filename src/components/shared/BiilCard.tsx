@@ -1,5 +1,5 @@
 import { PropsWithChildren, FC } from 'react';
-import { ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
@@ -29,8 +29,8 @@ const BillCard: FC<BillCardImportation> = ({ bill, index, listInfo }) => {
     >
       <ListItemButton>
         <ListItem disablePadding sx={{ my: '10px' }}>
-          <Box display="flex" flexDirection="column" alignItems="start" width="100%" gap="10px">
-            <Box component="div">
+          <Box display="flex" flexDirection="column" alignItems="start" width="100%" gap="8px">
+            <Box component="div" mb={'8px'}>
               <ListItemText
                 primaryTypographyProps={{ fontSize: '14px', fontWeight: 'bold' }}
                 sx={{ margin: '0' }}
@@ -40,9 +40,50 @@ const BillCard: FC<BillCardImportation> = ({ bill, index, listInfo }) => {
 
             <Box component="div">
               <ListItemText
-                secondaryTypographyProps={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}
                 sx={{ margin: '0' }}
-                secondary={bill.description}
+                secondary={
+                  <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                    <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+                      Consumers:{' '}
+                    </Typography>
+                    {bill.consumers.map((consumer) => (
+                      <Box
+                        key={consumer}
+                        component={'span'}
+                        sx={{
+                          backgroundColor: '#e6e6e6',
+                          borderRadius: '20px',
+                          padding: '1px 10px',
+                          minWidth: '50px',
+                          display: 'inline-block',
+                          textAlign: 'center',
+                          margin: '1px',
+                        }}
+                      >
+                        <Typography
+                          component={'span'}
+                          sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', textAlign: 'center' }}
+                        >
+                          {consumer}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Typography>
+                }
+              />
+            </Box>
+
+            <Box component="div">
+              <ListItemText
+                sx={{ margin: '0' }}
+                secondary={
+                  <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                    <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+                      Description:{' '}
+                    </Typography>
+                    {bill.description}
+                  </Typography>
+                }
               />
             </Box>
 

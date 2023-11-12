@@ -11,20 +11,19 @@ import Navigation from '../../layout/Navigation';
 
 const UpdateUserContent: FC = () => {
   const params = useParams();
-  const { setSpecificDetails } = useAction();
-  const { specificDetails } = useSelector();
-  const { request, isInitialApiProcessing } = useRequest();
+  const actions = useAction();
+  const selectors = useSelector();
+  const request = useRequest();
   const updateUserFormInstance = useForm(UpdateUser);
-  const isInitialUserApiProcessing = isInitialApiProcessing(UserApi);
+  const isInitialUserApiProcessing = request.isInitialApiProcessing(UserApi);
 
   useEffect(() => {
     const userId = params.id;
     if (userId) {
-      request<UserObj, number>(new UserApi(+userId).setInitialApi()).then(response => {
-        setSpecificDetails('user', response.data);
+      request.build<UserObj, number>(new UserApi(+userId).setInitialApi()).then((response) => {
+        actions.setSpecificDetails('user', response.data);
         updateUserFormInstance.initializeForm(
           new UpdateUser({
-            id: response.data.id,
             firstName: response.data.firstName,
             lastName: response.data.lastName,
             email: response.data.email,
@@ -40,7 +39,7 @@ const UpdateUserContent: FC = () => {
       <FormContainer>
         {isInitialUserApiProcessing ? (
           <Skeleton />
-        ) : specificDetails.user ? (
+        ) : selectors.specificDetails.user ? (
           <Form formInstance={updateUserFormInstance} />
         ) : (
           <NotFound />

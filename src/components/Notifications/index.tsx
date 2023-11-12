@@ -9,13 +9,15 @@ import { Typography } from '@mui/material';
 import { ModalNames } from '../../store';
 
 const NotificationsContent: FC = () => {
-  const { showModal } = useAction();
-  const { isInitialApiProcessing } = useRequest();
+  const actions = useAction();
+  const request = useRequest();
   const notificationListInstance = usePaginationList(NotificationList);
-  const isInitialNotificationsApiProcessing = isInitialApiProcessing(NotificationsApi);
+  const isInitialNotificationsApiProcessing = request.isInitialApiProcessing(NotificationsApi);
   const notificationsTotal = notificationListInstance.getTotal();
 
-  const menuOptions = [<Typography onClick={() => showModal(ModalNames.NOTIFICATION_FILTERS)}>Filters</Typography>];
+  const menuOptions = [
+    <Typography onClick={() => actions.showModal(ModalNames.NOTIFICATION_FILTERS)}>Filters</Typography>,
+  ];
 
   return (
     <Navigation

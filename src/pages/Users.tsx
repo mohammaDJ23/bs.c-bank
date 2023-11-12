@@ -6,10 +6,9 @@ import { getDynamicPath, Pathes, UserRoles } from '../lib';
 import UserRoleProtectionProvider from '../lib/providers/UserRoleProtectionProvider';
 
 const Users: FC = () => {
-  const { getTokenInfo } = useAuth();
-  const userInfo = getTokenInfo();
-  const isUserInfoExist = !!userInfo;
-  const path = isUserInfoExist ? getDynamicPath(Pathes.USER, { id: userInfo.id }) : Pathes.LOGIN;
+  const auth = useAuth();
+  const decodedToken = auth.getDecodedToken()!;
+  const path = getDynamicPath(Pathes.USER, { id: decodedToken.id });
 
   return (
     <UserRoleProtectionProvider path={path} roles={[UserRoles.OWNER, UserRoles.ADMIN]}>

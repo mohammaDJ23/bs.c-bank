@@ -9,12 +9,11 @@ import {
   UserRoles,
   DefineValidation,
 } from '../';
-import { Form } from './formConstructor';
+import { Form, IgnoreFormConstructor } from './formConstructor';
+
+export interface UpdateUserByOwnerObj extends IgnoreFormConstructor<UpdateUserByOwner> {}
 
 export class UpdateUserByOwner extends Form {
-  @DefineVal()
-  id: number = 0;
-
   @DefineRules([isFirstName])
   @DefineVal()
   @DefineValidation()
@@ -41,7 +40,6 @@ export class UpdateUserByOwner extends Form {
   role: UserRoles = UserRoles.USER;
 
   constructor({
-    id = 0,
     firstName = '',
     lastName = '',
     email = '',
@@ -49,7 +47,6 @@ export class UpdateUserByOwner extends Form {
     role = UserRoles.USER,
   }: Partial<Omit<UpdateUserByOwner, keyof Form>> = {}) {
     super();
-    this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
@@ -59,9 +56,6 @@ export class UpdateUserByOwner extends Form {
 }
 
 export class UpdateUser extends Form {
-  @DefineVal()
-  id: number = 0;
-
   @DefineRules([isFirstName])
   @DefineVal()
   @DefineValidation()
@@ -82,15 +76,8 @@ export class UpdateUser extends Form {
   @DefineValidation()
   phone: string = '';
 
-  constructor({
-    id = 0,
-    firstName = '',
-    lastName = '',
-    email = '',
-    phone = '',
-  }: Partial<Omit<UpdateUser, keyof Form>> = {}) {
+  constructor({ firstName = '', lastName = '', email = '', phone = '' }: Partial<Omit<UpdateUser, keyof Form>> = {}) {
     super();
-    this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;

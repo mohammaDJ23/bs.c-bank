@@ -10,7 +10,9 @@ import {
   isPhone,
   isRole,
 } from '../';
-import { Form } from './formConstructor';
+import { Form, IgnoreFormConstructor } from './formConstructor';
+
+export interface CreateUserObj extends IgnoreFormConstructor<CreateUser> {}
 
 export class CreateUser extends Form {
   @DefineRules([isFirstName])

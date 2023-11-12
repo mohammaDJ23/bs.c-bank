@@ -3,4 +3,5 @@ export function isName(value: string): string | undefined {
   const isNameValid = length >= 3 && length <= 45;
 
   if (!isNameValid) return 'Please input a valid name';
+  else if (!value.match(/^[a-zA-Z_]+( [a-zA-Z_]+)*$/)) return 'Invalid name';
 }

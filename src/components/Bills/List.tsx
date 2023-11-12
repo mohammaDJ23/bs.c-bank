@@ -11,33 +11,44 @@ import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const billListInstance = usePaginationList(BillList);
   const billListFiltersFormInstance = useForm(BillListFilters);
   const billListFiltersForm = billListFiltersFormInstance.getForm();
   const billListInfo = billListInstance.getFullInfo();
-  const isInitialBillsApiProcessing = isInitialApiProcessing(BillsApi);
-  const isBillsApiProcessing = isApiProcessing(BillsApi);
+  const isInitialBillsApiProcessing = request.isInitialApiProcessing(BillsApi);
+  const isBillsApiProcessing = request.isApiProcessing(BillsApi);
+
+  const getBillsListApi = useCallback(
+    (options: Partial<BillsApiConstructorType> = {}) => {
+      return new BillsApi({
+        take: billListInfo.take,
+        page: billListInfo.page,
+        filters: {
+          q: billListFiltersForm.q,
+          fromDate: billListFiltersForm.fromDate,
+          toDate: billListFiltersForm.toDate,
+        },
+        ...options,
+      });
+    },
+    [billListInfo, billListFiltersForm]
+  );
 
   const getBillsList = useCallback(
-    (options: Partial<BillsApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: billListInfo.take, page: billListInfo.page, ...options },
-        billListFiltersForm
-      );
-      const billsApi = new BillsApi<BillObj>(apiData);
-      billsApi.setInitialApi(!!apiData.isInitialApi);
-
-      request<[BillObj[], number], BillObj>(billsApi).then(response => {
+    (api: BillsApi) => {
+      request.build<[BillObj[], number], BillObj>(api).then((response) => {
         const [list, total] = response.data;
-        billListInstance.insertNewList({ list, total, page: apiData.page });
+        billListInstance.insertNewList({ list, total, page: api.api.params.page });
       });
     },
     [billListInfo, billListInstance, billListFiltersForm, request]
   );
 
   useEffect(() => {
-    getBillsList({ isInitialApi: true });
+    const api = getBillsListApi();
+    api.setInitialApi();
+    getBillsList(api);
   }, []);
 
   const changePage = useCallback(
@@ -46,7 +57,10 @@ const List: FC = () => {
 
       if (billListInstance.isNewPageEqualToCurrentPage(newPage) || isBillsApiProcessing) return;
 
-      if (!billListInstance.isNewPageExist(newPage)) getBillsList({ page: newPage });
+      if (!billListInstance.isNewPageExist(newPage)) {
+        const api = getBillsListApi({ page: newPage });
+        getBillsList(api);
+      }
     },
     [isBillsApiProcessing, billListInstance, getBillsList]
   );
@@ -55,7 +69,8 @@ const List: FC = () => {
     billListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       billListInstance.onPageChange(newPage);
-      getBillsList({ page: newPage });
+      const api = getBillsListApi({ page: newPage });
+      getBillsList(api);
     });
   }, [billListFiltersFormInstance, billListInstance, getBillsList]);
 
@@ -85,7 +100,7 @@ const List: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             billListFilterFormSubmition();
           }}
@@ -96,7 +111,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={billListFiltersForm.q}
-            onChange={event => billListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => billListFiltersFormInstance.onChange('q', event.target.value.trim())}
             helperText={billListFiltersFormInstance.getInputErrorMessage('q')}
             error={billListFiltersFormInstance.isInputInValid('q')}
             name="q"
@@ -108,7 +123,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={billListFiltersForm.fromDate ? isoDate(billListFiltersForm.fromDate) : ''}
-            onChange={event => billListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
+            onChange={(event) => billListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
             helperText={billListFiltersFormInstance.getInputErrorMessage('fromDate')}
             error={billListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
@@ -120,7 +135,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={billListFiltersForm.toDate ? isoDate(billListFiltersForm.toDate) : ''}
-            onChange={event => billListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
+            onChange={(event) => billListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
             helperText={billListFiltersFormInstance.getInputErrorMessage('toDate')}
             error={billListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}

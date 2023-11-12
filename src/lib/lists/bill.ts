@@ -4,6 +4,7 @@ export interface BillObj {
   id: string;
   amount: string;
   receiver: string;
+  consumers: string[];
   description: string;
   date: number;
   createdAt: Date;

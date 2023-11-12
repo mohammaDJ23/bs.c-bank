@@ -6,14 +6,25 @@ import {
   UpdateUserByOwner,
   UpdateUser,
   ListParams,
-  UserListFilters,
-  BillListFilters,
-  DeletedUserListFilters,
-  DeletedBillListFilters,
-  NotificationListFilters,
+  BillListFiltersObj,
+  DeletedBillListFiltersObj,
+  NotificationListFiltersObj,
+  AllBillListFiltersObj,
+  UserObj,
+  BillObj,
+  BillWithUserObj,
+  ConsumerObj,
+  NotificationObj,
+  UserListFiltersObj,
+  DeletedUserListFiltersObj,
+  ConsumerListFiltersObj,
+  ReceiverObj,
 } from '../lib';
 import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
+import { ReceiverListFiltersObj } from '../lib/forms/receiverListFilters';
+
+export type FilterParams<T = any> = Record<'filters', T>;
 
 export abstract class RootApi<D = any> implements RootApiObj<D> {
   protected _isInitialApi: boolean = false;
@@ -66,10 +77,10 @@ export class CreateBillApi extends RootApi<CreateBill> {
 }
 
 export class UpdateUserByOwnerApi extends RootApi<UpdateUserByOwner> {
-  constructor(data: UpdateUserByOwner) {
+  constructor(data: UpdateUserByOwner, id: number) {
     super(
       {
-        url: '/api/v1/user/owner/update',
+        url: `/api/v1/user/owner/update/${id}`,
         method: 'put',
         data,
         headers: {
@@ -113,103 +124,80 @@ export class UpdateBillApi extends RootApi<UpdateBill> {
   }
 }
 
-export class UsersApi<T = any> extends RootApi {
-  constructor(data: ListParams<T> & UserListFilters) {
+export class UsersApi extends RootApi {
+  constructor(params: ListParams<UserObj> & FilterParams<UserListFiltersObj>) {
     super(
       {
         url: '/api/v1/user/all',
         method: 'get',
-        params: {
-          page: data.page,
-          take: data.take,
-          filters: {
-            q: data.q,
-            roles: data.roles,
-            fromDate: data.fromDate,
-            toDate: data.toDate,
-          },
-        },
+        params,
       },
       { baseURL: process.env.USER_SERVICE }
     );
   }
 }
 
-export type UsersApiConstructorType = ConstructorParameters<typeof UsersApi>[0] & Pick<RootApi, 'isInitialApi'>;
+export type UsersApiConstructorType = ConstructorParameters<typeof UsersApi>[0];
 
-export class DeletedUsersApi<T = any> extends RootApi {
-  constructor(data: ListParams<T> & DeletedUserListFilters) {
+export class DeletedUsersApi extends RootApi {
+  constructor(params: ListParams<UserObj> & FilterParams<DeletedUserListFiltersObj>) {
     super(
       {
         url: '/api/v1/user/all/deleted',
         method: 'get',
-        params: {
-          page: data.page,
-          take: data.take,
-          filters: {
-            q: data.q,
-            roles: data.roles,
-            fromDate: data.fromDate,
-            toDate: data.toDate,
-            deletedDate: data.deletedDate,
-          },
-        },
+        params,
       },
       { baseURL: process.env.USER_SERVICE }
     );
   }
 }
 
-export type DeletedUsersApiConstructorType = ConstructorParameters<typeof DeletedUsersApi>[0] &
-  Pick<RootApi, 'isInitialApi'>;
+export type DeletedUsersApiConstructorType = ConstructorParameters<typeof DeletedUsersApi>[0];
 
-export class BillsApi<T = any> extends RootApi {
-  constructor(data: ListParams<T> & BillListFilters) {
+export class BillsApi extends RootApi {
+  constructor(params: ListParams<BillObj> & FilterParams<BillListFiltersObj>) {
     super(
       {
         url: '/api/v1/bank/bill/all',
         method: 'get',
-        params: {
-          page: data.page,
-          take: data.take,
-          filters: {
-            q: data.q,
-            fromDate: data.fromDate,
-            toDate: data.toDate,
-          },
-        },
+        params,
       },
       { baseURL: process.env.BANK_SERVICE }
     );
   }
 }
 
-export type BillsApiConstructorType = ConstructorParameters<typeof BillsApi>[0] & Pick<RootApi, 'isInitialApi'>;
+export type BillsApiConstructorType = ConstructorParameters<typeof BillsApi>[0];
 
-export class DeletedBillListApi<T = any> extends RootApi {
-  constructor(data: ListParams<T> & DeletedBillListFilters) {
+export class AllBillsApi extends RootApi {
+  constructor(params: ListParams<BillWithUserObj> & FilterParams<AllBillListFiltersObj>) {
+    super(
+      {
+        url: '/api/v1/bank/owner/bill/all',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export type AllBillsApiConstructorType = ConstructorParameters<typeof AllBillsApi>[0];
+
+export class DeletedBillListApi extends RootApi {
+  constructor(params: ListParams<BillObj> & FilterParams<DeletedBillListFiltersObj>) {
     super(
       {
         url: '/api/v1/bank/bill/all/deleted',
         method: 'get',
-        params: {
-          page: data.page,
-          take: data.take,
-          filters: {
-            q: data.q,
-            fromDate: data.fromDate,
-            toDate: data.toDate,
-            deletedDate: data.deletedDate,
-          },
-        },
+        params,
       },
       { baseURL: process.env.BANK_SERVICE }
     );
   }
 }
 
-export type DeletedBillListApiConstructorType = ConstructorParameters<typeof DeletedBillListApi>[0] &
-  Pick<RootApi, 'isInitialApi'>;
+export type DeletedBillListApiConstructorType = ConstructorParameters<typeof DeletedBillListApi>[0];
 
 export class UserApi extends RootApi {
   constructor(id: number) {
@@ -227,7 +215,7 @@ export class DeletedUserApi extends RootApi {
   constructor(id: number) {
     super(
       {
-        url: `/api/v1/user/${id}/deleted`,
+        url: `/api/v1/user/deleted/${id}`,
         method: 'get',
       },
       { baseURL: process.env.USER_SERVICE }
@@ -239,7 +227,7 @@ export class RestoreUserApi extends RootApi {
   constructor(id: number) {
     super(
       {
-        url: `/api/v1/user/${id}/restore`,
+        url: `/api/v1/user/restore/${id}`,
         method: 'post',
       },
       { baseURL: process.env.USER_SERVICE }
@@ -263,7 +251,7 @@ export class DeletedBillApi extends RootApi {
   constructor(id: string) {
     super(
       {
-        url: `/api/v1/bank/bill/${id}/deleted`,
+        url: `/api/v1/bank/bill/deleted/${id}`,
         method: 'get',
       },
       { baseURL: process.env.BANK_SERVICE }
@@ -290,7 +278,7 @@ export class RestoreBillApi extends RootApi {
   constructor(id: string) {
     super(
       {
-        url: `/api/v1/bank/bill/${id}/restore`,
+        url: `/api/v1/bank/bill/restore/${id}`,
         method: 'post',
       },
       { baseURL: process.env.BANK_SERVICE }
@@ -299,14 +287,23 @@ export class RestoreBillApi extends RootApi {
 }
 
 export class DeleteUserApi extends RootApi {
-  constructor(id: number) {
+  constructor() {
     super(
       {
         url: '/api/v1/user/delete',
         method: 'delete',
-        params: {
-          id,
-        },
+      },
+      { baseURL: process.env.USER_SERVICE }
+    );
+  }
+}
+
+export class DeleteUserByOwnerApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: `/api/v1/user/owner/delete/${id}`,
+        method: 'delete',
       },
       { baseURL: process.env.USER_SERVICE }
     );
@@ -441,30 +438,20 @@ export class BillQuantitiesApi extends RootApi {
   }
 }
 
-export class NotificationsApi<T = any> extends RootApi {
-  constructor(data: ListParams<T> & NotificationListFilters) {
+export class NotificationsApi extends RootApi {
+  constructor(params: ListParams<NotificationObj> & FilterParams<NotificationListFiltersObj>) {
     super(
       {
         url: '/api/v1/notification/all',
         method: 'get',
-        params: {
-          page: data.page,
-          take: data.take,
-          filters: {
-            q: data.q,
-            roles: data.roles,
-            fromDate: data.fromDate,
-            toDate: data.toDate,
-          },
-        },
+        params,
       },
       { baseURL: process.env.NOTIFICATION_SERVICE }
     );
   }
 }
 
-export type NotificationsApiConstructorType = ConstructorParameters<typeof NotificationsApi>[0] &
-  Pick<RootApi, 'isInitialApi'>;
+export type NotificationsApiConstructorType = ConstructorParameters<typeof NotificationsApi>[0];
 
 export class NotificationApi extends RootApi {
   constructor(id: number) {
@@ -474,6 +461,32 @@ export class NotificationApi extends RootApi {
         method: 'get',
       },
       { baseURL: process.env.NOTIFICATION_SERVICE }
+    );
+  }
+}
+
+export class ConsumersApi extends RootApi {
+  constructor(params: ListParams<ConsumerObj> & FilterParams<ConsumerListFiltersObj>) {
+    super(
+      {
+        url: '/api/v1/bank/consumer/all',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class ReceiversApi extends RootApi {
+  constructor(params: ListParams<ReceiverObj> & FilterParams<ReceiverListFiltersObj>) {
+    super(
+      {
+        url: '/api/v1/bank/receiver/all',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
     );
   }
 }

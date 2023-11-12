@@ -11,33 +11,45 @@ import UserSkeleton from '../shared/UsersSkeleton';
 import UserCard from '../shared/UserCard';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const userListInstance = usePaginationList(UserList);
   const userListFiltersFormInstance = useForm(UserListFilters);
   const userListFiltersForm = userListFiltersFormInstance.getForm();
   const userListInfo = userListInstance.getFullInfo();
-  const isInitialUsersApiProcessing = isInitialApiProcessing(UsersApi);
-  const isUsersApiProcessing = isApiProcessing(UsersApi);
+  const isInitialUsersApiProcessing = request.isInitialApiProcessing(UsersApi);
+  const isUsersApiProcessing = request.isApiProcessing(UsersApi);
+
+  const getUsersListApi = useCallback(
+    (options: Partial<UsersApiConstructorType> = {}) => {
+      return new UsersApi({
+        take: userListInfo.take,
+        page: userListInfo.page,
+        filters: {
+          q: userListFiltersForm.q,
+          roles: userListFiltersForm.roles,
+          fromDate: userListFiltersForm.fromDate,
+          toDate: userListFiltersForm.toDate,
+        },
+        ...options,
+      });
+    },
+    [userListInfo, userListFiltersForm]
+  );
 
   const getUsersList = useCallback(
-    (options: Partial<UsersApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: userListInfo.take, page: userListInfo.page, ...options },
-        userListFiltersForm
-      );
-      const userApi = new UsersApi<UserObj>(apiData);
-      userApi.setInitialApi(!!apiData.isInitialApi);
-
-      request<[UserObj[], number], UsersApiConstructorType>(userApi).then(response => {
+    (api: UsersApi) => {
+      request.build<[UserObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
-        userListInstance.insertNewList({ total, list, page: apiData.page });
+        userListInstance.insertNewList({ total, list, page: api.api.params.page });
       });
     },
     [userListInfo, userListInstance, userListFiltersForm, request]
   );
 
   useEffect(() => {
-    getUsersList({ isInitialApi: true });
+    const api = getUsersListApi();
+    api.setInitialApi();
+    getUsersList(api);
   }, []);
 
   const changePage = useCallback(
@@ -46,7 +58,10 @@ const List: FC = () => {
 
       if (userListInstance.isNewPageEqualToCurrentPage(newPage) || isUsersApiProcessing) return;
 
-      if (!userListInstance.isNewPageExist(newPage)) getUsersList({ page: newPage });
+      if (!userListInstance.isNewPageExist(newPage)) {
+        const api = getUsersListApi({ page: newPage });
+        getUsersList(api);
+      }
     },
     [userListInstance, isUsersApiProcessing, getUsersList]
   );
@@ -55,7 +70,8 @@ const List: FC = () => {
     userListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       userListInstance.onPageChange(newPage);
-      getUsersList({ page: newPage });
+      const api = getUsersListApi({ page: newPage });
+      getUsersList(api);
     });
   }, [userListFiltersFormInstance, userListInstance, getUsersList]);
 
@@ -84,7 +100,7 @@ const List: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             userListFilterFormSubmition();
           }}
@@ -95,7 +111,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={userListFiltersForm.q}
-            onChange={event => userListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => userListFiltersFormInstance.onChange('q', event.target.value.trim())}
             helperText={userListFiltersFormInstance.getInputErrorMessage('q')}
             error={userListFiltersFormInstance.isInputInValid('q')}
             name="q"
@@ -129,7 +145,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={userListFiltersForm.fromDate ? isoDate(userListFiltersForm.fromDate) : ''}
-            onChange={event => userListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
+            onChange={(event) => userListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
             helperText={userListFiltersFormInstance.getInputErrorMessage('fromDate')}
             error={userListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
@@ -141,7 +157,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={userListFiltersForm.toDate ? isoDate(userListFiltersForm.toDate) : ''}
-            onChange={event => userListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
+            onChange={(event) => userListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
             helperText={userListFiltersFormInstance.getInputErrorMessage('toDate')}
             error={userListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}

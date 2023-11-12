@@ -3,7 +3,7 @@ import { List as MuiList, Box, TextField, Button, Autocomplete } from '@mui/mate
 import { UserObj, isoDate, getTime, UserRoles, DeletedUserListFilters, DeletedUserList } from '../../lib';
 import Pagination from '../shared/Pagination';
 import { useForm, usePaginationList, useRequest } from '../../hooks';
-import { DeletedUsersApi, DeletedUsersApiConstructorType, UsersApiConstructorType } from '../../apis';
+import { DeletedUsersApi, DeletedUsersApiConstructorType } from '../../apis';
 import Filter from '../shared/Filter';
 import EmptyList from './EmptyList';
 import { ModalNames } from '../../store';
@@ -11,33 +11,46 @@ import UserCard from '../shared/UserCard';
 import UserSkeleton from '../shared/UsersSkeleton';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const deletedUserListInstance = usePaginationList(DeletedUserList);
   const deletedUserListFiltersFormInstance = useForm(DeletedUserListFilters);
   const deletedUserListFiltersForm = deletedUserListFiltersFormInstance.getForm();
-  const userListInfo = deletedUserListInstance.getFullInfo();
-  const isInitialDeletedUsersApiProcessing = isInitialApiProcessing(DeletedUsersApi);
-  const isDeletedUsersApiProcessing = isApiProcessing(DeletedUsersApi);
+  const deletedUserListInfo = deletedUserListInstance.getFullInfo();
+  const isInitialDeletedUsersApiProcessing = request.isInitialApiProcessing(DeletedUsersApi);
+  const isDeletedUsersApiProcessing = request.isApiProcessing(DeletedUsersApi);
 
-  const getDeletedUsersList = useCallback(
+  const getDeletedUsersApi = useCallback(
     (options: Partial<DeletedUsersApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: userListInfo.take, page: userListInfo.page, ...options },
-        deletedUserListFiltersForm
-      );
-      const userApi = new DeletedUsersApi<UserObj>(apiData);
-      userApi.setInitialApi(!!apiData.isInitialApi);
-
-      request<[UserObj[], number], UsersApiConstructorType>(userApi).then(response => {
-        const [list, total] = response.data;
-        deletedUserListInstance.insertNewList({ total, list, page: apiData.page });
+      return new DeletedUsersApi({
+        take: deletedUserListInfo.take,
+        page: deletedUserListInfo.page,
+        filters: {
+          q: deletedUserListFiltersForm.q,
+          roles: deletedUserListFiltersForm.roles,
+          fromDate: deletedUserListFiltersForm.fromDate,
+          toDate: deletedUserListFiltersForm.toDate,
+          deletedDate: deletedUserListFiltersForm.deletedDate,
+        },
+        ...options,
       });
     },
-    [userListInfo, deletedUserListInstance, deletedUserListFiltersForm, request]
+    [deletedUserListInfo, deletedUserListFiltersForm]
+  );
+
+  const getDeletedUsersList = useCallback(
+    (api: DeletedUsersApi) => {
+      request.build<[UserObj[], number]>(api).then((response) => {
+        const [list, total] = response.data;
+        deletedUserListInstance.insertNewList({ total, list, page: api.api.params.page });
+      });
+    },
+    [deletedUserListInfo, deletedUserListInstance, deletedUserListFiltersForm, request]
   );
 
   useEffect(() => {
-    getDeletedUsersList({ isInitialApi: true });
+    const api = getDeletedUsersApi();
+    api.setInitialApi();
+    getDeletedUsersList(api);
   }, []);
 
   const changePage = useCallback(
@@ -46,7 +59,10 @@ const List: FC = () => {
 
       if (deletedUserListInstance.isNewPageEqualToCurrentPage(newPage) || isDeletedUsersApiProcessing) return;
 
-      if (!deletedUserListInstance.isNewPageExist(newPage)) getDeletedUsersList({ page: newPage });
+      if (!deletedUserListInstance.isNewPageExist(newPage)) {
+        const api = getDeletedUsersApi({ page: newPage });
+        getDeletedUsersList(api);
+      }
     },
     [deletedUserListInstance, isDeletedUsersApiProcessing, getDeletedUsersList]
   );
@@ -55,24 +71,25 @@ const List: FC = () => {
     deletedUserListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       deletedUserListInstance.onPageChange(newPage);
-      getDeletedUsersList({ page: newPage });
+      const api = getDeletedUsersApi({ page: newPage });
+      getDeletedUsersList(api);
     });
   }, [deletedUserListFiltersFormInstance, deletedUserListInstance, getDeletedUsersList]);
 
   return (
     <>
       {isInitialDeletedUsersApiProcessing || isDeletedUsersApiProcessing ? (
-        <UserSkeleton take={userListInfo.take} />
+        <UserSkeleton take={deletedUserListInfo.take} />
       ) : deletedUserListInstance.isListEmpty() ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {userListInfo.list.map((user, index) => (
-              <UserCard key={index} index={index} user={user} listInfo={userListInfo} />
+            {deletedUserListInfo.list.map((user, index) => (
+              <UserCard key={index} index={index} user={user} listInfo={deletedUserListInfo} />
             ))}
           </MuiList>
-          <Pagination page={userListInfo.page} count={userListInfo.count} onPageChange={changePage} />
+          <Pagination page={deletedUserListInfo.page} count={deletedUserListInfo.count} onPageChange={changePage} />
         </>
       )}
 
@@ -84,7 +101,7 @@ const List: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             userListFilterFormSubmition();
           }}
@@ -95,7 +112,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={deletedUserListFiltersForm.q}
-            onChange={event => deletedUserListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => deletedUserListFiltersFormInstance.onChange('q', event.target.value.trim())}
             helperText={deletedUserListFiltersFormInstance.getInputErrorMessage('q')}
             error={deletedUserListFiltersFormInstance.isInputInValid('q')}
             name="q"
@@ -129,7 +146,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedUserListFiltersForm.fromDate ? isoDate(deletedUserListFiltersForm.fromDate) : ''}
-            onChange={event => deletedUserListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
+            onChange={(event) => deletedUserListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
             helperText={deletedUserListFiltersFormInstance.getInputErrorMessage('fromDate')}
             error={deletedUserListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
@@ -141,7 +158,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedUserListFiltersForm.toDate ? isoDate(deletedUserListFiltersForm.toDate) : ''}
-            onChange={event => deletedUserListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
+            onChange={(event) => deletedUserListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
             helperText={deletedUserListFiltersFormInstance.getInputErrorMessage('toDate')}
             error={deletedUserListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}
@@ -153,7 +170,9 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedUserListFiltersForm.deletedDate ? isoDate(deletedUserListFiltersForm.deletedDate) : ''}
-            onChange={event => deletedUserListFiltersFormInstance.onChange('deletedDate', getTime(event.target.value))}
+            onChange={(event) =>
+              deletedUserListFiltersFormInstance.onChange('deletedDate', getTime(event.target.value))
+            }
             helperText={deletedUserListFiltersFormInstance.getInputErrorMessage('deletedDate')}
             error={deletedUserListFiltersFormInstance.isInputInValid('deletedDate')}
             InputLabelProps={{ shrink: true }}

@@ -15,33 +15,37 @@ interface FormImportation {
 const Form: FC<FormImportation> = ({ formInstance }) => {
   const params = useParams();
   const navigate = useNavigate();
-  const { hideModal } = useAction();
-  const { request, isApiProcessing } = useRequest();
-  const isUpdateUserByOwnerApiProcessing = isApiProcessing(UpdateUserByOwnerApi);
+  const actions = useAction();
+  const request = useRequest();
+  const isUpdateUserByOwnerApiProcessing = request.isApiProcessing(UpdateUserByOwnerApi);
   const form = formInstance.getForm();
-  const { enqueueSnackbar } = useSnackbar();
-  const { getTokenInfo } = useAuth();
-  const userInfo = getTokenInfo();
-  const isUserInfoExist = !!userInfo;
+  const snackbar = useSnackbar();
+  const auth = useAuth();
+  const decodedToken = auth.getDecodedToken();
 
   const formSubmition = useCallback(() => {
     formInstance.onSubmit(() => {
-      request<AccessTokenObj, UpdateUserByOwner>(new UpdateUserByOwnerApi(form))
-        .then(response => {
-          const userId = params.id as string;
-          hideModal(ModalNames.CONFIRMATION);
+      const isUserIdExist = !!params.id;
+      if (!isUserIdExist) {
+        return;
+      }
+      const userId = +params.id!;
+      request
+        .build<AccessTokenObj, UpdateUserByOwner>(new UpdateUserByOwnerApi(form, userId))
+        .then((response) => {
+          actions.hideModal(ModalNames.CONFIRMATION);
           formInstance.resetForm();
 
-          if (isUserInfoExist && userInfo.id === +userId) {
+          if (decodedToken && decodedToken.id === userId) {
             reInitializeToken(response.data.accessToken);
           } else {
-            enqueueSnackbar({ message: 'You have updated the user successfully.', variant: 'success' });
+            snackbar.enqueueSnackbar({ message: 'You have updated the user successfully.', variant: 'success' });
           }
           navigate(getDynamicPath(Pathes.USER, { id: userId }));
         })
-        .catch(err => hideModal(ModalNames.CONFIRMATION));
+        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
     });
-  }, [formInstance, userInfo, isUserInfoExist, form, params, navigate, request, hideModal]);
+  }, [formInstance, form, params, request]);
 
   return (
     <>
@@ -52,7 +56,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
         display="flex"
         flexDirection="column"
         gap="20px"
-        onSubmit={event => {
+        onSubmit={(event) => {
           event.preventDefault();
           formInstance.confirmation();
         }}
@@ -62,7 +66,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           variant="standard"
           type="text"
           value={form.firstName}
-          onChange={event => formInstance.onChange('firstName', event.target.value)}
+          onChange={(event) => formInstance.onChange('firstName', event.target.value)}
           helperText={formInstance.getInputErrorMessage('firstName')}
           error={formInstance.isInputInValid('firstName')}
           disabled={isUpdateUserByOwnerApiProcessing}
@@ -72,7 +76,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           variant="standard"
           type="text"
           value={form.lastName}
-          onChange={event => formInstance.onChange('lastName', event.target.value)}
+          onChange={(event) => formInstance.onChange('lastName', event.target.value)}
           helperText={formInstance.getInputErrorMessage('lastName')}
           error={formInstance.isInputInValid('lastName')}
           disabled={isUpdateUserByOwnerApiProcessing}
@@ -82,7 +86,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           type="email"
           variant="standard"
           value={form.email}
-          onChange={event => formInstance.onChange('email', event.target.value)}
+          onChange={(event) => formInstance.onChange('email', event.target.value.trim())}
           helperText={formInstance.getInputErrorMessage('email')}
           error={formInstance.isInputInValid('email')}
           disabled={isUpdateUserByOwnerApiProcessing}
@@ -92,7 +96,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           type="text"
           variant="standard"
           value={form.phone}
-          onChange={event => formInstance.onChange('phone', event.target.value)}
+          onChange={(event) => formInstance.onChange('phone', event.target.value.trim())}
           helperText={formInstance.getInputErrorMessage('phone')}
           error={formInstance.isInputInValid('phone')}
           disabled={isUpdateUserByOwnerApiProcessing}
@@ -103,11 +107,11 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
             labelId="role"
             id="role"
             value={form.role}
-            onChange={event => formInstance.onChange('role', event.target.value)}
+            onChange={(event) => formInstance.onChange('role', event.target.value)}
             label="Role"
             error={formInstance.isInputInValid('role')}
           >
-            {getUserRoles().map(el => (
+            {getUserRoles().map((el) => (
               <MenuItem key={el.value} value={el.value}>
                 {el.label}
               </MenuItem>
@@ -142,7 +146,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
       <Modal
         isLoading={isUpdateUserByOwnerApiProcessing}
         isActive={formInstance.isConfirmationActive()}
-        onCancel={() => hideModal(ModalNames.CONFIRMATION)}
+        onCancel={() => actions.hideModal(ModalNames.CONFIRMATION)}
         onConfirm={formSubmition}
       />
     </>

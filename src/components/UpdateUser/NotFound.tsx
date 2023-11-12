@@ -6,23 +6,21 @@ import { getDynamicPath, Pathes } from '../../lib';
 
 const NotFound: FC = () => {
   const navigate = useNavigate();
-  const { getTokenInfo } = useAuth();
-  const userInfo = getTokenInfo();
-  const isUserInfoExist = !!userInfo;
+  const auth = useAuth();
+  const decodedToken = auth.getDecodedToken()!;
 
   return (
     <Box display="flex" alignItems="center" justifyContent="center" flexDirection="column" gap="12px" mt="20px">
       <Typography>Not found the user</Typography>
-      {isUserInfoExist && (
-        <Button
-          onClick={() => navigate(getDynamicPath(Pathes.USER, { id: userInfo.id.toString() }))}
-          sx={{ textTransform: 'capitalize' }}
-          variant="contained"
-          size="small"
-        >
-          Navigate To The User Page
-        </Button>
-      )}
+
+      <Button
+        onClick={() => navigate(getDynamicPath(Pathes.USER, { id: decodedToken.id.toString() }))}
+        sx={{ textTransform: 'capitalize' }}
+        variant="contained"
+        size="small"
+      >
+        Navigate To The User Page
+      </Button>
     </Box>
   );
 };

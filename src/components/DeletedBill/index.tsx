@@ -11,17 +11,17 @@ import Navigation from '../../layout/Navigation';
 
 const DeletedBillContent: FC = () => {
   const params = useParams();
-  const { isInitialApiProcessing, request } = useRequest();
-  const { setSpecificDetails } = useAction();
-  const { specificDetails } = useSelector();
-  const isInitialDeletedBillApiProcessing = isInitialApiProcessing(DeletedBillApi);
-  const deletedBill = specificDetails.deletedBill;
+  const request = useRequest();
+  const actions = useAction();
+  const selectors = useSelector();
+  const isInitialDeletedBillApiProcessing = request.isInitialApiProcessing(DeletedBillApi);
+  const deletedBill = selectors.specificDetails.deletedBill;
 
   useEffect(() => {
     const billId = params.id;
     if (billId) {
-      request<BillObj, string>(new DeletedBillApi(billId).setInitialApi()).then(response => {
-        setSpecificDetails('deletedBill', response.data);
+      request.build<BillObj, string>(new DeletedBillApi(billId).setInitialApi()).then((response) => {
+        actions.setSpecificDetails('deletedBill', response.data);
       });
     }
   }, []);

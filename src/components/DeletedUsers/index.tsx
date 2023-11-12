@@ -9,13 +9,15 @@ import { ModalNames } from '../../store';
 import { DeletedUsersApi } from '../../apis';
 
 const UsersContent: FC = () => {
-  const { showModal } = useAction();
-  const { isInitialApiProcessing } = useRequest();
+  const actions = useAction();
+  const request = useRequest();
   const deletedUserListInstance = usePaginationList(DeletedUserList);
-  const isInitialDeletedUsersApiProcessing = isInitialApiProcessing(DeletedUsersApi);
+  const isInitialDeletedUsersApiProcessing = request.isInitialApiProcessing(DeletedUsersApi);
   const usersTotal = deletedUserListInstance.getTotal();
 
-  const menuOptions = [<Typography onClick={() => showModal(ModalNames.DELETED_USER_FILTERS)}>Filters</Typography>];
+  const menuOptions = [
+    <Typography onClick={() => actions.showModal(ModalNames.DELETED_USER_FILTERS)}>Filters</Typography>,
+  ];
 
   return (
     <Navigation

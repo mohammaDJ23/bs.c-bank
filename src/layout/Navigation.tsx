@@ -23,6 +23,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import NotificationIcon from '@mui/icons-material/Notifications';
 import ChatIcon from '@mui/icons-material/Chat';
+import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import { styled } from '@mui/material/styles';
 import { LocalStorage, onLogoutEvent, Pathes, routes, UserRoles } from '../lib';
 import { useAuth } from '../hooks';
@@ -108,10 +109,10 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
-  const { isUserAuthenticated, getTokenInfo, isOwner } = useAuth();
-  const userInfo = getTokenInfo();
-  const isUserInfoExist = !!userInfo;
-  const isUserLoggedIn = isUserAuthenticated();
+  const auth = useAuth();
+  const decodedToken = auth.getDecodedToken()!;
+  const isUserAuthenticated = auth.isUserAuthenticated();
+  const isCurrentOwner = auth.isCurrentOwner();
   const activeRoute = routes.find((route) => matchPath(route.path, location.pathname));
   const activeRouteTitle = activeRoute?.title || 'Bank system';
 
@@ -131,6 +132,14 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
 
   function getNavigationItems() {
     const navigationItems: NavigationItemObj[] = [
+      {
+        title: `${decodedToken.firstName} ${decodedToken.lastName}`,
+        icon: <PersonIcon />,
+        path: Pathes.USER,
+        redirectPath: Pathes.USERS,
+        navigateOptions: { state: { previousUserId: decodedToken.id } },
+        activationOptions: [decodedToken.id === +(params.id as string)],
+      },
       {
         title: 'Dashboard',
         icon: <DashboardIcon />,
@@ -177,6 +186,13 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         redirectPath: Pathes.DELETED_bILLS,
       },
       {
+        title: 'All bills',
+        icon: <AutoAwesomeMotionIcon />,
+        path: Pathes.ALL_BILLS,
+        redirectPath: Pathes.ALL_BILLS,
+        roles: [UserRoles.OWNER],
+      },
+      {
         title: 'Notifications',
         icon: <NotificationIcon />,
         path: Pathes.NOTIFICATIONS,
@@ -194,34 +210,20 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
       },
     ];
 
-    if (isUserInfoExist) {
-      navigationItems.unshift({
-        title: `${userInfo.firstName} ${userInfo.lastName}`,
-        icon: <PersonIcon />,
-        path: Pathes.USER,
-        redirectPath: Pathes.USERS,
-        navigateOptions: { state: { previousUserId: userInfo.id } },
-        activationOptions: [userInfo.id === +(params.id as string)],
+    if (isCurrentOwner) {
+      navigationItems.splice(-2, 0, {
+        title: 'Conversations',
+        icon: <ChatIcon />,
+        path: Pathes.CHAT,
+        redirectPath: Pathes.CHAT,
       });
-    }
-
-    if (isUserInfoExist) {
-      const isUserOwner = isOwner();
-      if (isUserOwner) {
-        navigationItems.splice(-2, 0, {
-          title: 'Conversations',
-          icon: <ChatIcon />,
-          path: Pathes.CHAT,
-          redirectPath: Pathes.CHAT,
-        });
-      } else {
-        navigationItems.splice(-2, 0, {
-          title: 'Contact support',
-          icon: <ChatIcon />,
-          path: Pathes.CHAT,
-          redirectPath: Pathes.CHAT,
-        });
-      }
+    } else {
+      navigationItems.splice(-2, 0, {
+        title: 'Contact support',
+        icon: <ChatIcon />,
+        path: Pathes.CHAT,
+        redirectPath: Pathes.CHAT,
+      });
     }
 
     return navigationItems;
@@ -247,7 +249,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
     <>
       <AppBar>
         <Toolbar>
-          {isUserLoggedIn && (
+          {isUserAuthenticated && (
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -282,7 +284,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
 
       <ChildrenWrapper>{children}</ChildrenWrapper>
 
-      {isUserLoggedIn && (
+      {isUserAuthenticated && (
         <Drawer sx={{ zIndex: 11 }} anchor="left" open={isDrawerOpened} onClose={() => setIsDrawerOpened(false)}>
           <Box sx={{ width: 250 }} role="presentation">
             <DrawerHeader>
@@ -327,12 +329,8 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
 
                 return !item.roles ? (
                   navigationEl
-                ) : isUserInfoExist ? (
-                  item.roles.includes(userInfo.role) ? (
-                    navigationEl
-                  ) : (
-                    <Fragment key={index}></Fragment>
-                  )
+                ) : item.roles.includes(decodedToken.role) ? (
+                  navigationEl
                 ) : (
                   <Fragment key={index}></Fragment>
                 );

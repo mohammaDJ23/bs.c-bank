@@ -8,19 +8,19 @@ import { useSnackbar } from 'notistack';
 import Navigation from '../../layout/Navigation';
 
 const CreateUserContent: FC = () => {
-  const { getUserRoles } = useAuth();
+  const auth = useAuth();
   const createUserFormInstance = useForm(CreateUser);
-  const { isApiProcessing, request } = useRequest();
-  const { focus } = useFocus();
-  const isCreateUserApiProcessing = isApiProcessing(CreateUserApi);
+  const request = useRequest();
+  const focus = useFocus();
+  const isCreateUserApiProcessing = request.isApiProcessing(CreateUserApi);
   const form = createUserFormInstance.getForm();
-  const { enqueueSnackbar } = useSnackbar();
+  const snackbar = useSnackbar();
 
   const formSubmition = useCallback(() => {
     createUserFormInstance.onSubmit(() => {
-      request<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
+      request.build<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
         createUserFormInstance.resetForm();
-        enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
+        snackbar.enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
       });
     });
   }, [createUserFormInstance, form, request]);
@@ -70,7 +70,7 @@ const CreateUserContent: FC = () => {
             type="email"
             variant="standard"
             value={form.email}
-            onChange={(event) => createUserFormInstance.onChange('email', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('email', event.target.value.trim())}
             helperText={createUserFormInstance.getInputErrorMessage('email')}
             error={createUserFormInstance.isInputInValid('email')}
             disabled={isCreateUserApiProcessing}
@@ -81,7 +81,7 @@ const CreateUserContent: FC = () => {
             variant="standard"
             value={form.password}
             autoComplete="off"
-            onChange={(event) => createUserFormInstance.onChange('password', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('password', event.target.value.trim())}
             helperText={createUserFormInstance.getInputErrorMessage('password')}
             error={createUserFormInstance.isInputInValid('password')}
             disabled={isCreateUserApiProcessing}
@@ -91,7 +91,7 @@ const CreateUserContent: FC = () => {
             type="text"
             variant="standard"
             value={form.phone}
-            onChange={(event) => createUserFormInstance.onChange('phone', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('phone', event.target.value.trim())}
             helperText={createUserFormInstance.getInputErrorMessage('phone')}
             error={createUserFormInstance.isInputInValid('phone')}
             disabled={isCreateUserApiProcessing}
@@ -107,7 +107,7 @@ const CreateUserContent: FC = () => {
               label="Role"
               error={createUserFormInstance.isInputInValid('role')}
             >
-              {getUserRoles().map((el) => (
+              {auth.getUserRoles().map((el) => (
                 <MenuItem key={el.value} value={el.value}>
                   {el.label}
                 </MenuItem>

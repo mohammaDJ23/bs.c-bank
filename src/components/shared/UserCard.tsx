@@ -3,7 +3,7 @@ import moment from 'moment';
 import { FC, PropsWithChildren } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, usePaginationList } from '../../hooks';
-import { getDynamicPath, getUserRoleColor, isOwner, Pathes, UserObj } from '../../lib';
+import { getDynamicPath, Pathes, UserObj } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
 
@@ -15,10 +15,9 @@ interface UserCardImportion extends PropsWithChildren {
 
 const UserCard: FC<UserCardImportion> = ({ user, index, listInfo }) => {
   const navigate = useNavigate();
-  const { getTokenInfo, getUserStatusColor } = useAuth();
-  const userInfo = getTokenInfo();
-  const isUserOwner = isOwner();
-  const isUserExist = !!userInfo;
+  const auth = useAuth();
+  const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(user);
+  const isCurrentOwner = auth.isCurrentOwner();
 
   return (
     <Card
@@ -27,7 +26,7 @@ const UserCard: FC<UserCardImportion> = ({ user, index, listInfo }) => {
         my: '20px',
         position: 'relative',
         overflow: 'visible',
-        backgroundColor: isUserExist && user.id === userInfo.id && listInfo.total >= 2 ? '#F8F8F8' : '',
+        backgroundColor: isUserEqualToCurrentUser ? '#F8F8F8' : '',
       }}
       onClick={() => {
         const path = user.deletedAt ? Pathes.DELETED_USER : Pathes.USER;
@@ -46,13 +45,13 @@ const UserCard: FC<UserCardImportion> = ({ user, index, listInfo }) => {
               gap="10px"
               flexWrap="wrap"
             >
-              {isUserOwner && !user.deletedAt && (
+              {isCurrentOwner && !user.deletedAt && (
                 <ListItemText
                   sx={{
                     flex: 'unset',
                     width: '10px',
                     height: '10px',
-                    backgroundColor: getUserStatusColor(user.id),
+                    backgroundColor: auth.getUserStatusColor(user.id),
                     borderRadius: '50%',
                   }}
                   secondary={<Box component="span"></Box>}

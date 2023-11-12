@@ -16,8 +16,8 @@ interface NotificationCardImportation extends PropsWithChildren {
 
 const NotificationCard: FC<NotificationCardImportation> = ({ notification, index, listInfo }) => {
   const navigate = useNavigate();
-  const { getTokenInfo } = useAuth();
-  const userInfo = getTokenInfo()!;
+  const auth = useAuth();
+  const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(notification.user);
 
   return (
     <Card
@@ -27,7 +27,7 @@ const NotificationCard: FC<NotificationCardImportation> = ({ notification, index
         my: '20px',
         position: 'relative',
         overflow: 'visible',
-        backgroundColor: notification.user.id === userInfo.id && listInfo.total >= 2 ? '#F8F8F8' : '',
+        backgroundColor: isUserEqualToCurrentUser ? '#F8F8F8' : '',
       }}
       onClick={() => {
         navigate(getDynamicPath(Pathes.NOTIFICATION, { id: notification.id }));

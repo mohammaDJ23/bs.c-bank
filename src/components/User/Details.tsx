@@ -5,8 +5,8 @@ import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
 import { FC, useCallback, useState } from 'react';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
-import { DeleteUserApi, DownloadBillReportApi } from '../../apis';
-import { UserWithBillInfoObj, UserObj, Pathes, getDynamicPath, UserRoles, LocalStorage } from '../../lib';
+import { DeleteUserApi, DeleteUserByOwnerApi, DownloadBillReportApi } from '../../apis';
+import { UserWithBillInfoObj, UserObj, Pathes, getDynamicPath, LocalStorage } from '../../lib';
 import { ModalNames } from '../../store';
 
 interface DetailsImporation {
@@ -17,31 +17,21 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
-  const { showModal, hideModal } = useAction();
-  const { modals, userServiceSocket } = useSelector();
-  const { isApiProcessing, request } = useRequest();
-  const {
-    isOwner,
-    getTokenInfo,
-    hasUserAuthorized,
-    getUserStatusColor,
-    getUserLastConnection,
-    isSameUser,
-    isUserOnline,
-  } = useAuth();
-  const isUserOwner = isOwner();
-  const isCurrentUserSameUser = isSameUser(user.id);
-  const isCurrentUserOnline = isUserOnline(user.id);
-  const isCurrentUserOwner = isOwner(user.role);
-  const isAuthorized = hasUserAuthorized(user);
-  const userInfo = getTokenInfo();
-  const isUserExist = !!userInfo;
-  const isDeleteUserApiProcessing = isApiProcessing(DeleteUserApi);
-  const isDownloadBillReportApiProcessing = isApiProcessing(DownloadBillReportApi);
+  const actions = useAction();
+  const selectors = useSelector();
+  const request = useRequest();
+  const auth = useAuth();
+  const isUserOnline = auth.isUserOnline(user.id);
+  const isCurrentOwner = auth.isCurrentOwner();
+  const hasRoleAuthorized = auth.hasRoleAuthorized(user);
+  const hasCreatedByOwnerRoleAuthorized = auth.hasCreatedByOwnerRoleAuthorized(user);
+  const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(user);
+  const isDeleteUserApiProcessing = request.isApiProcessing(DeleteUserApi);
+  const isDownloadBillReportApiProcessing = request.isApiProcessing(DownloadBillReportApi);
   const options = [
     {
       label: 'Update',
-      path: isUserOwner
+      path: isCurrentOwner
         ? getDynamicPath(Pathes.UPDATE_USER_BY_OWNER, { id: user.id })
         : getDynamicPath(Pathes.UPDATE_USER, { id: user.id }),
     },
@@ -66,42 +56,48 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   );
 
   const onDeleteAccount = useCallback(() => {
-    showModal(ModalNames.CONFIRMATION);
-  }, [showModal]);
+    actions.showModal(ModalNames.CONFIRMATION);
+  }, []);
 
   const onLogoutUser = useCallback(() => {
-    if (userServiceSocket) {
-      userServiceSocket.emit('logout_user', { id: user.id });
+    if (selectors.userServiceSocket) {
+      selectors.userServiceSocket.emit('logout_user', { id: user.id });
     }
-  }, [user, userServiceSocket]);
+  }, [user, selectors.userServiceSocket]);
 
-  const deleteUser = useCallback(() => {
-    if (isUserOnline(user.id)) {
-      onLogoutUser();
-    }
-
-    request<UserObj, number>(new DeleteUserApi(user.id))
+  const deleteByUser = useCallback(() => {
+    request
+      .build<UserObj, number>(new DeleteUserApi())
       .then((response) => {
-        hideModal(ModalNames.CONFIRMATION);
-        if (isUserExist) {
-          if ((userInfo.role === UserRoles.OWNER && userInfo.id === user.id) || userInfo.role !== UserRoles.OWNER) {
-            LocalStorage.clear();
-            navigate(Pathes.LOGIN);
-          } else {
-            navigate(Pathes.USERS);
-          }
-        } else {
+        actions.hideModal(ModalNames.CONFIRMATION);
+        LocalStorage.clear();
+        navigate(Pathes.LOGIN);
+      })
+      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+  }, []);
+
+  const deleteByOwner = useCallback(() => {
+    request
+      .build<UserObj, number>(new DeleteUserByOwnerApi(user.id))
+      .then((response) => {
+        actions.hideModal(ModalNames.CONFIRMATION);
+        if (isUserEqualToCurrentUser) {
           LocalStorage.clear();
           navigate(Pathes.LOGIN);
+        } else {
+          if (isUserOnline) {
+            onLogoutUser();
+          }
+          navigate(Pathes.USERS);
         }
       })
-      .catch((err) => hideModal(ModalNames.CONFIRMATION));
-  }, [user, isUserExist, userInfo, request, hideModal, navigate, onLogoutUser, isSameUser]);
+      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+  }, [user, isUserEqualToCurrentUser]);
 
   const downloadBillReport = useCallback(() => {
     if (isDownloadBillReportApiProcessing) return;
 
-    request<Blob>(new DownloadBillReportApi(user.id)).then((response) => {
+    request.build<Blob>(new DownloadBillReportApi(user.id)).then((response) => {
       const href = URL.createObjectURL(response.data);
       const link = document.createElement('a');
       link.href = href;
@@ -111,7 +107,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
       document.body.removeChild(link);
       URL.revokeObjectURL(href);
     });
-  }, [isDownloadBillReportApiProcessing, user, request]);
+  }, [isDownloadBillReportApiProcessing, user]);
 
   return (
     <>
@@ -126,13 +122,13 @@ const Details: FC<DetailsImporation> = ({ user }) => {
             flexWrap="wrap"
             mb={'15px'}
           >
-            {isUserOwner && (
+            {isCurrentOwner && (
               <Box
                 sx={{
                   flex: 'unset',
                   width: '10px',
                   height: '10px',
-                  backgroundColor: getUserStatusColor(user.id),
+                  backgroundColor: auth.getUserStatusColor(user.id),
                   borderRadius: '50%',
                 }}
                 component={'span'}
@@ -142,7 +138,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
               {user.firstName} {user.lastName}
             </Typography>
           </Box>
-          {options.length > 0 && isAuthorized && (
+          {options.length > 0 && hasRoleAuthorized && (
             <>
               <IconButton onClick={onMenuOpen}>
                 <MoreVert />
@@ -182,7 +178,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
           {user.parent.firstName} {user.parent.lastName} ({user.parent.role}){' '}
           {user.parent.deletedAt && `was deleted at ${moment(user.parent.deletedAt).format('LLLL')}`}
         </Typography>
-        {isCurrentUserOwner && (
+        {isCurrentOwner && (
           <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
             <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
               Total created users:
@@ -202,9 +198,9 @@ const Details: FC<DetailsImporation> = ({ user }) => {
           </Typography>{' '}
           {user.bill.amounts}
         </Typography>
-        {isUserOwner &&
+        {isCurrentOwner &&
           (() => {
-            const userLastConnection = getUserLastConnection(user.id);
+            const userLastConnection = auth.getUserLastConnection(user.id);
             if (userLastConnection) {
               return (
                 <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
@@ -240,7 +236,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
             {moment(user.updatedAt).format('LLLL')}
           </Typography>
         )}
-        {isAuthorized && (
+        {hasRoleAuthorized && (
           <Box display="flex" alignItems="center" gap="8px">
             <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
               The bill report:
@@ -259,8 +255,8 @@ const Details: FC<DetailsImporation> = ({ user }) => {
             </Box>
           </Box>
         )}
-        {isAuthorized && (
-          <Box mt="30px" display={'flex'} alignItems={'center'} gap={'10px'}>
+        <Box mt="30px" display={'flex'} alignItems={'center'} gap={'10px'}>
+          {hasRoleAuthorized && (
             <Button
               disabled={isDeleteUserApiProcessing}
               onClick={onDeleteAccount}
@@ -271,29 +267,29 @@ const Details: FC<DetailsImporation> = ({ user }) => {
             >
               Delete the account
             </Button>
-            {!isCurrentUserSameUser && isCurrentUserOnline && (
-              <Button
-                disabled={isDeleteUserApiProcessing}
-                onClick={onLogoutUser}
-                variant="outlined"
-                color="primary"
-                size="small"
-                sx={{ textTransform: 'capitalize' }}
-              >
-                Logout the user
-              </Button>
-            )}
-          </Box>
-        )}
+          )}
+          {hasCreatedByOwnerRoleAuthorized && isUserOnline && (
+            <Button
+              disabled={isDeleteUserApiProcessing}
+              onClick={onLogoutUser}
+              variant="outlined"
+              color="primary"
+              size="small"
+              sx={{ textTransform: 'capitalize' }}
+            >
+              Logout the user
+            </Button>
+          )}
+        </Box>
       </Box>
 
       <Modal
         title="Deleting the Account"
         body="Are you sure do delete the user account?"
         isLoading={isDeleteUserApiProcessing}
-        isActive={modals[ModalNames.CONFIRMATION]}
-        onCancel={() => hideModal(ModalNames.CONFIRMATION)}
-        onConfirm={() => deleteUser()}
+        isActive={selectors.modals[ModalNames.CONFIRMATION]}
+        onCancel={() => actions.hideModal(ModalNames.CONFIRMATION)}
+        onConfirm={() => (isCurrentOwner ? deleteByOwner() : deleteByUser())}
       />
     </>
   );

@@ -10,3 +10,5 @@ export * from './isDescriptions';
 export * from './isDate';
 export * from './isQuery';
 export * from './isUserRoles';
+export * from './isConsumers';
+export * from './isConsumer';

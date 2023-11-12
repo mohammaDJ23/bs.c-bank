@@ -11,33 +11,45 @@ import { ModalNames } from '../../store';
 import NotificationCard from '../shared/NotificationCard';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const notificationListInstance = usePaginationList(NotificationList);
   const notificationListFiltersFormInstance = useForm(NotificationListFilters);
   const notificationListFiltersForm = notificationListFiltersFormInstance.getForm();
   const notificationListInfo = notificationListInstance.getFullInfo();
-  const isInitialNotificationsApiProcessing = isInitialApiProcessing(NotificationsApi);
-  const isNotificationsApiProcessing = isApiProcessing(NotificationsApi);
+  const isInitialNotificationsApiProcessing = request.isInitialApiProcessing(NotificationsApi);
+  const isNotificationsApiProcessing = request.isApiProcessing(NotificationsApi);
+
+  const getNotificationsApi = useCallback(
+    (options: Partial<NotificationsApiConstructorType> = {}) => {
+      return new NotificationsApi({
+        take: notificationListInfo.take,
+        page: notificationListInfo.page,
+        filters: {
+          q: notificationListFiltersForm.q,
+          roles: notificationListFiltersForm.roles,
+          fromDate: notificationListFiltersForm.fromDate,
+          toDate: notificationListFiltersForm.toDate,
+        },
+        ...options,
+      });
+    },
+    [notificationListInfo, notificationListFiltersForm]
+  );
 
   const getNotificationList = useCallback(
-    (options: Partial<NotificationsApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: notificationListInfo.take, page: notificationListInfo.page, ...options },
-        notificationListFiltersForm
-      );
-      const notificationsApi = new NotificationsApi<NotificationObj>(apiData);
-      notificationsApi.setInitialApi(!!apiData.isInitialApi);
-
-      request<[NotificationObj[], number], NotificationObj>(notificationsApi).then((response) => {
+    (api: NotificationsApi) => {
+      request.build<[NotificationObj[], number], NotificationObj>(api).then((response) => {
         const [list, total] = response.data;
-        notificationListInstance.insertNewList({ list, total, page: apiData.page });
+        notificationListInstance.insertNewList({ list, total, page: api.api.params.page });
       });
     },
     [notificationListInfo, notificationListInstance, notificationListFiltersForm, request]
   );
 
   useEffect(() => {
-    getNotificationList({ isInitialApi: true });
+    const api = getNotificationsApi();
+    api.setInitialApi();
+    getNotificationList(api);
   }, []);
 
   const changePage = useCallback(
@@ -46,7 +58,10 @@ const List: FC = () => {
 
       if (notificationListInstance.isNewPageEqualToCurrentPage(newPage) || isNotificationsApiProcessing) return;
 
-      if (!notificationListInstance.isNewPageExist(newPage)) getNotificationList({ page: newPage });
+      if (!notificationListInstance.isNewPageExist(newPage)) {
+        const api = getNotificationsApi({ page: newPage });
+        getNotificationList(api);
+      }
     },
     [isNotificationsApiProcessing, notificationListInstance, getNotificationList]
   );
@@ -55,7 +70,8 @@ const List: FC = () => {
     notificationListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       notificationListInstance.onPageChange(newPage);
-      getNotificationList({ page: newPage });
+      const api = getNotificationsApi({ page: newPage });
+      getNotificationList(api);
     });
   }, [notificationListFiltersFormInstance, notificationListInstance, getNotificationList]);
 
@@ -95,7 +111,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={notificationListFiltersForm.q}
-            onChange={(event) => notificationListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => notificationListFiltersFormInstance.onChange('q', event.target.value.trim())}
             helperText={notificationListFiltersFormInstance.getInputErrorMessage('q')}
             error={notificationListFiltersFormInstance.isInputInValid('q')}
             name="q"

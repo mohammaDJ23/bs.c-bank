@@ -14,22 +14,22 @@ interface DetailsImporation {
 
 const Details: FC<DetailsImporation> = ({ bill }) => {
   const navigate = useNavigate();
-  const { showModal, hideModal } = useAction();
-  const { modals } = useSelector();
-  const { isApiProcessing, request } = useRequest();
+  const actions = useAction();
+  const selectors = useSelector();
+  const request = useRequest();
 
-  const isRestoreBillApiProcessing = isApiProcessing(RestoreBillApi);
+  const isRestoreBillApiProcessing = request.isApiProcessing(RestoreBillApi);
 
   const showRestoreBillModal = useCallback(() => {
-    showModal(ModalNames.RESTORE_BILL);
+    actions.showModal(ModalNames.RESTORE_BILL);
   }, []);
 
   const hideRestoreBillModal = useCallback(() => {
-    hideModal(ModalNames.RESTORE_BILL);
+    actions.hideModal(ModalNames.RESTORE_BILL);
   }, []);
 
   const restoreBill = useCallback(() => {
-    request(new RestoreBillApi(bill.id)).then((response) => {
+    request.build(new RestoreBillApi(bill.id)).then((response) => {
       navigate(Pathes.BILLS);
     });
   }, [bill]);
@@ -47,6 +47,33 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
             Receiver:
           </Typography>{' '}
           {bill.receiver}
+        </Typography>
+        <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
+          <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+            Consumers:{' '}
+          </Typography>
+          {bill.consumers.map((consumer) => (
+            <Box
+              key={consumer}
+              component={'span'}
+              sx={{
+                backgroundColor: '#e6e6e6',
+                borderRadius: '20px',
+                padding: '1px 10px',
+                minWidth: '50px',
+                display: 'inline-block',
+                textAlign: 'center',
+                margin: '1px',
+              }}
+            >
+              <Typography
+                component={'span'}
+                sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', textAlign: 'center' }}
+              >
+                {consumer}
+              </Typography>
+            </Box>
+          ))}
         </Typography>
         <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
           <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
@@ -89,7 +116,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
         title="Restoring the bill"
         body="Are you sure to restore the bill?"
         isLoading={isRestoreBillApiProcessing}
-        isActive={modals[ModalNames.RESTORE_BILL]}
+        isActive={selectors.modals[ModalNames.RESTORE_BILL]}
         onCancel={hideRestoreBillModal}
         onConfirm={restoreBill}
       />

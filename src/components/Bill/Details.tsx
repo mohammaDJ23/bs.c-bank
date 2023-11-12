@@ -17,10 +17,10 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
-  const { showModal, hideModal } = useAction();
-  const { modals } = useSelector();
-  const { isApiProcessing, request } = useRequest();
-  const isDeleteBillApiProcessing = isApiProcessing(DeleteBillApi);
+  const actions = useAction();
+  const selectors = useSelector();
+  const request = useRequest();
+  const isDeleteBillApiProcessing = request.isApiProcessing(DeleteBillApi);
   const options = [{ label: 'Update', path: getDynamicPath(Pathes.UPDATE_BILL, { id: bill.id }) }];
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -42,17 +42,18 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
   );
 
   const onDeleteBill = useCallback(() => {
-    showModal(ModalNames.CONFIRMATION);
-  }, [showModal]);
+    actions.showModal(ModalNames.CONFIRMATION);
+  }, []);
 
   const deleteBill = useCallback(() => {
-    request<BillObj, string>(new DeleteBillApi(bill.id))
+    request
+      .build<BillObj, string>(new DeleteBillApi(bill.id))
       .then(() => {
-        hideModal(ModalNames.CONFIRMATION);
+        actions.hideModal(ModalNames.CONFIRMATION);
         navigate(Pathes.BILLS);
       })
-      .catch((err) => hideModal(ModalNames.CONFIRMATION));
-  }, [bill, request, hideModal, navigate]);
+      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+  }, [bill, request]);
 
   return (
     <>
@@ -77,6 +78,33 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
             Receiver:
           </Typography>{' '}
           {bill.receiver}
+        </Typography>
+        <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
+          <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+            Consumers:{' '}
+          </Typography>
+          {bill.consumers.map((consumer) => (
+            <Box
+              key={consumer}
+              component={'span'}
+              sx={{
+                backgroundColor: '#e6e6e6',
+                borderRadius: '20px',
+                padding: '1px 10px',
+                minWidth: '50px',
+                display: 'inline-block',
+                textAlign: 'center',
+                margin: '1px',
+              }}
+            >
+              <Typography
+                component={'span'}
+                sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', textAlign: 'center' }}
+              >
+                {consumer}
+              </Typography>
+            </Box>
+          ))}
         </Typography>
         <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
           <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
@@ -121,8 +149,8 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
         title="Deleting the Bill"
         body="Are you sure do delete the bill?"
         isLoading={isDeleteBillApiProcessing}
-        isActive={modals[ModalNames.CONFIRMATION]}
-        onCancel={() => hideModal(ModalNames.CONFIRMATION)}
+        isActive={selectors.modals[ModalNames.CONFIRMATION]}
+        onCancel={() => actions.hideModal(ModalNames.CONFIRMATION)}
         onConfirm={() => deleteBill()}
       />
     </>

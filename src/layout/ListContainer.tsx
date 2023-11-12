@@ -41,11 +41,11 @@ const Content = styled('div')(({ theme }) => ({
 
 const ListContainer: FC<PropsWithChildren> = ({ children }) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const { setListContainerElement } = useAction();
+  const actions = useAction();
 
   useEffect(() => {
     if (wrapperRef.current) {
-      setListContainerElement(wrapperRef.current);
+      actions.setListContainerElement(wrapperRef.current);
     }
   }, []);
 

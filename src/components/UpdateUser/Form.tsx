@@ -14,25 +14,26 @@ interface FormImportation {
 const Form: FC<FormImportation> = ({ formInstance }) => {
   const params = useParams();
   const navigate = useNavigate();
-  const { hideModal } = useAction();
-  const { request, isApiProcessing } = useRequest();
-  const isUpdateUserApiProcessing = isApiProcessing(UpdateUserApi);
+  const actions = useAction();
+  const request = useRequest();
+  const isUpdateUserApiProcessing = request.isApiProcessing(UpdateUserApi);
   const form = formInstance.getForm();
 
   const formSubmition = useCallback(() => {
     formInstance.onSubmit(() => {
-      request<AccessTokenObj, UpdateUser>(new UpdateUserApi(form))
-        .then(response => {
+      request
+        .build<AccessTokenObj, UpdateUser>(new UpdateUserApi(form))
+        .then((response) => {
           const userId = params.id as string;
-          hideModal(ModalNames.CONFIRMATION);
+          actions.hideModal(ModalNames.CONFIRMATION);
           formInstance.resetForm();
 
           reInitializeToken(response.data.accessToken);
           navigate(getDynamicPath(Pathes.USER, { id: userId }));
         })
-        .catch(err => hideModal(ModalNames.CONFIRMATION));
+        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
     });
-  }, [form, formInstance, params, request, hideModal, navigate]);
+  }, [form, formInstance, params, request]);
 
   return (
     <>
@@ -43,7 +44,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
         display="flex"
         flexDirection="column"
         gap="20px"
-        onSubmit={event => {
+        onSubmit={(event) => {
           event.preventDefault();
           formInstance.confirmation();
         }}
@@ -53,7 +54,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           variant="standard"
           type="text"
           value={form.firstName}
-          onChange={event => formInstance.onChange('firstName', event.target.value)}
+          onChange={(event) => formInstance.onChange('firstName', event.target.value)}
           helperText={formInstance.getInputErrorMessage('firstName')}
           error={formInstance.isInputInValid('firstName')}
           disabled={isUpdateUserApiProcessing}
@@ -63,7 +64,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           variant="standard"
           type="text"
           value={form.lastName}
-          onChange={event => formInstance.onChange('lastName', event.target.value)}
+          onChange={(event) => formInstance.onChange('lastName', event.target.value)}
           helperText={formInstance.getInputErrorMessage('lastName')}
           error={formInstance.isInputInValid('lastName')}
           disabled={isUpdateUserApiProcessing}
@@ -73,7 +74,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           type="email"
           variant="standard"
           value={form.email}
-          onChange={event => formInstance.onChange('email', event.target.value)}
+          onChange={(event) => formInstance.onChange('email', event.target.value.trim())}
           helperText={formInstance.getInputErrorMessage('email')}
           error={formInstance.isInputInValid('email')}
           disabled={isUpdateUserApiProcessing}
@@ -83,7 +84,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           type="text"
           variant="standard"
           value={form.phone}
-          onChange={event => formInstance.onChange('phone', event.target.value)}
+          onChange={(event) => formInstance.onChange('phone', event.target.value.trim())}
           helperText={formInstance.getInputErrorMessage('phone')}
           error={formInstance.isInputInValid('phone')}
           disabled={isUpdateUserApiProcessing}
@@ -113,7 +114,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
       <Modal
         isLoading={isUpdateUserApiProcessing}
         isActive={formInstance.isConfirmationActive()}
-        onCancel={() => hideModal(ModalNames.CONFIRMATION)}
+        onCancel={() => actions.hideModal(ModalNames.CONFIRMATION)}
         onConfirm={formSubmition}
       />
     </>

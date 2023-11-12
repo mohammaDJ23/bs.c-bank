@@ -4,13 +4,13 @@ import { useAuth, useInitialMicro } from '../../hooks';
 import Navigation from '../../layout/Navigation';
 
 const ChatContent: FC = () => {
-  const { ref } = useInitialMicro(app);
-  const { isOwner } = useAuth();
-  const isUserOwner = isOwner();
+  const initialMicro = useInitialMicro(app);
+  const auth = useAuth();
+  const isCurrentOwner = auth.isCurrentOwner();
 
   return (
-    <Navigation title={isUserOwner ? 'Conversations' : 'Contact support'}>
-      <div ref={ref} />
+    <Navigation title={isCurrentOwner ? 'Conversations' : 'Contact support'}>
+      <div ref={initialMicro.ref} />
     </Navigation>
   );
 };
