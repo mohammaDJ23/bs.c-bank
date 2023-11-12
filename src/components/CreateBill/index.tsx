@@ -262,7 +262,7 @@ const CreateBillContent: FC = () => {
             multiline
             variant="standard"
             value={createBillFrom.description}
-            onChange={(event) => createBillFromInstance.onChange('description', event.target.value.trim())}
+            onChange={(event) => createBillFromInstance.onChange('description', event.target.value)}
             helperText={createBillFromInstance.getInputErrorMessage('description')}
             error={createBillFromInstance.isInputInValid('description')}
             disabled={isCreateBillApiProcessing}

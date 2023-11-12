@@ -270,7 +270,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           multiline
           variant="standard"
           value={updateBillForm.description}
-          onChange={(event) => updateBillFormInstance.onChange('description', event.target.value.trim())}
+          onChange={(event) => updateBillFormInstance.onChange('description', event.target.value)}
           helperText={updateBillFormInstance.getInputErrorMessage('description')}
           error={updateBillFormInstance.isInputInValid('description')}
           disabled={isUpdateBillApiProcessing}
