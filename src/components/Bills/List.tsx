@@ -111,7 +111,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={billListFiltersForm.q}
-            onChange={(event) => billListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => billListFiltersFormInstance.onChange('q', event.target.value.trim())}
             helperText={billListFiltersFormInstance.getInputErrorMessage('q')}
             error={billListFiltersFormInstance.isInputInValid('q')}
             name="q"

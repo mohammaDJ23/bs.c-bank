@@ -111,7 +111,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={userListFiltersForm.q}
-            onChange={(event) => userListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => userListFiltersFormInstance.onChange('q', event.target.value.trim())}
             helperText={userListFiltersFormInstance.getInputErrorMessage('q')}
             error={userListFiltersFormInstance.isInputInValid('q')}
             name="q"

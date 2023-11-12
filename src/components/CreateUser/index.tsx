@@ -49,7 +49,7 @@ const CreateUserContent: FC = () => {
             variant="standard"
             type="text"
             value={form.firstName}
-            onChange={(event) => createUserFormInstance.onChange('firstName', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('firstName', event.target.value.trim())}
             helperText={createUserFormInstance.getInputErrorMessage('firstName')}
             error={createUserFormInstance.isInputInValid('firstName')}
             disabled={isCreateUserApiProcessing}
@@ -60,7 +60,7 @@ const CreateUserContent: FC = () => {
             variant="standard"
             type="text"
             value={form.lastName}
-            onChange={(event) => createUserFormInstance.onChange('lastName', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('lastName', event.target.value.trim())}
             helperText={createUserFormInstance.getInputErrorMessage('lastName')}
             error={createUserFormInstance.isInputInValid('lastName')}
             disabled={isCreateUserApiProcessing}
@@ -70,7 +70,7 @@ const CreateUserContent: FC = () => {
             type="email"
             variant="standard"
             value={form.email}
-            onChange={(event) => createUserFormInstance.onChange('email', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('email', event.target.value.trim())}
             helperText={createUserFormInstance.getInputErrorMessage('email')}
             error={createUserFormInstance.isInputInValid('email')}
             disabled={isCreateUserApiProcessing}
@@ -81,7 +81,7 @@ const CreateUserContent: FC = () => {
             variant="standard"
             value={form.password}
             autoComplete="off"
-            onChange={(event) => createUserFormInstance.onChange('password', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('password', event.target.value.trim())}
             helperText={createUserFormInstance.getInputErrorMessage('password')}
             error={createUserFormInstance.isInputInValid('password')}
             disabled={isCreateUserApiProcessing}
@@ -91,7 +91,7 @@ const CreateUserContent: FC = () => {
             type="text"
             variant="standard"
             value={form.phone}
-            onChange={(event) => createUserFormInstance.onChange('phone', event.target.value)}
+            onChange={(event) => createUserFormInstance.onChange('phone', event.target.value.trim())}
             helperText={createUserFormInstance.getInputErrorMessage('phone')}
             error={createUserFormInstance.isInputInValid('phone')}
             disabled={isCreateUserApiProcessing}

@@ -159,7 +159,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             value={updateBillForm.receiver}
             onChange={(event, value) => {
               value = value || '';
-              updateBillFormInstance.onChange('receiver', value);
+              updateBillFormInstance.onChange('receiver', value.trim());
               receiverListFiltersFormInstance.onChange('q', '');
               setReceivers([]);
               setIsReceiverAutocompleteOpen(false);
@@ -270,7 +270,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           multiline
           variant="standard"
           value={updateBillForm.description}
-          onChange={(event) => updateBillFormInstance.onChange('description', event.target.value)}
+          onChange={(event) => updateBillFormInstance.onChange('description', event.target.value.trim())}
           helperText={updateBillFormInstance.getInputErrorMessage('description')}
           error={updateBillFormInstance.isInputInValid('description')}
           disabled={isUpdateBillApiProcessing}

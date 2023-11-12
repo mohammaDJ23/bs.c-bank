@@ -66,7 +66,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           variant="standard"
           type="text"
           value={form.firstName}
-          onChange={(event) => formInstance.onChange('firstName', event.target.value)}
+          onChange={(event) => formInstance.onChange('firstName', event.target.value.trim())}
           helperText={formInstance.getInputErrorMessage('firstName')}
           error={formInstance.isInputInValid('firstName')}
           disabled={isUpdateUserByOwnerApiProcessing}
@@ -76,7 +76,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           variant="standard"
           type="text"
           value={form.lastName}
-          onChange={(event) => formInstance.onChange('lastName', event.target.value)}
+          onChange={(event) => formInstance.onChange('lastName', event.target.value.trim())}
           helperText={formInstance.getInputErrorMessage('lastName')}
           error={formInstance.isInputInValid('lastName')}
           disabled={isUpdateUserByOwnerApiProcessing}
@@ -86,7 +86,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           type="email"
           variant="standard"
           value={form.email}
-          onChange={(event) => formInstance.onChange('email', event.target.value)}
+          onChange={(event) => formInstance.onChange('email', event.target.value.trim())}
           helperText={formInstance.getInputErrorMessage('email')}
           error={formInstance.isInputInValid('email')}
           disabled={isUpdateUserByOwnerApiProcessing}
@@ -96,7 +96,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           type="text"
           variant="standard"
           value={form.phone}
-          onChange={(event) => formInstance.onChange('phone', event.target.value)}
+          onChange={(event) => formInstance.onChange('phone', event.target.value.trim())}
           helperText={formInstance.getInputErrorMessage('phone')}
           error={formInstance.isInputInValid('phone')}
           disabled={isUpdateUserByOwnerApiProcessing}
