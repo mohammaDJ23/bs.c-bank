@@ -1,6 +1,6 @@
 import { DefineRules, DefineVal, DefineValidation } from '../decorators';
 import { getTime } from '../utilFunctions';
-import { isReceiver, isAmount, isDescription, isDate, isConsumer } from '../validations';
+import { isReceiver, isAmount, isDescription, isDate, isConsumers } from '../validations';
 import { Form } from './formConstructor';
 
 export class UpdateBill extends Form {
@@ -17,7 +17,7 @@ export class UpdateBill extends Form {
   @DefineValidation()
   receiver: string = '';
 
-  @DefineRules([isConsumer])
+  @DefineRules([isConsumers])
   @DefineVal()
   @DefineValidation()
   consumers: string[] = [];

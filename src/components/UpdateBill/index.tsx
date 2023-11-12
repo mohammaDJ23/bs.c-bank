@@ -27,6 +27,7 @@ const UpdateBillContent: FC = () => {
             id: response.data.id,
             amount: response.data.amount,
             receiver: response.data.receiver,
+            consumers: response.data.consumers,
             description: response.data.description,
             date: response.data.date,
           })
