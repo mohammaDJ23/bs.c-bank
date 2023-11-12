@@ -1,11 +1,9 @@
-import { DefineRules, DefineVal, DefineValidation } from '../decorators';
-import { isConsumer } from '../validations';
+import { DefineVal, DefineValidation } from '../decorators';
 import { Form, IgnoreFormConstructor } from './formConstructor';
 
 export interface ConsumerListFiltersObj extends IgnoreFormConstructor<ConsumerListFilters> {}
 
 export class ConsumerListFilters extends Form {
-  @DefineRules([isConsumer])
   @DefineVal()
   @DefineValidation()
   q: string = '';
