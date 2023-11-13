@@ -3,10 +3,10 @@ import { MoreVert } from '@mui/icons-material';
 import moment from 'moment';
 import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import { DeleteUserApi, DeleteUserByOwnerApi, DownloadBillReportApi } from '../../apis';
-import { UserWithBillInfoObj, UserObj, Pathes, getDynamicPath, LocalStorage } from '../../lib';
+import { UserWithBillInfoObj, UserObj, Pathes, getDynamicPath, LocalStorage, UserStatusObj } from '../../lib';
 import { ModalNames } from '../../store';
 
 interface DetailsImporation {
@@ -36,6 +36,30 @@ const Details: FC<DetailsImporation> = ({ user }) => {
         : getDynamicPath(Pathes.UPDATE_USER, { id: user.id }),
     },
   ];
+
+  useEffect(() => {
+    if (selectors.userServiceSocket && isCurrentOwner) {
+      selectors.userServiceSocket.emit('initial-user-status', { payload: user.id });
+      selectors.userServiceSocket.on('initial-user-status', (data: UserStatusObj | undefined) => {
+        if (data) {
+          const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, { [data.id]: data });
+          actions.setSpecificDetails('usersStatus', newUsersStatus);
+        }
+      });
+
+      selectors.userServiceSocket.on('user-status', (data: UserStatusObj | undefined) => {
+        if (data && data.id === user.id) {
+          const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, { [data.id]: data });
+          actions.setSpecificDetails('usersStatus', newUsersStatus);
+        }
+      });
+
+      return () => {
+        selectors.userServiceSocket!.removeListener('initial-user-status');
+        selectors.userServiceSocket!.removeListener('user-status');
+      };
+    }
+  }, []);
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -204,15 +228,6 @@ const Details: FC<DetailsImporation> = ({ user }) => {
                     Last connection:
                   </Typography>{' '}
                   {moment(userLastConnection).format('LLLL')}
-                </Typography>
-              );
-            } else if (userLastConnection === undefined) {
-              return (
-                <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-                  <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-                    Last connection:
-                  </Typography>{' '}
-                  long time ago
                 </Typography>
               );
             }

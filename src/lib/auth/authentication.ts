@@ -14,9 +14,10 @@ export interface DecodedToken {
   lastName: string;
   role: UserRoles;
   expiration: number;
+  parentId: number;
 }
 
-export interface UserStatus extends DecodedToken {
+export interface UserStatusObj extends DecodedToken {
   lastConnection: Date | null;
 }
 
