@@ -74,14 +74,6 @@ export function hasRole(...roles: UserRoles[]): boolean {
   else return roles.some((role) => userInfo.role === role);
 }
 
-export function onLogoutEvent(): void {
-  const event = new CustomEvent('on-logout', {
-    cancelable: true,
-    detail: getDecodedToken(),
-  });
-  window.dispatchEvent(event);
-}
-
 export function isCurrentUser(): boolean {
   const userInfo = getDecodedToken()!;
   return userInfo.role === UserRoles.USER;
