@@ -2,7 +2,7 @@ import { Fragment, useEffect, FC, PropsWithChildren } from 'react';
 import { getUserServiceSocket } from '../utilFunctions';
 import { useAction } from '../../hooks';
 
-const UserServiceSocketConnectionProvider: FC<PropsWithChildren> = ({ children }) => {
+const UserServiceSocketProvider: FC<PropsWithChildren> = ({ children }) => {
   const actions = useAction();
 
   useEffect(() => {
@@ -13,4 +13,4 @@ const UserServiceSocketConnectionProvider: FC<PropsWithChildren> = ({ children }
   return <Fragment>{children}</Fragment>;
 };
 
-export default UserServiceSocketConnectionProvider;
+export default UserServiceSocketProvider;

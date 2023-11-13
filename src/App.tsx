@@ -13,7 +13,7 @@ import AuthProtectionProvider from './lib/providers/AuthProtectionProvider';
 import RedirectionProvider from './lib/providers/RedirectionProvider';
 import { createBrowserHistory } from 'history';
 import { SnackbarProvider } from 'notistack';
-import UserServiceSocketConnectionProvider from './lib/providers/userServiceSocketConnectionProvider';
+import UserServiceSocketProvider from './lib/providers/userServiceSocketProvider';
 
 export const history = createBrowserHistory();
 
@@ -38,9 +38,9 @@ const App: FC = () => {
                     element={
                       route.needAuth ? (
                         <AuthProtectionProvider>
-                          <UserServiceSocketConnectionProvider>
+                          <UserServiceSocketProvider>
                             <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
-                          </UserServiceSocketConnectionProvider>
+                          </UserServiceSocketProvider>
                         </AuthProtectionProvider>
                       ) : (
                         <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
