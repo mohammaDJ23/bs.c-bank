@@ -23,8 +23,6 @@ const List: FC = () => {
   const isInitialUsersApiProcessing = request.isInitialApiProcessing(UsersApi);
   const isUsersApiProcessing = request.isApiProcessing(UsersApi);
 
-  console.log(selectors.specificDetails.usersStatus);
-
   useEffect(() => {
     if (selectors.userServiceSocket && isCurrentOwner) {
       selectors.userServiceSocket.on('users-status', (data: UsersStatusType) => {
