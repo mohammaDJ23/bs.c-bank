@@ -14,9 +14,10 @@ export interface DecodedToken {
   lastName: string;
   role: UserRoles;
   expiration: number;
+  parentId: number;
 }
 
-export interface UserStatus extends DecodedToken {
+export interface UserStatusObj extends DecodedToken {
   lastConnection: Date | null;
 }
 
@@ -72,14 +73,6 @@ export function hasRole(...roles: UserRoles[]): boolean {
 
   if (!userInfo) return false;
   else return roles.some((role) => userInfo.role === role);
-}
-
-export function onLogoutEvent(): void {
-  const event = new CustomEvent('on-logout', {
-    cancelable: true,
-    detail: getDecodedToken(),
-  });
-  window.dispatchEvent(event);
 }
 
 export function isCurrentUser(): boolean {

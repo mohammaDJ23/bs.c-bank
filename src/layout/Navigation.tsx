@@ -25,8 +25,8 @@ import NotificationIcon from '@mui/icons-material/Notifications';
 import ChatIcon from '@mui/icons-material/Chat';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import { styled } from '@mui/material/styles';
-import { LocalStorage, onLogoutEvent, Pathes, routes, UserRoles } from '../lib';
-import { useAuth } from '../hooks';
+import { LocalStorage, Pathes, routes, UserRoles } from '../lib';
+import { useAuth, useSelector } from '../hooks';
 import { MoreVert } from '@mui/icons-material';
 import { Menu, MenuItem } from '@mui/material';
 
@@ -107,6 +107,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
   const isMenuOpened = Boolean(anchorEl);
   const [isDrawerOpened, setIsDrawerOpened] = useState(false);
   const navigate = useNavigate();
+  const selectors = useSelector();
   const location = useLocation();
   const params = useParams();
   const auth = useAuth();
@@ -203,7 +204,9 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         title: 'Logout',
         icon: <LogoutIcon />,
         onClick: () => {
-          onLogoutEvent();
+          if (selectors.userServiceSocket) {
+            selectors.userServiceSocket.disconnect();
+          }
           LocalStorage.clear();
           navigate(Pathes.LOGIN);
         },

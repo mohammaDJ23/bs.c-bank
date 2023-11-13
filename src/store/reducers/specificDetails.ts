@@ -1,4 +1,4 @@
-import { BillObj, DeletedUserObj, NotificationObj, UserObj, UserStatus, UserWithBillInfoObj } from '../../lib';
+import { BillObj, DeletedUserObj, NotificationObj, UserObj, UserStatusObj, UserWithBillInfoObj } from '../../lib';
 import { RootActions, SetSpecificDetailsAction } from '../actions';
 import { ClearState } from './clearState';
 
@@ -75,7 +75,7 @@ export class DeletedUserQuantities {
   }
 }
 
-export type UsersStatusType = Record<number, UserStatus>;
+export type UsersStatusType = Record<number, UserStatusObj>;
 
 export interface SpecificDetailsState {
   user: UserObj | null;

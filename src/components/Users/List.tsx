@@ -2,22 +2,47 @@ import { FC, useCallback, useEffect } from 'react';
 import { List as MuiList, Box, TextField, Button, Autocomplete } from '@mui/material';
 import { UserObj, UserListFilters, isoDate, getTime, UserRoles, UserList } from '../../lib';
 import Pagination from '../shared/Pagination';
-import { useForm, usePaginationList, useRequest } from '../../hooks';
+import { useAction, useAuth, useForm, usePaginationList, useRequest, useSelector } from '../../hooks';
 import { UsersApi, UsersApiConstructorType } from '../../apis';
 import Filter from '../shared/Filter';
 import EmptyList from './EmptyList';
-import { ModalNames } from '../../store';
+import { ModalNames, UsersStatusType } from '../../store';
 import UserSkeleton from '../shared/UsersSkeleton';
 import UserCard from '../shared/UserCard';
 
 const List: FC = () => {
+  const selectors = useSelector();
+  const actions = useAction();
   const request = useRequest();
+  const auth = useAuth();
+  const isCurrentOwner = auth.isCurrentOwner();
   const userListInstance = usePaginationList(UserList);
   const userListFiltersFormInstance = useForm(UserListFilters);
   const userListFiltersForm = userListFiltersFormInstance.getForm();
   const userListInfo = userListInstance.getFullInfo();
   const isInitialUsersApiProcessing = request.isInitialApiProcessing(UsersApi);
   const isUsersApiProcessing = request.isApiProcessing(UsersApi);
+
+  console.log(selectors.specificDetails.usersStatus);
+
+  useEffect(() => {
+    if (selectors.userServiceSocket && isCurrentOwner) {
+      selectors.userServiceSocket.on('users-status', (data: UsersStatusType) => {
+        const usersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
+        actions.setSpecificDetails('usersStatus', usersStatus);
+      });
+
+      selectors.userServiceSocket.on('user-status', (data: UsersStatusType) => {
+        const usersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
+        actions.setSpecificDetails('usersStatus', usersStatus);
+      });
+
+      return () => {
+        selectors.userServiceSocket!.removeListener('users-status');
+        selectors.userServiceSocket!.removeListener('user-status');
+      };
+    }
+  }, [selectors.userServiceSocket, selectors.specificDetails.usersStatus, isCurrentOwner]);
 
   const getUsersListApi = useCallback(
     (options: Partial<UsersApiConstructorType> = {}) => {
@@ -41,9 +66,13 @@ const List: FC = () => {
       request.build<[UserObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
         userListInstance.insertNewList({ total, list, page: api.api.params.page });
+
+        if (selectors.userServiceSocket && isCurrentOwner) {
+          selectors.userServiceSocket.emit('users-status', { payload: list.map((user) => user.id) });
+        }
       });
     },
-    [userListInfo, userListInstance, userListFiltersForm, request]
+    [userListInfo, userListInstance, userListFiltersForm, request, selectors.userServiceSocket]
   );
 
   useEffect(() => {
