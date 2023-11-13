@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import { DeleteUserApi, DeleteUserByOwnerApi, DownloadBillReportApi } from '../../apis';
-import { UserWithBillInfoObj, UserObj, Pathes, getDynamicPath, LocalStorage, UserStatusObj } from '../../lib';
+import { UserWithBillInfoObj, UserObj, Pathes, getDynamicPath, LocalStorage } from '../../lib';
 import { ModalNames, UsersStatusType } from '../../store';
 
 interface DetailsImporation {
@@ -38,26 +38,28 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   ];
 
   useEffect(() => {
-    if (selectors.userServiceSocket && isCurrentOwner) {
-      selectors.userServiceSocket.emit('initial-user-status', { payload: user.id });
-      selectors.userServiceSocket.on('initial-user-status', (data: UsersStatusType) => {
-        const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
-        actions.setSpecificDetails('usersStatus', newUsersStatus);
-      });
-
-      selectors.userServiceSocket.on('user-status', (data: UsersStatusType) => {
-        if (data[user.id].id === user.id) {
+    if (selectors.userServiceSocket) {
+      if (isCurrentOwner) {
+        selectors.userServiceSocket.emit('initial-user-status', { payload: user.id });
+        selectors.userServiceSocket.on('initial-user-status', (data: UsersStatusType) => {
           const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
           actions.setSpecificDetails('usersStatus', newUsersStatus);
-        }
-      });
+        });
+
+        selectors.userServiceSocket.on('user-status', (data: UsersStatusType) => {
+          if (data[user.id] && data[user.id].id === user.id) {
+            const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
+            actions.setSpecificDetails('usersStatus', newUsersStatus);
+          }
+        });
+      }
 
       return () => {
         selectors.userServiceSocket!.removeListener('initial-user-status');
         selectors.userServiceSocket!.removeListener('user-status');
       };
     }
-  }, []);
+  }, [selectors.userServiceSocket, isCurrentOwner]);
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -81,7 +83,11 @@ const Details: FC<DetailsImporation> = ({ user }) => {
     actions.showModal(ModalNames.CONFIRMATION);
   }, []);
 
-  const onLogoutUser = useCallback(() => {}, []);
+  const onLogoutUser = useCallback(() => {
+    if (selectors.userServiceSocket && isCurrentOwner) {
+      selectors.userServiceSocket.emit('logout-user', { payload: user.id });
+    }
+  }, [selectors.userServiceSocket, isCurrentOwner]);
 
   const deleteByUser = useCallback(() => {
     request

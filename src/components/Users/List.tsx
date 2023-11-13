@@ -23,8 +23,6 @@ const List: FC = () => {
   const isInitialUsersApiProcessing = request.isInitialApiProcessing(UsersApi);
   const isUsersApiProcessing = request.isApiProcessing(UsersApi);
 
-  console.log(selectors.specificDetails.usersStatus);
-
   useEffect(() => {
     if (selectors.userServiceSocket && isCurrentOwner) {
       selectors.userServiceSocket.on('users-status', (data: UsersStatusType) => {
@@ -33,8 +31,13 @@ const List: FC = () => {
       });
 
       selectors.userServiceSocket.on('user-status', (data: UsersStatusType) => {
-        const usersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
-        actions.setSpecificDetails('usersStatus', usersStatus);
+        for (const page in userListInfo.listAsObject) {
+          const [id] = Object.keys(data);
+          if (userListInfo.listAsObject[+page]?.[id]) {
+            const usersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
+            actions.setSpecificDetails('usersStatus', usersStatus);
+          }
+        }
       });
 
       return () => {
@@ -42,7 +45,7 @@ const List: FC = () => {
         selectors.userServiceSocket!.removeListener('user-status');
       };
     }
-  }, [selectors.userServiceSocket, selectors.specificDetails.usersStatus, isCurrentOwner]);
+  }, [selectors.userServiceSocket, selectors.specificDetails.usersStatus, isCurrentOwner, userListInfo.listAsObject]);
 
   const getUsersListApi = useCallback(
     (options: Partial<UsersApiConstructorType> = {}) => {

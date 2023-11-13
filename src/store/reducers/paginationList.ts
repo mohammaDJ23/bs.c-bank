@@ -32,10 +32,7 @@ function setList(state: PaginationListState, action: SetPaginationListAction): P
   return newState;
 }
 
-function changePage(
-  state: PaginationListState,
-  action: ChangePaginationListPageAction
-): PaginationListState {
+function changePage(state: PaginationListState, action: ChangePaginationListPageAction): PaginationListState {
   const { list: ListInstance, page: listInstancePage } = action.payload;
   const page = Math.sign(listInstancePage) <= 0 ? 1 : listInstancePage;
   const copiedList = copyConstructor(state[ListInstance.name]);
@@ -58,10 +55,7 @@ function clearState(): PaginationListState {
   return makeListState();
 }
 
-export function paginationListReducer(
-  state: PaginationListState = initialState,
-  actions: RootActions
-) {
+export function paginationListReducer(state: PaginationListState = initialState, actions: RootActions) {
   switch (actions.type) {
     case PaginationList.SET_LISTS:
       return setList(state, actions);

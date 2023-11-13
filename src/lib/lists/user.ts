@@ -33,6 +33,8 @@ export interface DeletedUserObj extends UserObj {
 }
 
 export class UserList implements ListInstance {
+  public listAsObject: {};
+
   constructor(
     public list: ListObj<UserObj> = {},
     public total: number = 0,
@@ -43,5 +45,6 @@ export class UserList implements ListInstance {
     this.take = take;
     this.page = page;
     this.total = total;
+    this.listAsObject = {};
   }
 }
