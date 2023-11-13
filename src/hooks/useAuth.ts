@@ -40,7 +40,7 @@ export function useAuth() {
 
   const isUserOnline = useCallback(
     (id: number) => {
-      return isUserStatusExit(id) && !getUserStatus(id).lastConnection;
+      return isUserStatusExit(id) && getUserStatus(id).lastConnection === null;
     },
     [specificDetails]
   );
