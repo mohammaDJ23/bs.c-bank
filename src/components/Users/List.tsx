@@ -36,6 +36,11 @@ const List: FC = () => {
         const usersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
         actions.setSpecificDetails('usersStatus', usersStatus);
       });
+
+      return () => {
+        selectors.userServiceSocket!.removeListener('users-status');
+        selectors.userServiceSocket!.removeListener('user-status');
+      };
     }
   }, [selectors.userServiceSocket, selectors.specificDetails.usersStatus, isCurrentOwner]);
 
