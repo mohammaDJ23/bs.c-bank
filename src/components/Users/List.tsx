@@ -31,8 +31,13 @@ const List: FC = () => {
       });
 
       selectors.userServiceSocket.on('user-status', (data: UsersStatusType) => {
-        const usersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
-        actions.setSpecificDetails('usersStatus', usersStatus);
+        for (const page in userListInfo.listAsObject) {
+          const [id] = Object.keys(data);
+          if (userListInfo.listAsObject[+page]?.[id]) {
+            const usersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
+            actions.setSpecificDetails('usersStatus', usersStatus);
+          }
+        }
       });
 
       return () => {
@@ -40,7 +45,7 @@ const List: FC = () => {
         selectors.userServiceSocket!.removeListener('user-status');
       };
     }
-  }, [selectors.userServiceSocket, selectors.specificDetails.usersStatus, isCurrentOwner]);
+  }, [selectors.userServiceSocket, selectors.specificDetails.usersStatus, isCurrentOwner, userListInfo.listAsObject]);
 
   const getUsersListApi = useCallback(
     (options: Partial<UsersApiConstructorType> = {}) => {

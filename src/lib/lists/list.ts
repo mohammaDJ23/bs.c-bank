@@ -7,6 +7,7 @@ export interface ListInstance<T = any> {
   take: number;
   page: number;
   total: number;
+  listAsObject?: Record<number | string, any>;
 }
 
 export type ListType<T extends ListInstance = ListInstance> = T['list'] extends ListObj<infer C> ? C : any;

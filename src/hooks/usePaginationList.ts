@@ -29,6 +29,11 @@ export function usePaginationList<T>(listInstance: ListInstanceConstructor<ListI
         return paginationList[listInstance.name];
       }
 
+      function getListAsObject() {
+        const listInstance = getListInstance();
+        return listInstance.listAsObject || {};
+      }
+
       function isListEmpty(): boolean {
         const listInstance = getListInstance();
         return Object.keys(listInstance.list).length <= 0;
@@ -68,10 +73,11 @@ export function usePaginationList<T>(listInstance: ListInstanceConstructor<ListI
           count: getCount(),
           isListEmpty: isListEmpty(),
           lists: getListInstance().list,
+          listAsObject: getListAsObject(),
         };
       }
 
-      function insertNewList({ page, total, list }: InsertNewListOptions<T>) {
+      function insertNewList({ page, total, list }: InsertNewListOptions) {
         const listInstance = getListInstance();
         const listInfo = getFullInfo();
 
@@ -83,6 +89,19 @@ export function usePaginationList<T>(listInstance: ListInstanceConstructor<ListI
           constructedList.list = {};
         } else {
           constructedList.list = Object.assign(listInfo.lists, { [page]: list });
+        }
+
+        if (constructedList.listAsObject) {
+          constructedList.listAsObject = Object.assign(listInfo.listAsObject, {
+            [page]: list.reduce((acc, val) => {
+              if (val.id) {
+                acc[val.id] = val;
+              } else {
+                throw new Error('For setting list-object you need an id for each item.');
+              }
+              return acc;
+            }, {} as Record<number | string, {}>),
+          });
         }
 
         constructedList.total = total;
@@ -114,6 +133,7 @@ export function usePaginationList<T>(listInstance: ListInstanceConstructor<ListI
         insertNewList,
         isNewPageEqualToCurrentPage,
         isNewPageExist,
+        getListAsObject,
       };
     },
     [listContainer, paginationList, listInstance, setPaginationList, changePaginationListPage]
