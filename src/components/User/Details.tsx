@@ -7,7 +7,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import { DeleteUserApi, DeleteUserByOwnerApi, DownloadBillReportApi } from '../../apis';
 import { UserWithBillInfoObj, UserObj, Pathes, getDynamicPath, LocalStorage, UserStatusObj } from '../../lib';
-import { ModalNames } from '../../store';
+import { ModalNames, UsersStatusType } from '../../store';
 
 interface DetailsImporation {
   user: UserWithBillInfoObj;
@@ -40,16 +40,14 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   useEffect(() => {
     if (selectors.userServiceSocket && isCurrentOwner) {
       selectors.userServiceSocket.emit('initial-user-status', { payload: user.id });
-      selectors.userServiceSocket.on('initial-user-status', (data: UserStatusObj | undefined) => {
-        if (data) {
-          const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, { [data.id]: data });
-          actions.setSpecificDetails('usersStatus', newUsersStatus);
-        }
+      selectors.userServiceSocket.on('initial-user-status', (data: UsersStatusType) => {
+        const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
+        actions.setSpecificDetails('usersStatus', newUsersStatus);
       });
 
-      selectors.userServiceSocket.on('user-status', (data: UserStatusObj | undefined) => {
-        if (data && data.id === user.id) {
-          const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, { [data.id]: data });
+      selectors.userServiceSocket.on('user-status', (data: UsersStatusType) => {
+        if (data[user.id].id === user.id) {
+          const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
           actions.setSpecificDetails('usersStatus', newUsersStatus);
         }
       });
