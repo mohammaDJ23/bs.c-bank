@@ -59,11 +59,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
     actions.showModal(ModalNames.CONFIRMATION);
   }, []);
 
-  const onLogoutUser = useCallback(() => {
-    if (selectors.userServiceSocket) {
-      selectors.userServiceSocket.emit('logout_user', { id: user.id });
-    }
-  }, [user, selectors.userServiceSocket]);
+  const onLogoutUser = useCallback(() => {}, []);
 
   const deleteByUser = useCallback(() => {
     request
