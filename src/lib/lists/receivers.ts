@@ -1,4 +1,4 @@
-import { ListInstance, ListObj } from './list';
+import { BaseList } from './list';
 
 export interface ReceiverObj {
   id: number;
@@ -9,16 +9,8 @@ export interface ReceiverObj {
   userId: number;
 }
 
-export class ReceiverList implements ListInstance {
-  constructor(
-    public list: ListObj<ReceiverObj> = {},
-    public total: number = 0,
-    public page: number = 1,
-    public take: number = 10
-  ) {
-    this.list = list;
-    this.take = take;
-    this.page = page;
-    this.total = total;
+export class ReceiverList<T = ReceiverObj> extends BaseList<T> {
+  constructor(arg: Partial<BaseList<T>> = {}) {
+    super(arg);
   }
 }

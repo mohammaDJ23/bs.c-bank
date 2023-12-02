@@ -1,5 +1,4 @@
-import { UserRoles } from '../auth';
-import { ListInstance, ListObj } from './list';
+import { BaseList } from './list';
 import { UserObj } from './user';
 
 export interface BillWithUserObj {
@@ -15,16 +14,8 @@ export interface BillWithUserObj {
   user: UserObj;
 }
 
-export class AllBillList implements ListInstance {
-  constructor(
-    public list: ListObj<BillWithUserObj> = {},
-    public total: number = 0,
-    public page: number = 1,
-    public take: number = 10
-  ) {
-    this.list = list;
-    this.take = take;
-    this.page = page;
-    this.total = total;
+export class AllBillList<T = BillWithUserObj> extends BaseList<T> {
+  constructor(arg: Partial<BaseList<T>> = {}) {
+    super(arg);
   }
 }

@@ -12,3 +12,7 @@ interface MicroApp {
 declare module 'chat/ChatApp' {
   export const app: MicroApp;
 }
+
+interface Constructor<T = any> {
+  new (...args: any[]): T;
+}

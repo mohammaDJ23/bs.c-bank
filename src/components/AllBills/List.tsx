@@ -15,15 +15,14 @@ const List: FC = () => {
   const allBillListInstance = usePaginationList(AllBillList);
   const allBillListFiltersFormInstance = useForm(AllBillListFilters);
   const allBillListFiltersForm = allBillListFiltersFormInstance.getForm();
-  const allBillListInfo = allBillListInstance.getFullInfo();
   const isInitialAllBillsApiProcessing = request.isInitialApiProcessing(AllBillsApi);
   const isAllBillsApiProcessing = request.isApiProcessing(AllBillsApi);
 
   const getAllBillsApi = useCallback(
     (options: Partial<AllBillsApiConstructorType> = {}) => {
       return new AllBillsApi({
-        take: allBillListInfo.take,
-        page: allBillListInfo.page,
+        take: allBillListInstance.getTake(),
+        page: allBillListInstance.getPage(),
         filters: {
           q: allBillListFiltersForm.q,
           roles: allBillListFiltersForm.roles,
@@ -33,17 +32,19 @@ const List: FC = () => {
         ...options,
       });
     },
-    [allBillListFiltersForm, allBillListInfo]
+    [allBillListFiltersForm]
   );
 
   const getAllBillsList = useCallback(
     (api: AllBillsApi) => {
       request.build<[BillWithUserObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
-        allBillListInstance.insertNewList({ list, total, page: api.api.params.page });
+        allBillListInstance.updateAndConcatList(list, api.api.params.page);
+        allBillListInstance.updatePage(api.api.params.page);
+        allBillListInstance.updateTotal(total);
       });
     },
-    [allBillListInfo, allBillListInstance, request]
+    [allBillListInstance, request]
   );
 
   useEffect(() => {
@@ -54,7 +55,7 @@ const List: FC = () => {
 
   const changePage = useCallback(
     (newPage: number) => {
-      allBillListInstance.onPageChange(newPage);
+      allBillListInstance.updatePage(newPage);
 
       if (allBillListInstance.isNewPageEqualToCurrentPage(newPage) || isAllBillsApiProcessing) return;
 
@@ -69,7 +70,7 @@ const List: FC = () => {
   const allBillListFilterFormSubmition = useCallback(() => {
     allBillListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
-      allBillListInstance.onPageChange(newPage);
+      allBillListInstance.updatePage(newPage);
       const api = getAllBillsApi({ page: newPage });
       getAllBillsList(api);
     });
@@ -78,18 +79,22 @@ const List: FC = () => {
   return (
     <>
       {isInitialAllBillsApiProcessing || isAllBillsApiProcessing ? (
-        <BillsSkeleton take={allBillListInfo.take} />
+        <BillsSkeleton take={allBillListInstance.getTake()} />
       ) : allBillListInstance.isListEmpty() ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {allBillListInfo.list.map((bill, index) => (
-              <BillWithUserCard key={index} index={index} bill={bill} listInfo={allBillListInfo} />
+            {allBillListInstance.getList().map((bill, index) => (
+              <BillWithUserCard key={index} index={index} bill={bill} listInstance={allBillListInstance} />
             ))}
           </MuiList>
 
-          <Pagination page={allBillListInfo.page} count={allBillListInfo.count} onPageChange={changePage} />
+          <Pagination
+            page={allBillListInstance.getPage()}
+            count={allBillListInstance.getCount()}
+            onPageChange={changePage}
+          />
         </>
       )}
 

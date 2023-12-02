@@ -15,15 +15,14 @@ const List: FC = () => {
   const billListInstance = usePaginationList(BillList);
   const billListFiltersFormInstance = useForm(BillListFilters);
   const billListFiltersForm = billListFiltersFormInstance.getForm();
-  const billListInfo = billListInstance.getFullInfo();
   const isInitialBillsApiProcessing = request.isInitialApiProcessing(BillsApi);
   const isBillsApiProcessing = request.isApiProcessing(BillsApi);
 
   const getBillsListApi = useCallback(
     (options: Partial<BillsApiConstructorType> = {}) => {
       return new BillsApi({
-        take: billListInfo.take,
-        page: billListInfo.page,
+        take: billListInstance.getTake(),
+        page: billListInstance.getPage(),
         filters: {
           q: billListFiltersForm.q,
           fromDate: billListFiltersForm.fromDate,
@@ -32,17 +31,19 @@ const List: FC = () => {
         ...options,
       });
     },
-    [billListInfo, billListFiltersForm]
+    [billListFiltersForm]
   );
 
   const getBillsList = useCallback(
     (api: BillsApi) => {
       request.build<[BillObj[], number], BillObj>(api).then((response) => {
         const [list, total] = response.data;
-        billListInstance.insertNewList({ list, total, page: api.api.params.page });
+        billListInstance.updateAndConcatList(list, api.api.params.page);
+        billListInstance.updatePage(api.api.params.page);
+        billListInstance.updateTotal(total);
       });
     },
-    [billListInfo, billListInstance, billListFiltersForm, request]
+    [billListInstance, billListFiltersForm, request]
   );
 
   useEffect(() => {
@@ -53,7 +54,7 @@ const List: FC = () => {
 
   const changePage = useCallback(
     (newPage: number) => {
-      billListInstance.onPageChange(newPage);
+      billListInstance.updatePage(newPage);
 
       if (billListInstance.isNewPageEqualToCurrentPage(newPage) || isBillsApiProcessing) return;
 
@@ -68,7 +69,7 @@ const List: FC = () => {
   const billListFilterFormSubmition = useCallback(() => {
     billListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
-      billListInstance.onPageChange(newPage);
+      billListInstance.updatePage(newPage);
       const api = getBillsListApi({ page: newPage });
       getBillsList(api);
     });
@@ -77,18 +78,18 @@ const List: FC = () => {
   return (
     <>
       {isInitialBillsApiProcessing || isBillsApiProcessing ? (
-        <BillsSkeleton take={billListInfo.take} />
+        <BillsSkeleton take={billListInstance.getTake()} />
       ) : billListInstance.isListEmpty() ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {billListInfo.list.map((bill, index) => (
-              <BillCard key={index} index={index} bill={bill} listInfo={billListInfo} />
+            {billListInstance.getList().map((bill, index) => (
+              <BillCard key={index} index={index} bill={bill} listInstance={billListInstance} />
             ))}
           </MuiList>
 
-          <Pagination page={billListInfo.page} count={billListInfo.count} onPageChange={changePage} />
+          <Pagination page={billListInstance.getPage()} count={billListInstance.getCount()} onPageChange={changePage} />
         </>
       )}
 

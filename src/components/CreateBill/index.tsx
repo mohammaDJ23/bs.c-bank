@@ -36,8 +36,6 @@ const CreateBillContent: FC = () => {
   const receiverListFiltersForm = receiverListFiltersFormInstance.getForm();
   const consumerListInstance = usePaginationList(ConsumerList);
   const receiverlistInstance = usePaginationList(ReceiverList);
-  const consumerListInfo = consumerListInstance.getFullInfo();
-  const receiverListInfo = receiverlistInstance.getFullInfo();
   const snackbar = useSnackbar();
   const oneSecDebounce = useRef(debounce(1000));
 
@@ -64,8 +62,8 @@ const CreateBillContent: FC = () => {
         receiverListFiltersFormInstance.onSubmit(() => {
           setIsReceiverAutocompleteOpen(true);
           const receiverApi = new ReceiversApi({
-            take: receiverListInfo.take,
-            page: receiverListInfo.page,
+            take: receiverlistInstance.getTake(),
+            page: receiverlistInstance.getPage(),
             filters: { q },
           });
           request.build<[ReceiverObj[], number]>(receiverApi).then((response) => {
@@ -81,7 +79,7 @@ const CreateBillContent: FC = () => {
         });
       });
     },
-    [createBillFromInstance, receiverListFiltersFormInstance, receiverListInfo]
+    [createBillFromInstance, receiverListFiltersFormInstance]
   );
 
   const onConsumerChange = useCallback(
@@ -93,8 +91,8 @@ const CreateBillContent: FC = () => {
         consumerListFiltersFormInstance.onSubmit(() => {
           setIsConsumerAutocompleteOpen(true);
           const consumersApi = new ConsumersApi({
-            take: consumerListInfo.take,
-            page: consumerListInfo.page,
+            take: consumerListInstance.getTake(),
+            page: consumerListInstance.getPage(),
             filters: { q },
           });
           request.build<[ConsumerObj[], number]>(consumersApi).then((response) => {
@@ -111,7 +109,7 @@ const CreateBillContent: FC = () => {
         });
       });
     },
-    [createBillFrom, consumerListFiltersFormInstance, consumerListInfo]
+    [createBillFrom, consumerListFiltersFormInstance]
   );
 
   return (
