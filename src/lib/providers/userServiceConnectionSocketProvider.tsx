@@ -7,7 +7,7 @@ const UserServiceConnectionSocketProvider: FC<PropsWithChildren> = ({ children }
 
   useEffect(() => {
     const socket = getUserServiceConnectionSocket();
-    actions.setUserServiceSocket(socket);
+    actions.setUserServiceConnectionSocket(socket);
   }, []);
 
   return <Fragment>{children}</Fragment>;

@@ -1,22 +1,26 @@
-import { RootActions, SetUserServiceSocketAction } from '../actions';
+import { RootActions, SetUserServiceConnectionSocketAction } from '../actions';
 import { Socket } from 'socket.io-client';
 
 export enum UserServiceSocket {
-  SET_SOCKET = 'SET_SOCKET',
+  SET_CONNECTION_SOCKET = 'SET_CONNECTION_SOCKET',
 }
 
-export type SocketState = Socket | null;
+export interface SocketState {
+  connection: Socket | null;
+}
 
-const initialState: SocketState = null;
+const initialState: SocketState = {
+  connection: null,
+};
 
-function setSocket(state: SocketState, action: SetUserServiceSocketAction): SocketState {
-  return action.payload.socket;
+function setUserServiceConnectionSocket(state: SocketState, action: SetUserServiceConnectionSocketAction): SocketState {
+  return Object.assign({}, state, { connection: action.payload.socket });
 }
 
 export function userServiceSocketReducer(state: SocketState = initialState, actions: RootActions): SocketState {
   switch (actions.type) {
-    case UserServiceSocket.SET_SOCKET:
-      return setSocket(state, actions);
+    case UserServiceSocket.SET_CONNECTION_SOCKET:
+      return setUserServiceConnectionSocket(state, actions);
 
     default:
       return state;

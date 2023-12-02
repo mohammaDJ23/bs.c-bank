@@ -23,13 +23,13 @@ const List: FC = () => {
   const isUsersApiProcessing = request.isApiProcessing(UsersApi);
 
   useEffect(() => {
-    if (selectors.userServiceSocket && isCurrentOwner) {
-      selectors.userServiceSocket.on('users-status', (data: UsersStatusType) => {
+    if (selectors.userServiceSocket.connection && isCurrentOwner) {
+      selectors.userServiceSocket.connection.on('users-status', (data: UsersStatusType) => {
         const usersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
         actions.setSpecificDetails('usersStatus', usersStatus);
       });
 
-      selectors.userServiceSocket.on('user-status', (data: UsersStatusType) => {
+      selectors.userServiceSocket.connection.on('user-status', (data: UsersStatusType) => {
         const userListAsObject = userListInstance.getListAsObject();
         const [id] = Object.keys(data);
         if (userListAsObject[id]) {
@@ -39,11 +39,11 @@ const List: FC = () => {
       });
 
       return () => {
-        selectors.userServiceSocket!.removeListener('users-status');
-        selectors.userServiceSocket!.removeListener('user-status');
+        selectors.userServiceSocket.connection!.removeListener('users-status');
+        selectors.userServiceSocket.connection!.removeListener('user-status');
       };
     }
-  }, [selectors.userServiceSocket, selectors.specificDetails.usersStatus, isCurrentOwner]);
+  }, [selectors.userServiceSocket.connection, selectors.specificDetails.usersStatus, isCurrentOwner]);
 
   const getUsersListApi = useCallback(
     (options: Partial<UsersApiConstructorType> = {}) => {
@@ -75,12 +75,12 @@ const List: FC = () => {
         userListInstance.updatePage(api.api.params.page);
         userListInstance.updateTotal(total);
 
-        if (selectors.userServiceSocket && isCurrentOwner) {
-          selectors.userServiceSocket.emit('users-status', { payload: list.map((user) => user.id) });
+        if (selectors.userServiceSocket.connection && isCurrentOwner) {
+          selectors.userServiceSocket.connection.emit('users-status', { payload: list.map((user) => user.id) });
         }
       });
     },
-    [userListInstance, userListFiltersForm, request, selectors.userServiceSocket]
+    [userListInstance, userListFiltersForm, request, selectors.userServiceSocket.connection]
   );
 
   useEffect(() => {
