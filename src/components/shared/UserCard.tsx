@@ -3,17 +3,17 @@ import moment from 'moment';
 import { FC, PropsWithChildren } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, usePaginationList } from '../../hooks';
-import { getDynamicPath, Pathes, UserObj } from '../../lib';
+import { DeletedUserList, getDynamicPath, Pathes, UserList, UserObj } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
 
 interface UserCardImportion extends PropsWithChildren {
   user: UserObj;
-  listInfo: ReturnType<ReturnType<typeof usePaginationList<UserObj>>['getFullInfo']>;
   index: number;
+  listInstance: ReturnType<typeof usePaginationList<UserList | DeletedUserList>>;
 }
 
-const UserCard: FC<UserCardImportion> = ({ user, index, listInfo }) => {
+const UserCard: FC<UserCardImportion> = ({ user, index, listInstance }) => {
   const navigate = useNavigate();
   const auth = useAuth();
   const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(user);
@@ -117,7 +117,7 @@ const UserCard: FC<UserCardImportion> = ({ user, index, listInfo }) => {
               />
             </Box>
           </Box>
-          <CountBadge take={listInfo.take} page={listInfo.page} index={index} />
+          <CountBadge take={listInstance.getTake()} page={listInstance.getPage()} index={index} />
         </ListItem>
       </ListItemButton>
     </Card>

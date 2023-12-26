@@ -7,4 +7,4 @@ export * from './speceficDetails';
 export * from './paginationList';
 export * from './form';
 export * from './clearState';
-export * from './socket';
+export * from './userSocket';

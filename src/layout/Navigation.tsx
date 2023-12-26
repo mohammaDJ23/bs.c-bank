@@ -204,8 +204,8 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         title: 'Logout',
         icon: <LogoutIcon />,
         onClick: () => {
-          if (selectors.userServiceSocket) {
-            selectors.userServiceSocket.disconnect();
+          if (selectors.userServiceSocket.connection) {
+            selectors.userServiceSocket.connection.disconnect();
           }
           LocalStorage.clear();
           navigate(Pathes.LOGIN);

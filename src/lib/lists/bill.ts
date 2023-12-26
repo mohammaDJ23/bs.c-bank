@@ -1,4 +1,4 @@
-import { ListInstance, ListObj } from './list';
+import { BaseList } from './list';
 
 export interface BillObj {
   id: string;
@@ -13,23 +13,8 @@ export interface BillObj {
   userId: number;
 }
 
-export interface BillFiltersObj {
-  q: string;
-  date: string;
-  fromDate: string;
-  toDate: string;
-}
-
-export class BillList implements ListInstance {
-  constructor(
-    public list: ListObj<BillObj> = {},
-    public total: number = 0,
-    public page: number = 1,
-    public take: number = 10
-  ) {
-    this.list = list;
-    this.take = take;
-    this.page = page;
-    this.total = total;
+export class BillList<T = BillObj> extends BaseList<T> {
+  constructor(arg: Partial<BaseList<T>> = {}) {
+    super(arg);
   }
 }

@@ -43,8 +43,6 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
   const receiverListFiltersForm = receiverListFiltersFormInstance.getForm();
   const consumerListInstance = usePaginationList(ConsumerList);
   const receiverlistInstance = usePaginationList(ReceiverList);
-  const consumerListInfo = consumerListInstance.getFullInfo();
-  const receiverListInfo = receiverlistInstance.getFullInfo();
   const oneSecDebounce = useRef(debounce(1000));
   const updateBillForm = updateBillFormInstance.getForm();
   const snackbar = useSnackbar();
@@ -74,8 +72,8 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
         receiverListFiltersFormInstance.onSubmit(() => {
           setIsReceiverAutocompleteOpen(true);
           const receiverApi = new ReceiversApi({
-            take: receiverListInfo.take,
-            page: receiverListInfo.page,
+            take: receiverlistInstance.getTake(),
+            page: receiverlistInstance.getPage(),
             filters: { q },
           });
           request.build<[ReceiverObj[], number]>(receiverApi).then((response) => {
@@ -91,7 +89,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
         });
       });
     },
-    [updateBillFormInstance, receiverListFiltersFormInstance, receiverListInfo]
+    [updateBillFormInstance, receiverListFiltersFormInstance]
   );
 
   const onConsumerChange = useCallback(
@@ -103,8 +101,8 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
         consumerListFiltersFormInstance.onSubmit(() => {
           setIsConsumerAutocompleteOpen(true);
           const consumersApi = new ConsumersApi({
-            take: consumerListInfo.take,
-            page: consumerListInfo.page,
+            take: consumerListInstance.getTake(),
+            page: consumerListInstance.getPage(),
             filters: { q },
           });
           request.build<[ConsumerObj[], number]>(consumersApi).then((response) => {
@@ -121,7 +119,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
         });
       });
     },
-    [updateBillForm, consumerListFiltersFormInstance, consumerListInfo]
+    [updateBillForm, consumerListFiltersFormInstance]
   );
 
   return (

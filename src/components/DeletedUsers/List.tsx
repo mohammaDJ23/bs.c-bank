@@ -15,15 +15,14 @@ const List: FC = () => {
   const deletedUserListInstance = usePaginationList(DeletedUserList);
   const deletedUserListFiltersFormInstance = useForm(DeletedUserListFilters);
   const deletedUserListFiltersForm = deletedUserListFiltersFormInstance.getForm();
-  const deletedUserListInfo = deletedUserListInstance.getFullInfo();
   const isInitialDeletedUsersApiProcessing = request.isInitialApiProcessing(DeletedUsersApi);
   const isDeletedUsersApiProcessing = request.isApiProcessing(DeletedUsersApi);
 
   const getDeletedUsersApi = useCallback(
     (options: Partial<DeletedUsersApiConstructorType> = {}) => {
       return new DeletedUsersApi({
-        take: deletedUserListInfo.take,
-        page: deletedUserListInfo.page,
+        take: deletedUserListInstance.getTake(),
+        page: deletedUserListInstance.getPage(),
         filters: {
           q: deletedUserListFiltersForm.q,
           roles: deletedUserListFiltersForm.roles,
@@ -34,17 +33,19 @@ const List: FC = () => {
         ...options,
       });
     },
-    [deletedUserListInfo, deletedUserListFiltersForm]
+    [deletedUserListFiltersForm]
   );
 
   const getDeletedUsersList = useCallback(
     (api: DeletedUsersApi) => {
       request.build<[UserObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
-        deletedUserListInstance.insertNewList({ total, list, page: api.api.params.page });
+        deletedUserListInstance.updateAndConcatList(list, api.api.params.page);
+        deletedUserListInstance.updatePage(api.api.params.page);
+        deletedUserListInstance.updateTotal(total);
       });
     },
-    [deletedUserListInfo, deletedUserListInstance, deletedUserListFiltersForm, request]
+    [deletedUserListInstance, deletedUserListFiltersForm, request]
   );
 
   useEffect(() => {
@@ -55,7 +56,7 @@ const List: FC = () => {
 
   const changePage = useCallback(
     (newPage: number) => {
-      deletedUserListInstance.onPageChange(newPage);
+      deletedUserListInstance.updatePage(newPage);
 
       if (deletedUserListInstance.isNewPageEqualToCurrentPage(newPage) || isDeletedUsersApiProcessing) return;
 
@@ -70,7 +71,7 @@ const List: FC = () => {
   const userListFilterFormSubmition = useCallback(() => {
     deletedUserListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
-      deletedUserListInstance.onPageChange(newPage);
+      deletedUserListInstance.updatePage(newPage);
       const api = getDeletedUsersApi({ page: newPage });
       getDeletedUsersList(api);
     });
@@ -79,17 +80,21 @@ const List: FC = () => {
   return (
     <>
       {isInitialDeletedUsersApiProcessing || isDeletedUsersApiProcessing ? (
-        <UserSkeleton take={deletedUserListInfo.take} />
+        <UserSkeleton take={deletedUserListInstance.getTake()} />
       ) : deletedUserListInstance.isListEmpty() ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {deletedUserListInfo.list.map((user, index) => (
-              <UserCard key={index} index={index} user={user} listInfo={deletedUserListInfo} />
+            {deletedUserListInstance.getList().map((user, index) => (
+              <UserCard key={index} index={index} user={user} listInstance={deletedUserListInstance} />
             ))}
           </MuiList>
-          <Pagination page={deletedUserListInfo.page} count={deletedUserListInfo.count} onPageChange={changePage} />
+          <Pagination
+            page={deletedUserListInstance.getPage()}
+            count={deletedUserListInstance.getCount()}
+            onPageChange={changePage}
+          />
         </>
       )}
 

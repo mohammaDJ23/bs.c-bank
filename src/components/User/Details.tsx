@@ -38,15 +38,15 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   ];
 
   useEffect(() => {
-    if (selectors.userServiceSocket) {
+    if (selectors.userServiceSocket.connection) {
       if (isCurrentOwner) {
-        selectors.userServiceSocket.emit('initial-user-status', { payload: user.id });
-        selectors.userServiceSocket.on('initial-user-status', (data: UsersStatusType) => {
+        selectors.userServiceSocket.connection.emit('initial-user-status', { payload: user.id });
+        selectors.userServiceSocket.connection.on('initial-user-status', (data: UsersStatusType) => {
           const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
           actions.setSpecificDetails('usersStatus', newUsersStatus);
         });
 
-        selectors.userServiceSocket.on('user-status', (data: UsersStatusType) => {
+        selectors.userServiceSocket.connection.on('user-status', (data: UsersStatusType) => {
           if (data[user.id] && data[user.id].id === user.id) {
             const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
             actions.setSpecificDetails('usersStatus', newUsersStatus);
@@ -55,11 +55,11 @@ const Details: FC<DetailsImporation> = ({ user }) => {
       }
 
       return () => {
-        selectors.userServiceSocket!.removeListener('initial-user-status');
-        selectors.userServiceSocket!.removeListener('user-status');
+        selectors.userServiceSocket.connection!.removeListener('initial-user-status');
+        selectors.userServiceSocket.connection!.removeListener('user-status');
       };
     }
-  }, [selectors.userServiceSocket, isCurrentOwner]);
+  }, [selectors.userServiceSocket.connection, isCurrentOwner]);
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -84,10 +84,10 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   }, []);
 
   const onLogoutUser = useCallback(() => {
-    if (selectors.userServiceSocket && isCurrentOwner) {
-      selectors.userServiceSocket.emit('logout-user', { payload: user.id });
+    if (selectors.userServiceSocket.connection && isCurrentOwner) {
+      selectors.userServiceSocket.connection.emit('logout-user', { payload: user.id });
     }
-  }, [selectors.userServiceSocket, isCurrentOwner]);
+  }, [selectors.userServiceSocket.connection, isCurrentOwner]);
 
   const deleteByUser = useCallback(() => {
     request

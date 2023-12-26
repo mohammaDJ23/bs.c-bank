@@ -125,7 +125,7 @@ export class UpdateBillApi extends RootApi<UpdateBill> {
 }
 
 export class UsersApi extends RootApi {
-  constructor(params: ListParams<UserObj> & FilterParams<UserListFiltersObj>) {
+  constructor(params: ListParams<UserObj> & FilterParams<Partial<UserListFiltersObj>>) {
     super(
       {
         url: '/api/v1/user/all',
@@ -140,7 +140,7 @@ export class UsersApi extends RootApi {
 export type UsersApiConstructorType = ConstructorParameters<typeof UsersApi>[0];
 
 export class DeletedUsersApi extends RootApi {
-  constructor(params: ListParams<UserObj> & FilterParams<DeletedUserListFiltersObj>) {
+  constructor(params: ListParams<UserObj> & FilterParams<Partial<DeletedUserListFiltersObj>>) {
     super(
       {
         url: '/api/v1/user/all/deleted',
@@ -155,7 +155,7 @@ export class DeletedUsersApi extends RootApi {
 export type DeletedUsersApiConstructorType = ConstructorParameters<typeof DeletedUsersApi>[0];
 
 export class BillsApi extends RootApi {
-  constructor(params: ListParams<BillObj> & FilterParams<BillListFiltersObj>) {
+  constructor(params: ListParams<BillObj> & FilterParams<Partial<BillListFiltersObj>>) {
     super(
       {
         url: '/api/v1/bank/bill/all',
@@ -170,7 +170,7 @@ export class BillsApi extends RootApi {
 export type BillsApiConstructorType = ConstructorParameters<typeof BillsApi>[0];
 
 export class AllBillsApi extends RootApi {
-  constructor(params: ListParams<BillWithUserObj> & FilterParams<AllBillListFiltersObj>) {
+  constructor(params: ListParams<BillWithUserObj> & FilterParams<Partial<AllBillListFiltersObj>>) {
     super(
       {
         url: '/api/v1/bank/owner/bill/all',
@@ -185,7 +185,7 @@ export class AllBillsApi extends RootApi {
 export type AllBillsApiConstructorType = ConstructorParameters<typeof AllBillsApi>[0];
 
 export class DeletedBillListApi extends RootApi {
-  constructor(params: ListParams<BillObj> & FilterParams<DeletedBillListFiltersObj>) {
+  constructor(params: ListParams<BillObj> & FilterParams<Partial<DeletedBillListFiltersObj>>) {
     super(
       {
         url: '/api/v1/bank/bill/all/deleted',
@@ -439,7 +439,7 @@ export class BillQuantitiesApi extends RootApi {
 }
 
 export class NotificationsApi extends RootApi {
-  constructor(params: ListParams<NotificationObj> & FilterParams<NotificationListFiltersObj>) {
+  constructor(params: ListParams<NotificationObj> & FilterParams<Partial<NotificationListFiltersObj>>) {
     super(
       {
         url: '/api/v1/notification/all',
@@ -466,7 +466,7 @@ export class NotificationApi extends RootApi {
 }
 
 export class ConsumersApi extends RootApi {
-  constructor(params: ListParams<ConsumerObj> & FilterParams<ConsumerListFiltersObj>) {
+  constructor(params: ListParams<ConsumerObj> & FilterParams<Partial<ConsumerListFiltersObj>>) {
     super(
       {
         url: '/api/v1/bank/consumer/all',
@@ -479,7 +479,7 @@ export class ConsumersApi extends RootApi {
 }
 
 export class ReceiversApi extends RootApi {
-  constructor(params: ListParams<ReceiverObj> & FilterParams<ReceiverListFiltersObj>) {
+  constructor(params: ListParams<ReceiverObj> & FilterParams<Partial<ReceiverListFiltersObj>>) {
     super(
       {
         url: '/api/v1/bank/receiver/all',
