@@ -137,16 +137,8 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   return (
     <>
       <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px">
-        <Box width="100%" mb="15px" display="flex" gap="8px" justifyContent="space-between" alignItems="center">
-          <Box
-            component={'div'}
-            display="flex"
-            alignItems="center"
-            justifyContent="start"
-            gap="10px"
-            flexWrap="wrap"
-            mb={'15px'}
-          >
+        <Box width="100%" mb="20px" display="flex" gap="8px" justifyContent="space-between" alignItems="center">
+          <Box component={'div'} display="flex" alignItems="center" justifyContent="start" gap="10px" flexWrap="wrap">
             {isCurrentOwner && (
               <Box
                 sx={{
