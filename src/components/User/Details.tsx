@@ -85,7 +85,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
 
   const onLogoutUser = useCallback(() => {
     if (selectors.userServiceSocket.connection && isCurrentOwner) {
-      selectors.userServiceSocket.connection.emit('logout-user', { payload: user.id });
+      selectors.userServiceSocket.connection.emit('logout-user', { id: user.id });
     }
   }, [selectors.userServiceSocket.connection, isCurrentOwner]);
 
