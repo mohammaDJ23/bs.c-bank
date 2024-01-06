@@ -76,7 +76,7 @@ const List: FC = () => {
         userListInstance.updateTotal(total);
 
         if (selectors.userServiceSocket.connection && isCurrentOwner) {
-          selectors.userServiceSocket.connection.emit('users-status', { payload: list.map((user) => user.id) });
+          selectors.userServiceSocket.connection.emit('users-status', { ids: list.map((user) => user.id) });
         }
       });
     },
