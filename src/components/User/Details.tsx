@@ -28,6 +28,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(user);
   const isDeleteUserApiProcessing = request.isApiProcessing(DeleteUserApi);
   const isDownloadBillReportApiProcessing = request.isApiProcessing(DownloadBillReportApi);
+  const connectionSocket = selectors.userServiceSocket.connection;
   const options = [
     {
       label: 'Update',
@@ -38,15 +39,15 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   ];
 
   useEffect(() => {
-    if (selectors.userServiceSocket.connection) {
+    if (connectionSocket) {
       if (isCurrentOwner) {
-        selectors.userServiceSocket.connection.emit('initial-user-status', { payload: user.id });
-        selectors.userServiceSocket.connection.on('initial-user-status', (data: UsersStatusType) => {
+        connectionSocket.emit('initial-user-status', { id: user.id });
+        connectionSocket.on('initial-user-status', (data: UsersStatusType) => {
           const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
           actions.setSpecificDetails('usersStatus', newUsersStatus);
         });
 
-        selectors.userServiceSocket.connection.on('user-status', (data: UsersStatusType) => {
+        connectionSocket.on('user-status', (data: UsersStatusType) => {
           if (data[user.id] && data[user.id].id === user.id) {
             const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
             actions.setSpecificDetails('usersStatus', newUsersStatus);
@@ -55,11 +56,11 @@ const Details: FC<DetailsImporation> = ({ user }) => {
       }
 
       return () => {
-        selectors.userServiceSocket.connection!.removeListener('initial-user-status');
-        selectors.userServiceSocket.connection!.removeListener('user-status');
+        connectionSocket.removeListener('initial-user-status');
+        connectionSocket.removeListener('user-status');
       };
     }
-  }, [selectors.userServiceSocket.connection, isCurrentOwner]);
+  }, [connectionSocket, isCurrentOwner]);
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -84,10 +85,10 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   }, []);
 
   const onLogoutUser = useCallback(() => {
-    if (selectors.userServiceSocket.connection && isCurrentOwner) {
-      selectors.userServiceSocket.connection.emit('logout-user', { payload: user.id });
+    if (connectionSocket && isCurrentOwner) {
+      connectionSocket.emit('logout-user', { id: user.id });
     }
-  }, [selectors.userServiceSocket.connection, isCurrentOwner]);
+  }, [connectionSocket, isCurrentOwner]);
 
   const deleteByUser = useCallback(() => {
     request
@@ -136,16 +137,8 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   return (
     <>
       <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px">
-        <Box width="100%" mb="15px" display="flex" gap="8px" justifyContent="space-between" alignItems="center">
-          <Box
-            component={'div'}
-            display="flex"
-            alignItems="center"
-            justifyContent="start"
-            gap="10px"
-            flexWrap="wrap"
-            mb={'15px'}
-          >
+        <Box width="100%" mb="20px" display="flex" gap="8px" justifyContent="space-between" alignItems="center">
+          <Box component={'div'} display="flex" alignItems="center" justifyContent="start" gap="10px" flexWrap="wrap">
             {isCurrentOwner && (
               <Box
                 sx={{

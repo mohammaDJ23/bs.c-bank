@@ -69,6 +69,13 @@ const AppBar = styled('div')(({ theme }) => ({
       minHeight: '48px',
     },
   },
+  [theme.breakpoints.down('sm')]: {
+    minHeight: '48px',
+    '.css-hyum1k-MuiToolbar-root': {
+      transition: 'all 0.3s',
+      minHeight: '48px',
+    },
+  },
 }));
 
 const ChildrenWrapper = styled('div')(({ theme }) => ({
