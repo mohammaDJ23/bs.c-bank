@@ -40,7 +40,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   useEffect(() => {
     if (selectors.userServiceSocket.connection) {
       if (isCurrentOwner) {
-        selectors.userServiceSocket.connection.emit('initial-user-status', { payload: user.id });
+        selectors.userServiceSocket.connection.emit('initial-user-status', { id: user.id });
         selectors.userServiceSocket.connection.on('initial-user-status', (data: UsersStatusType) => {
           const newUsersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
           actions.setSpecificDetails('usersStatus', newUsersStatus);
