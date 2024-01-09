@@ -350,18 +350,6 @@ export class LastWeekBillsApi extends RootApi {
   }
 }
 
-export class BillsExcelApi extends RootApi {
-  constructor() {
-    super(
-      {
-        url: '/api/v1/bank/bill/excel',
-        method: 'get',
-      },
-      { baseURL: process.env.BANK_SERVICE }
-    );
-  }
-}
-
 export class UserQuantitiesApi extends RootApi {
   constructor() {
     super(
@@ -414,12 +402,9 @@ export class DownloadBillReportApi extends RootApi {
   constructor(id: number) {
     super(
       {
-        url: '/api/v1/bank/bill/excel',
+        url: `/api/v1/bank/bill/excel/${id}`,
         method: 'get',
         responseType: 'blob',
-        params: {
-          id,
-        },
       },
       { baseURL: process.env.BANK_SERVICE }
     );
