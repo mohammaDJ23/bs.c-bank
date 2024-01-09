@@ -258,7 +258,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
   return (
     <>
       <AppBar>
-        <Toolbar>
+        <Toolbar sx={{ minHeight: 'inherit' }}>
           {isUserAuthenticated && (
             <IconButton
               color="inherit"
