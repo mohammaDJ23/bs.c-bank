@@ -16,6 +16,10 @@ const BadgeWrapper = styled('div')(({ theme }) => ({
     position: 'unset',
     padding: '2px 6px',
   },
+  '.css-13xqbvb': {
+    position: 'unset',
+    transform: 'unset',
+  },
 }));
 
 interface CountBadgeImportation
