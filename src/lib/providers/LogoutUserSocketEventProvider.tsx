@@ -10,22 +10,23 @@ const LogoutUserSocketEventProvider: FC<PropsWithChildren> = ({ children }) => {
   const auth = useAuth();
   const navigate = useNavigate();
   const decodedToken = auth.getDecodedToken()!;
+  const connectionSocket = selectors.userServiceSocket.connection;
 
   useEffect(() => {
-    if (selectors.userServiceSocket.connection) {
-      selectors.userServiceSocket.connection.on('logout-user', (data: UsersStatusType) => {
+    if (connectionSocket) {
+      connectionSocket.on('logout-user', (data: UsersStatusType) => {
         if (data[decodedToken.id] && data[decodedToken.id].id === decodedToken.id) {
           LocalStorage.clear();
-          selectors.userServiceSocket.connection!.disconnect();
+          connectionSocket.disconnect();
           navigate(Pathes.LOGIN);
         }
       });
 
       return () => {
-        selectors.userServiceSocket.connection!.removeListener('logout-user');
+        connectionSocket.removeListener('logout-user');
       };
     }
-  }, [selectors.userServiceSocket.connection]);
+  }, [connectionSocket]);
 
   return <Fragment>{children}</Fragment>;
 };
