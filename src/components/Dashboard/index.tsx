@@ -506,7 +506,7 @@ const Dashboard: FC = () => {
                         Total bill Amount:{' '}
                       </Typography>
                       <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                        {selectors.specificDetails.totalAmount.totalAmount}
+                        {Number(selectors.specificDetails.totalAmount.totalAmount).toLocaleString()}
                       </Typography>
                     </Box>
                   </Box>
