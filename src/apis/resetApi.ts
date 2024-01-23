@@ -70,6 +70,7 @@ export class Request<R = any, D = any> implements RootApiObj<D> {
     try {
       return this.axiosInstance.request<R, AxiosResponse<R>, D>(this.api);
     } catch (error) {
+      console.log(error);
       const err = error as AxiosError<ErrorObj, D>;
       throw err;
     }
