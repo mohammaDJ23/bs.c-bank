@@ -60,7 +60,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
       <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px">
         <Box width="100%" mb="15px" display="flex" gap="8px" justifyContent="space-between" alignItems="center">
           <Typography component={'p'} fontSize="14px" fontWeight={'bold'}>
-            {Number(bill.amount).toLocaleString()}
+            {bill.amount}
           </Typography>
           <IconButton onClick={onMenuOpen}>
             <MoreVert />
