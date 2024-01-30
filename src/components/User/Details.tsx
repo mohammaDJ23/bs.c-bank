@@ -213,7 +213,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
           <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
             Total bill amounts:
           </Typography>{' '}
-          {Number(user.bill.amounts).toLocaleString()}
+          {user.bill.amounts}
         </Typography>
         {isCurrentOwner &&
           (() => {

@@ -51,9 +51,7 @@ const BillWithUserCard: FC<BillCardImportation> = ({ bill, index, listInstance }
               <ListItemText
                 primaryTypographyProps={{ fontSize: '14px', fontWeight: 'bold' }}
                 sx={{ margin: '0' }}
-                primary={`${bill.receiver} received ${Number(bill.amount).toLocaleString()} at ${moment(
-                  bill.date
-                ).format('ll')}`}
+                primary={`${bill.receiver} received ${bill.amount} at ${moment(bill.date).format('ll')}`}
               />
             </Box>
 
