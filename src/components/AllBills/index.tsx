@@ -18,7 +18,10 @@ const AllBillsContent: FC = () => {
   const menuOptions = [<Typography onClick={() => actions.showModal(ModalNames.ALL_BILL_FILTERS)}>Filters</Typography>];
 
   return (
-    <Navigation title={`Bills ${!isInitialAllBillsApiProcessing ? `(${billsTotal})` : ''}`} menuOptions={menuOptions}>
+    <Navigation
+      title={`All Bills ${!isInitialAllBillsApiProcessing ? `(${billsTotal})` : ''}`}
+      menuOptions={menuOptions}
+    >
       <ListContainer>
         <List />
       </ListContainer>
