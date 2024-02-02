@@ -53,7 +53,7 @@ const AppBar = styled('div')(({ theme }) => ({
   position: 'sticky',
   top: 0,
   left: 0,
-  zIndex: 10,
+  zIndex: 15,
   minHeight: '64px',
   width: '100%',
   backgroundColor: '#20a0ff',
@@ -291,7 +291,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
       <ChildrenWrapper>{children}</ChildrenWrapper>
 
       {isUserAuthenticated && (
-        <Drawer sx={{ zIndex: 11 }} anchor="left" open={isDrawerOpened} onClose={() => setIsDrawerOpened(false)}>
+        <Drawer sx={{ zIndex: 20 }} anchor="left" open={isDrawerOpened} onClose={() => setIsDrawerOpened(false)}>
           <Box sx={{ width: 250 }} role="presentation">
             <DrawerHeader>
               <CloseIcon onClick={() => setIsDrawerOpened(false)} />
