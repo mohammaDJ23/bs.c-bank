@@ -3,18 +3,15 @@ import { FC, PropsWithChildren, useEffect, useRef } from 'react';
 import { useAction } from '../hooks';
 
 const Container = styled('div')(({ theme }) => ({
-  width: '100vw',
-  height: '100vh',
+  width: '100%',
+  height: '100%',
   overflow: 'hidden',
 }));
 
 const Wrapper = styled('div')(({ theme }) => ({
   width: '100%',
-  height: 'calc(100% - 64px)',
+  height: '100%',
   overflow: 'auto',
-  [theme.breakpoints.down('sm')]: {
-    height: 'calc(100% - 48px)',
-  },
 }));
 
 const Content = styled('div')(({ theme }) => ({
@@ -53,7 +50,7 @@ const ListContainer: FC<PropsWithChildren> = ({ children }) => {
     <Container>
       <Wrapper ref={wrapperRef}>
         <Content>
-          <Box pb="16px">{children}</Box>
+          <Box>{children}</Box>
         </Content>
       </Wrapper>
     </Container>
