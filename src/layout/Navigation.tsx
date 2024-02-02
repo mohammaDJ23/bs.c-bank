@@ -50,7 +50,7 @@ interface NavigationItemObj {
 }
 
 const AppBar = styled('div')(({ theme }) => ({
-  position: 'fixed',
+  position: 'sticky',
   top: 0,
   left: 0,
   zIndex: 10,
@@ -79,11 +79,7 @@ const AppBar = styled('div')(({ theme }) => ({
 }));
 
 const ChildrenWrapper = styled('div')(({ theme }) => ({
-  marginTop: theme.spacing(8),
   transition: 'all 0.3s',
-  [theme.breakpoints.down('sm')]: {
-    marginTop: theme.spacing(6),
-  },
 }));
 
 const DrawerHeader = styled('div')(({ theme }) => ({
