@@ -49,7 +49,7 @@ export enum Pathes {
 export const routes = [
   { title: 'Dashboard', path: Pathes.DASHBOARD, element: <Dashboard />, needAuth: true },
   { title: 'Bills', path: Pathes.BILLS, element: <Bills />, needAuth: true },
-  { title: 'Bills', path: Pathes.ALL_BILLS, element: <AllBills />, needAuth: true },
+  { title: 'All bills', path: Pathes.ALL_BILLS, element: <AllBills />, needAuth: true },
   { title: 'Deleted bills', path: Pathes.DELETED_bILLS, element: <DeletedBills />, needAuth: true },
   { title: 'Users', path: Pathes.USERS, element: <Users />, needAuth: true },
   { path: Pathes.CHAT, element: <Chat />, needAuth: true },

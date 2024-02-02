@@ -50,10 +50,10 @@ interface NavigationItemObj {
 }
 
 const AppBar = styled('div')(({ theme }) => ({
-  position: 'fixed',
+  position: 'sticky',
   top: 0,
   left: 0,
-  zIndex: 10,
+  zIndex: 15,
   minHeight: '64px',
   width: '100%',
   backgroundColor: '#20a0ff',
@@ -79,11 +79,7 @@ const AppBar = styled('div')(({ theme }) => ({
 }));
 
 const ChildrenWrapper = styled('div')(({ theme }) => ({
-  marginTop: theme.spacing(8),
   transition: 'all 0.3s',
-  [theme.breakpoints.down('sm')]: {
-    marginTop: theme.spacing(6),
-  },
 }));
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -295,7 +291,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
       <ChildrenWrapper>{children}</ChildrenWrapper>
 
       {isUserAuthenticated && (
-        <Drawer sx={{ zIndex: 11 }} anchor="left" open={isDrawerOpened} onClose={() => setIsDrawerOpened(false)}>
+        <Drawer sx={{ zIndex: 20 }} anchor="left" open={isDrawerOpened} onClose={() => setIsDrawerOpened(false)}>
           <Box sx={{ width: 250 }} role="presentation">
             <DrawerHeader>
               <CloseIcon onClick={() => setIsDrawerOpened(false)} />
