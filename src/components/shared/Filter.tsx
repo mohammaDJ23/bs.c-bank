@@ -45,18 +45,19 @@ const Filter: FC<FilterImporation> = ({ children, name }) => {
       touchStartXPositionRef.current = event.changedTouches[0].clientX;
     }
 
-    function touchMoveProcess(event: TouchEvent) {
-      if (event.changedTouches[0].clientX < touchStartXPositionRef.current) {
-        touchStartXPositionRef.current = event.changedTouches[0].clientX;
-        actions.showModal(name);
-      }
-    }
+    function touchMoveProcess(event: TouchEvent) {}
 
     function touchEndProcess(event: TouchEvent) {
-      if (event.changedTouches[0].clientX > touchStartXPositionRef.current) {
-        touchStartXPositionRef.current = 0;
-        actions.hideModal(name);
+      if (event.changedTouches[0].clientX < touchStartXPositionRef.current) {
+        if (touchStartXPositionRef.current - event.changedTouches[0].clientX > 50) {
+          actions.showModal(name);
+        }
+      } else {
+        if (event.changedTouches[0].clientX - touchStartXPositionRef.current > 20) {
+          actions.hideModal(name);
+        }
       }
+      touchStartXPositionRef.current = 0;
     }
 
     function keyupProcess(event: KeyboardEvent) {
