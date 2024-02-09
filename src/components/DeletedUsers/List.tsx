@@ -90,11 +90,13 @@ const List: FC = () => {
               <UserCard key={index} index={index} user={user} listInstance={deletedUserListInstance} />
             ))}
           </MuiList>
-          <Pagination
-            page={deletedUserListInstance.getPage()}
-            count={deletedUserListInstance.getCount()}
-            onPageChange={changePage}
-          />
+          {deletedUserListInstance.getTotal() > deletedUserListInstance.getTake() && (
+            <Pagination
+              page={deletedUserListInstance.getPage()}
+              count={deletedUserListInstance.getCount()}
+              onPageChange={changePage}
+            />
+          )}
         </>
       )}
 
