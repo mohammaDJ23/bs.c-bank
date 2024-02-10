@@ -89,7 +89,13 @@ const List: FC = () => {
             ))}
           </MuiList>
 
-          <Pagination page={billListInstance.getPage()} count={billListInstance.getCount()} onPageChange={changePage} />
+          {billListInstance.getTotal() > billListInstance.getTake() && (
+            <Pagination
+              page={billListInstance.getPage()}
+              count={billListInstance.getCount()}
+              onPageChange={changePage}
+            />
+          )}
         </>
       )}
 
