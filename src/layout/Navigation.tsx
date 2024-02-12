@@ -304,12 +304,17 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
                 const navigationEl = (
                   <ListItem
                     onClick={() => {
-                      setIsDrawerOpened(false);
-
-                      if (item.path && item.redirectPath && !isPathActive(item))
-                        navigate(item.redirectPath, item.navigateOptions);
-
-                      if (item.onClick) item.onClick.call({});
+                      new Promise<boolean>((resolve) => {
+                        setIsDrawerOpened(false);
+                        resolve(true);
+                      })
+                        .then(() => {
+                          if (item.onClick) item.onClick.call({});
+                        })
+                        .then(() => {
+                          if (item.path && item.redirectPath && !isPathActive(item))
+                            navigate(item.redirectPath, item.navigateOptions);
+                        });
                     }}
                     key={index}
                     disablePadding
