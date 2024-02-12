@@ -23,20 +23,36 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const auth = useAuth();
   const isUserOnline = auth.isUserOnline(user.id);
   const isCurrentOwner = auth.isCurrentOwner();
+  const isCurrentAdmin = auth.isCurrentAdmin();
+  const isCurrentUser = auth.isCurrentUser();
+  const isOwner = auth.isOwner(user);
   const hasRoleAuthorized = auth.hasRoleAuthorized(user);
   const hasCreatedByOwnerRoleAuthorized = auth.hasCreatedByOwnerRoleAuthorized(user);
   const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(user);
   const isDeleteUserApiProcessing = request.isApiProcessing(DeleteUserApi);
   const isDownloadBillReportApiProcessing = request.isApiProcessing(DownloadBillReportApi);
   const connectionSocket = selectors.userServiceSocket.connection;
-  const options = [
-    {
-      label: 'Update',
-      path: isCurrentOwner
-        ? getDynamicPath(Pathes.UPDATE_USER_BY_OWNER, { id: user.id })
-        : getDynamicPath(Pathes.UPDATE_USER, { id: user.id }),
-    },
-  ];
+
+  const getOptions = useCallback(() => {
+    const options = [
+      {
+        label: 'Update',
+        path: isCurrentOwner
+          ? getDynamicPath(Pathes.UPDATE_USER_BY_OWNER, { id: user.id })
+          : getDynamicPath(Pathes.UPDATE_USER, { id: user.id }),
+      },
+    ];
+
+    if (isUserEqualToCurrentUser || ((isCurrentAdmin || isCurrentUser) && isOwner) || isCurrentOwner) {
+      options.push({
+        label: 'Start a conversation',
+        path: `${Pathes.CHAT}?uid=${user.id}`,
+      });
+    }
+
+    return options;
+  }, []);
+  const options = getOptions();
 
   useEffect(() => {
     if (connectionSocket) {
@@ -93,18 +109,18 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const deleteByUser = useCallback(() => {
     request
       .build<UserObj, number>(new DeleteUserApi())
-      .then((response) => {
+      .then(response => {
         actions.hideModal(ModalNames.CONFIRMATION);
         LocalStorage.clear();
         navigate(Pathes.LOGIN);
       })
-      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+      .catch(err => actions.hideModal(ModalNames.CONFIRMATION));
   }, []);
 
   const deleteByOwner = useCallback(() => {
     request
       .build<UserObj, number>(new DeleteUserByOwnerApi(user.id))
-      .then((response) => {
+      .then(response => {
         actions.hideModal(ModalNames.CONFIRMATION);
         if (isUserEqualToCurrentUser) {
           LocalStorage.clear();
@@ -116,13 +132,13 @@ const Details: FC<DetailsImporation> = ({ user }) => {
           navigate(Pathes.USERS);
         }
       })
-      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+      .catch(err => actions.hideModal(ModalNames.CONFIRMATION));
   }, [user, isUserEqualToCurrentUser]);
 
   const downloadBillReport = useCallback(() => {
     if (isDownloadBillReportApiProcessing) return;
 
-    request.build<Blob>(new DownloadBillReportApi(user.id)).then((response) => {
+    request.build<Blob>(new DownloadBillReportApi(user.id)).then(response => {
       const href = URL.createObjectURL(response.data);
       const link = document.createElement('a');
       link.href = href;
@@ -161,7 +177,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
                 <MoreVert />
               </IconButton>
               <Menu anchorEl={anchorEl} open={open} onClick={onMenuClose}>
-                {options.map((option) => (
+                {options.map(option => (
                   <MenuItem key={option.path} onClick={onMenuClick(option)}>
                     {option.label}
                   </MenuItem>
