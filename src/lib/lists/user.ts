@@ -1,4 +1,4 @@
-import { ListInstance, ListObj } from './list';
+import { BaseList } from './list';
 import { UserRoles } from '../auth';
 
 export interface UserObj {
@@ -32,16 +32,8 @@ export interface DeletedUserObj extends UserObj {
   parent: UserObj;
 }
 
-export class UserList implements ListInstance {
-  constructor(
-    public list: ListObj<UserObj> = {},
-    public total: number = 0,
-    public page: number = 1,
-    public take: number = 10
-  ) {
-    this.list = list;
-    this.take = take;
-    this.page = page;
-    this.total = total;
+export class UserList<T = UserObj> extends BaseList<T> {
+  constructor(arg: Partial<BaseList<T>> = {}) {
+    super(arg);
   }
 }

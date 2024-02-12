@@ -29,7 +29,7 @@ export class Request<R = any, D = any> implements RootApiObj<D> {
 
   requestInterceptors() {
     this.axiosInstance.interceptors.request.use(
-      config => {
+      (config) => {
         if (!isUserAuthenticated()) {
           LocalStorage.clear();
           history.push(Pathes.LOGIN);
@@ -37,24 +37,24 @@ export class Request<R = any, D = any> implements RootApiObj<D> {
 
         return config;
       },
-      error => Promise.reject(error)
+      (error) => Promise.reject(error)
     );
 
     this.axiosInstance.interceptors.request.use(
-      config => {
+      (config) => {
         if (config.headers) {
           config.headers.Authorization = `Bearer ${getToken()}`;
         }
 
         return config;
       },
-      error => Promise.reject(error)
+      (error) => Promise.reject(error)
     );
   }
 
   responseInterceptors() {
     this.axiosInstance.interceptors.response.use(
-      response => response,
+      (response) => response,
       (error: AxiosError<ErrorObj>) => {
         if (error.response?.data?.statusCode === 401) {
           LocalStorage.clear();

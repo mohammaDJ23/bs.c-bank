@@ -36,32 +36,33 @@ interface FilterImporation extends PropsWithChildren {
 
 const Filter: FC<FilterImporation> = ({ children, name }) => {
   const touchStartXPositionRef = useRef<number>(0);
-  const { showModal, hideModal } = useAction();
-  const { modals } = useSelector();
-  const isFilterOpened = !!modals[name];
+  const actions = useAction();
+  const selectors = useSelector();
+  const isFilterOpened = !!selectors.modals[name];
 
   useEffect(() => {
     function touchStartProcess(event: TouchEvent) {
       touchStartXPositionRef.current = event.changedTouches[0].clientX;
     }
 
-    function touchMoveProcess(event: TouchEvent) {
-      if (event.changedTouches[0].clientX < touchStartXPositionRef.current) {
-        touchStartXPositionRef.current = event.changedTouches[0].clientX;
-        showModal(name);
-      }
-    }
+    function touchMoveProcess(event: TouchEvent) {}
 
     function touchEndProcess(event: TouchEvent) {
-      if (event.changedTouches[0].clientX > touchStartXPositionRef.current) {
-        touchStartXPositionRef.current = 0;
-        hideModal(name);
+      if (event.changedTouches[0].clientX < touchStartXPositionRef.current) {
+        if (touchStartXPositionRef.current - event.changedTouches[0].clientX > 50) {
+          actions.showModal(name);
+        }
+      } else {
+        if (event.changedTouches[0].clientX - touchStartXPositionRef.current > 20) {
+          actions.hideModal(name);
+        }
       }
+      touchStartXPositionRef.current = 0;
     }
 
     function keyupProcess(event: KeyboardEvent) {
       if (event.key === 'Escape') {
-        hideModal(name);
+        actions.hideModal(name);
       }
     }
 
@@ -80,7 +81,7 @@ const Filter: FC<FilterImporation> = ({ children, name }) => {
   return (
     <FiltersWrapper isactive={isFilterOpened ? 'true' : 'false'}>
       <FiltersContent>
-        <Box display="flex" alignItems="center" justifyContent="end" onClick={() => hideModal(name)}>
+        <Box display="flex" alignItems="center" justifyContent="end" onClick={() => actions.hideModal(name)}>
           <Close />
         </Box>
         {children}

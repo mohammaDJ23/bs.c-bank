@@ -3,18 +3,15 @@ import { FC, PropsWithChildren, useEffect, useRef } from 'react';
 import { useAction } from '../hooks';
 
 const Container = styled('div')(({ theme }) => ({
-  width: '100vw',
-  height: '100vh',
+  width: '100%',
+  height: '100%',
   overflow: 'hidden',
 }));
 
 const Wrapper = styled('div')(({ theme }) => ({
   width: '100%',
-  height: 'calc(100% - 64px)',
+  height: '100%',
   overflow: 'auto',
-  [theme.breakpoints.down('sm')]: {
-    height: 'calc(100% - 48px)',
-  },
 }));
 
 const Content = styled('div')(({ theme }) => ({
@@ -23,7 +20,7 @@ const Content = styled('div')(({ theme }) => ({
   margin: 'auto',
   wordBreak: 'break-word',
   transition: 'all 0.3s',
-  padding: '0 16px 32px 16px',
+  padding: '0 16px 16px 16px',
   [theme.breakpoints.up('xl')]: {
     maxWidth: '1000px',
   },
@@ -35,17 +32,16 @@ const Content = styled('div')(({ theme }) => ({
   },
   [theme.breakpoints.down('md')]: {
     maxWidth: '700px',
-    padding: '0 16px 16px 16px',
   },
 }));
 
 const ListContainer: FC<PropsWithChildren> = ({ children }) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const { setListContainerElement } = useAction();
+  const actions = useAction();
 
   useEffect(() => {
     if (wrapperRef.current) {
-      setListContainerElement(wrapperRef.current);
+      actions.setListContainerElement(wrapperRef.current);
     }
   }, []);
 
@@ -53,7 +49,7 @@ const ListContainer: FC<PropsWithChildren> = ({ children }) => {
     <Container>
       <Wrapper ref={wrapperRef}>
         <Content>
-          <Box pb="16px">{children}</Box>
+          <Box>{children}</Box>
         </Content>
       </Wrapper>
     </Container>

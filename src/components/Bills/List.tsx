@@ -11,42 +11,57 @@ import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const billListInstance = usePaginationList(BillList);
   const billListFiltersFormInstance = useForm(BillListFilters);
   const billListFiltersForm = billListFiltersFormInstance.getForm();
-  const billListInfo = billListInstance.getFullInfo();
-  const isInitialBillsApiProcessing = isInitialApiProcessing(BillsApi);
-  const isBillsApiProcessing = isApiProcessing(BillsApi);
+  const isInitialBillsApiProcessing = request.isInitialApiProcessing(BillsApi);
+  const isBillsApiProcessing = request.isApiProcessing(BillsApi);
 
-  const getBillsList = useCallback(
+  const getBillsListApi = useCallback(
     (options: Partial<BillsApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: billListInfo.take, page: billListInfo.page, ...options },
-        billListFiltersForm
-      );
-      const billsApi = new BillsApi<BillObj>(apiData);
-      billsApi.setInitialApi(!!apiData.isInitialApi);
-
-      request<[BillObj[], number], BillObj>(billsApi).then(response => {
-        const [list, total] = response.data;
-        billListInstance.insertNewList({ list, total, page: apiData.page });
+      return new BillsApi({
+        take: billListInstance.getTake(),
+        page: billListInstance.getPage(),
+        filters: {
+          q: billListFiltersForm.q,
+          fromDate: billListFiltersForm.fromDate,
+          toDate: billListFiltersForm.toDate,
+        },
+        ...options,
       });
     },
-    [billListInfo, billListInstance, billListFiltersForm, request]
+    [billListFiltersForm]
+  );
+
+  const getBillsList = useCallback(
+    (api: BillsApi) => {
+      request.build<[BillObj[], number], BillObj>(api).then((response) => {
+        const [list, total] = response.data;
+        billListInstance.updateAndConcatList(list, api.api.params.page);
+        billListInstance.updatePage(api.api.params.page);
+        billListInstance.updateTotal(total);
+      });
+    },
+    [billListInstance, billListFiltersForm, request]
   );
 
   useEffect(() => {
-    getBillsList({ isInitialApi: true });
+    const api = getBillsListApi();
+    api.setInitialApi();
+    getBillsList(api);
   }, []);
 
   const changePage = useCallback(
     (newPage: number) => {
-      billListInstance.onPageChange(newPage);
+      billListInstance.updatePage(newPage);
 
       if (billListInstance.isNewPageEqualToCurrentPage(newPage) || isBillsApiProcessing) return;
 
-      if (!billListInstance.isNewPageExist(newPage)) getBillsList({ page: newPage });
+      if (!billListInstance.isNewPageExist(newPage)) {
+        const api = getBillsListApi({ page: newPage });
+        getBillsList(api);
+      }
     },
     [isBillsApiProcessing, billListInstance, getBillsList]
   );
@@ -54,26 +69,33 @@ const List: FC = () => {
   const billListFilterFormSubmition = useCallback(() => {
     billListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
-      billListInstance.onPageChange(newPage);
-      getBillsList({ page: newPage });
+      billListInstance.updatePage(newPage);
+      const api = getBillsListApi({ page: newPage });
+      getBillsList(api);
     });
   }, [billListFiltersFormInstance, billListInstance, getBillsList]);
 
   return (
     <>
       {isInitialBillsApiProcessing || isBillsApiProcessing ? (
-        <BillsSkeleton take={billListInfo.take} />
+        <BillsSkeleton take={billListInstance.getTake()} />
       ) : billListInstance.isListEmpty() ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {billListInfo.list.map((bill, index) => (
-              <BillCard key={index} index={index} bill={bill} listInfo={billListInfo} />
+            {billListInstance.getList().map((bill, index) => (
+              <BillCard key={index} index={index} bill={bill} listInstance={billListInstance} />
             ))}
           </MuiList>
 
-          <Pagination page={billListInfo.page} count={billListInfo.count} onPageChange={changePage} />
+          {billListInstance.getTotal() > billListInstance.getTake() && (
+            <Pagination
+              page={billListInstance.getPage()}
+              count={billListInstance.getCount()}
+              onPageChange={changePage}
+            />
+          )}
         </>
       )}
 
@@ -85,7 +107,7 @@ const List: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             billListFilterFormSubmition();
           }}
@@ -96,7 +118,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={billListFiltersForm.q}
-            onChange={event => billListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => billListFiltersFormInstance.onChange('q', event.target.value.trim())}
             helperText={billListFiltersFormInstance.getInputErrorMessage('q')}
             error={billListFiltersFormInstance.isInputInValid('q')}
             name="q"
@@ -108,7 +130,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={billListFiltersForm.fromDate ? isoDate(billListFiltersForm.fromDate) : ''}
-            onChange={event => billListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
+            onChange={(event) => billListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
             helperText={billListFiltersFormInstance.getInputErrorMessage('fromDate')}
             error={billListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
@@ -120,7 +142,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={billListFiltersForm.toDate ? isoDate(billListFiltersForm.toDate) : ''}
-            onChange={event => billListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
+            onChange={(event) => billListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
             helperText={billListFiltersFormInstance.getInputErrorMessage('toDate')}
             error={billListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}

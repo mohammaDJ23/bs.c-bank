@@ -8,24 +8,22 @@ import Skeleton from './Skeleton';
 import { UserApi } from '../../apis';
 import NotFound from './NotFound';
 import Navigation from '../../layout/Navigation';
-import HasOwnerRoleAuthorizedProvider from '../shared/HasOwnerRoleAuthorizedProvider';
 
 const UpdateUserByOwnerContent: FC = () => {
   const params = useParams();
-  const { setSpecificDetails } = useAction();
-  const { specificDetails } = useSelector();
-  const { request, isInitialApiProcessing } = useRequest();
+  const actions = useAction();
+  const selectors = useSelector();
+  const request = useRequest();
   const updateUserByOwnerFormInstance = useForm(UpdateUserByOwner);
-  const isInitialUserApiProcessing = isInitialApiProcessing(UserApi);
+  const isInitialUserApiProcessing = request.isInitialApiProcessing(UserApi);
 
   useEffect(() => {
     const userId = params.id;
     if (userId) {
-      request<UserObj, number>(new UserApi(+userId).setInitialApi()).then((response) => {
-        setSpecificDetails('user', response.data);
+      request.build<UserObj, number>(new UserApi(+userId).setInitialApi()).then((response) => {
+        actions.setSpecificDetails('user', response.data);
         updateUserByOwnerFormInstance.initializeForm(
           new UpdateUserByOwner({
-            id: response.data.id,
             firstName: response.data.firstName,
             lastName: response.data.lastName,
             email: response.data.email,
@@ -42,10 +40,8 @@ const UpdateUserByOwnerContent: FC = () => {
       <FormContainer>
         {isInitialUserApiProcessing ? (
           <Skeleton />
-        ) : specificDetails.user ? (
-          <HasOwnerRoleAuthorizedProvider user={specificDetails.user}>
-            <Form formInstance={updateUserByOwnerFormInstance} />
-          </HasOwnerRoleAuthorizedProvider>
+        ) : selectors.specificDetails.user ? (
+          <Form formInstance={updateUserByOwnerFormInstance} />
         ) : (
           <NotFound />
         )}

@@ -13,6 +13,8 @@ import AuthProtectionProvider from './lib/providers/AuthProtectionProvider';
 import RedirectionProvider from './lib/providers/RedirectionProvider';
 import { createBrowserHistory } from 'history';
 import { SnackbarProvider } from 'notistack';
+import UserServiceConnectionSocketProvider from './lib/providers/userServiceConnectionSocketProvider';
+import LogoutUserSocketEventProvider from './lib/providers/LogoutUserSocketEventProvider';
 
 export const history = createBrowserHistory();
 
@@ -25,7 +27,7 @@ const App: FC = () => {
           <SnackbarProvider
             dense
             maxSnack={Infinity}
-            anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
             style={{ maxWidth: '300px' }}
           >
             <HistoryProvider history={history}>
@@ -37,7 +39,11 @@ const App: FC = () => {
                     element={
                       route.needAuth ? (
                         <AuthProtectionProvider>
-                          <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
+                          <UserServiceConnectionSocketProvider>
+                            <LogoutUserSocketEventProvider>
+                              <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
+                            </LogoutUserSocketEventProvider>
+                          </UserServiceConnectionSocketProvider>
                         </AuthProtectionProvider>
                       ) : (
                         <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>

@@ -1,7 +1,9 @@
 import { DefineRules, DefineVal, DefineValidation } from '../decorators';
 import { getTime } from '../utilFunctions';
-import { isReceiver, isAmount, isDescription, isDate } from '../validations';
-import { Form } from './formConstructor';
+import { isReceiver, isAmount, isDescription, isDate, isConsumers } from '../validations';
+import { Form, IgnoreFormConstructor } from './formConstructor';
+
+export interface UpdateBillObj extends IgnoreFormConstructor<UpdateBill> {}
 
 export class UpdateBill extends Form {
   @DefineVal()
@@ -17,6 +19,11 @@ export class UpdateBill extends Form {
   @DefineValidation()
   receiver: string = '';
 
+  @DefineRules([isConsumers])
+  @DefineVal()
+  @DefineValidation()
+  consumers: string[] = [];
+
   @DefineRules([isDescription])
   @DefineVal()
   @DefineValidation()
@@ -31,6 +38,7 @@ export class UpdateBill extends Form {
     id = '0',
     amount = '',
     receiver = '',
+    consumers = [],
     description = '',
     date = getTime(),
   }: Partial<Omit<UpdateBill, keyof Form>> = {}) {
@@ -38,6 +46,7 @@ export class UpdateBill extends Form {
     this.id = id;
     this.amount = amount;
     this.receiver = receiver;
+    this.consumers = consumers;
     this.description = description;
     this.date = date;
   }

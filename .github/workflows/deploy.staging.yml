@@ -39,13 +39,16 @@ jobs:
             CONTAINER_PUBLIC_PATH=${{ secrets.CONTAINER_PUBLIC_PATH }}
             AUTH_PUBLIC_PATH=${{ secrets.AUTH_PUBLIC_PATH }}
             BANK_PUBLIC_PATH=${{ secrets.BANK_PUBLIC_PATH }}
+            CHAT_PUBLIC_PATH=${{ secrets.CHAT_PUBLIC_PATH }}
             CACHE_SECRET_KEY=${{ secrets.STAGING_CACHE_SECRET_KEY }}
             AUTH_SERVICE=${{ secrets.STAGING_AUTH_SERVICE }}
             BANK_SERVICE=${{ secrets.STAGING_BANK_SERVICE }}
             USER_SERVICE=${{ secrets.STAGING_USER_SERVICE }}
+            NOTIFICATION_SERVICE=${{ secrets.STAGING_NOTIFICATION_SERVICE }}
             CONTAINER_APP=${{ secrets.STAGING_CONTAINER_APP }}
             AUTH_APP=${{ secrets.STAGING_AUTH_APP }}
             BANK_APP=${{ secrets.STAGING_BANK_APP }}
+            CHAT_APP=${{ secrets.STAGING_CHAT_APP }}
             PORT=${{ secrets.STAGING_PORT }}
 
   deploying-ssh:

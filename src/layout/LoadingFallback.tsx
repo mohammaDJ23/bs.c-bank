@@ -1,10 +1,10 @@
 import { FC } from 'react';
-import { ClipLoader } from 'react-spinners';
+import { SyncLoader } from 'react-spinners';
 
 const LoadingFallback: FC = () => {
   return (
-    <ClipLoader
-      size="30px"
+    <SyncLoader
+      size="10px"
       color="#20a0ff"
       cssOverride={{
         position: 'fixed',

@@ -1,121 +1,125 @@
 import { useMemo } from 'react';
-import { Constructor, ListInstance, ListInstanceConstructor } from '../lib';
+import { BaseList, ElementInArrayType, ListAsObjectType, ListType } from '../lib';
 import { useAction, useSelector } from './';
 
-interface InsertNewListOptions<T = any> {
-  page?: number;
-  list: T[];
-  total: number;
-}
-
-export function usePaginationList<T>(listInstance: ListInstanceConstructor<ListInstance<T>>) {
-  const { setPaginationList, changePaginationListPage } = useAction();
-  const { listContainer, paginationList } = useSelector();
+export function usePaginationList<
+  Instance extends BaseList,
+  Lists = ListType<Instance>,
+  Item = ElementInArrayType<Lists>
+>(listInstance: Constructor<Instance>) {
+  const actions = useAction();
+  const selectors = useSelector();
 
   return useMemo(
     function () {
-      function setList<R extends ListInstance>(newListInstance: R) {
-        setPaginationList(newListInstance);
-      }
-
-      function onPageChange(page: number) {
-        changePaginationListPage(listInstance, page);
-        if (listContainer.element) {
-          listContainer.element.scrollTo({ behavior: 'smooth', top: 0 });
+      function getInstance(): Instance {
+        const instance = selectors.paginationList[listInstance.name];
+        if (instance) {
+          return instance as Instance;
         }
+        throw new Error('The list instance is not exist.');
       }
 
-      function getListInstance(): InstanceType<typeof listInstance> {
-        return paginationList[listInstance.name];
+      function updateList(list: Item[]): void {
+        const instance = getInstance();
+        const newList = { [instance.page]: list };
+        actions.updateListPaginationList(listInstance, newList);
       }
 
-      function isListEmpty(): boolean {
-        const listInstance = getListInstance();
-        return Object.keys(listInstance.list).length <= 0;
+      function updateAndConcatList(list: Item[], page: number): void {
+        const instance = getInstance();
+        const newList = Object.assign(instance.list, { [page]: list });
+        actions.updateListPaginationList(listInstance, newList);
       }
 
-      function getCurrentList() {
-        const listInstance = getListInstance();
-        return listInstance.list[listInstance.page] || [];
+      function updateListAsObject(list: ListAsObjectType<Item>): void {
+        const instance = getInstance();
+        const newListAsObject = Object.assign(instance.listAsObject, list);
+        actions.updateListAsObjectPaginationList(listInstance, newListAsObject);
       }
 
-      function getCount() {
-        const listInstance = getListInstance();
+      function updateTake(take: number): void {
+        actions.updateTakePaginationList(listInstance, take);
+      }
+
+      function updatePage(page: number): void {
+        actions.updatePagePaginationList(listInstance, page);
+      }
+
+      function updateTotal(total: number): void {
+        actions.updateTotalPaginationList(listInstance, total);
+      }
+
+      function getList(): Lists {
+        const instance = getInstance();
+        return (instance.list[instance.page] || []) as Lists;
+      }
+
+      function getInfinityList(): Lists {
+        const instance = getInstance();
+        return Object.values(instance.list).flat() as Lists;
+      }
+
+      function getListAsObject(): ListAsObjectType<Item> {
+        const instance = getInstance();
+        return instance.listAsObject;
+      }
+
+      function getPage(): number {
+        const instance = getInstance();
+        return instance.page;
+      }
+
+      function getTake(): number {
+        const instance = getInstance();
+        return instance.take;
+      }
+
+      function getTotal(): number {
+        const instance = getInstance();
+        return instance.total;
+      }
+
+      function getCount(): number {
+        const listInstance = getInstance();
         return Math.ceil(listInstance.total / listInstance.take);
       }
 
-      function getPage() {
-        const listInstance = getListInstance();
-        return listInstance.page;
+      function isListEmpty(): boolean {
+        const total = getTotal();
+        return total <= 0;
       }
 
-      function getTake() {
-        const listInstance = getListInstance();
-        return listInstance.take;
-      }
-
-      function getTotal() {
-        const listInstance = getListInstance();
-        return listInstance.total;
-      }
-
-      function getFullInfo() {
-        return {
-          list: getCurrentList(),
-          page: getPage(),
-          take: getTake(),
-          total: getTotal(),
-          count: getCount(),
-          isListEmpty: isListEmpty(),
-          lists: getListInstance().list,
-        };
-      }
-
-      function insertNewList({ page, total, list }: InsertNewListOptions<T>) {
-        const listInstance = getListInstance();
-        const listInfo = getFullInfo();
-
-        page = page || listInfo.page;
-
-        const constructedList = new (listInstance.constructor as Constructor<ListInstance<T>>)();
-
-        if (list.length <= 0 && total <= 0) {
-          constructedList.list = {};
-        } else {
-          constructedList.list = Object.assign(listInfo.lists, { [page]: list });
-        }
-
-        constructedList.total = total;
-        constructedList.page = page;
-        setList(constructedList);
-      }
-
-      function isNewPageEqualToCurrentPage(newPage: number) {
-        const listInfo = getFullInfo();
+      function isNewPageEqualToCurrentPage(newPage: number): boolean {
+        const listInfo = getInstance();
         return newPage === listInfo.page;
       }
 
-      function isNewPageExist(newPage: number) {
-        const listInfo = getFullInfo();
-        return !!listInfo.lists[newPage];
+      function isNewPageExist(newPage: number): boolean {
+        const listInfo = getInstance();
+        return !!listInfo.list[newPage];
       }
 
       return {
-        setList,
-        onPageChange,
-        getListInstance,
-        isListEmpty,
-        getCurrentList,
-        getCount,
+        getInstance,
+        updateList,
+        updateAndConcatList,
+        updateListAsObject,
+        updateTake,
+        updatePage,
+        updateTotal,
+        getList,
+        getListAsObject,
         getPage,
         getTake,
         getTotal,
-        getFullInfo,
-        insertNewList,
+        isListEmpty,
+        getInfinityList,
         isNewPageEqualToCurrentPage,
         isNewPageExist,
+        getCount,
       };
     },
-    [listContainer, paginationList, listInstance, setPaginationList, changePaginationListPage]
+    [selectors.paginationList[listInstance.name]]
   );
 }

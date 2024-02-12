@@ -2,11 +2,11 @@ import { Fragment, useEffect, FC, PropsWithChildren } from 'react';
 import { useAction } from '../../hooks';
 
 const ClearStateProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { clearState } = useAction();
+  const actions = useAction();
 
   useEffect(() => {
     return () => {
-      clearState();
+      actions.clearState();
     };
   }, []);
 

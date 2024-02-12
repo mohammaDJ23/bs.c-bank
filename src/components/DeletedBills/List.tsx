@@ -11,42 +11,58 @@ import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const request = useRequest();
   const deletedBillListInstance = usePaginationList(DeletedBillList);
   const deletedBillListFiltersFormInstance = useForm(DeletedBillListFilters);
   const deletedBillListFiltersForm = deletedBillListFiltersFormInstance.getForm();
-  const deletedBillListInfo = deletedBillListInstance.getFullInfo();
-  const isInitialDeletedBillListApiProcessing = isInitialApiProcessing(DeletedBillListApi);
-  const isDeletedBillListApiProcessing = isApiProcessing(DeletedBillListApi);
+  const isInitialDeletedBillListApiProcessing = request.isInitialApiProcessing(DeletedBillListApi);
+  const isDeletedBillListApiProcessing = request.isApiProcessing(DeletedBillListApi);
 
-  const getDeletedBillList = useCallback(
+  const getDeletedBillListApi = useCallback(
     (options: Partial<DeletedBillListApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: deletedBillListInfo.take, page: deletedBillListInfo.page, ...options },
-        deletedBillListFiltersForm
-      );
-      const deletedBillListApi = new DeletedBillListApi<BillObj>(apiData);
-      deletedBillListApi.setInitialApi(!!apiData.isInitialApi);
-
-      request<[BillObj[], number]>(deletedBillListApi).then(response => {
-        const [list, total] = response.data;
-        deletedBillListInstance.insertNewList({ list, total, page: apiData.page });
+      return new DeletedBillListApi({
+        take: deletedBillListInstance.getTake(),
+        page: deletedBillListInstance.getPage(),
+        filters: {
+          q: deletedBillListFiltersForm.q,
+          fromDate: deletedBillListFiltersForm.fromDate,
+          toDate: deletedBillListFiltersForm.toDate,
+          deletedDate: deletedBillListFiltersForm.deletedDate,
+        },
+        ...options,
       });
     },
-    [deletedBillListInfo, deletedBillListInstance, deletedBillListFiltersForm, request]
+    [deletedBillListFiltersForm]
+  );
+
+  const getDeletedBillList = useCallback(
+    (api: DeletedBillListApi) => {
+      request.build<[BillObj[], number]>(api).then((response) => {
+        const [list, total] = response.data;
+        deletedBillListInstance.updateAndConcatList(list, api.api.params.page);
+        deletedBillListInstance.updatePage(api.api.params.page);
+        deletedBillListInstance.updateTotal(total);
+      });
+    },
+    [deletedBillListInstance, deletedBillListFiltersForm, request]
   );
 
   useEffect(() => {
-    getDeletedBillList({ isInitialApi: true });
+    const api = getDeletedBillListApi();
+    api.setInitialApi();
+    getDeletedBillList(api);
   }, []);
 
   const changePage = useCallback(
     (newPage: number) => {
-      deletedBillListInstance.onPageChange(newPage);
+      deletedBillListInstance.updatePage(newPage);
 
       if (deletedBillListInstance.isNewPageEqualToCurrentPage(newPage) || isDeletedBillListApiProcessing) return;
 
-      if (!deletedBillListInstance.isNewPageExist(newPage)) getDeletedBillList({ page: newPage });
+      if (!deletedBillListInstance.isNewPageExist(newPage)) {
+        const api = getDeletedBillListApi({ page: newPage });
+        getDeletedBillList(api);
+      }
     },
     [isDeletedBillListApiProcessing, deletedBillListInstance, getDeletedBillList]
   );
@@ -54,26 +70,33 @@ const List: FC = () => {
   const deletedBillListFilterFormSubmition = useCallback(() => {
     deletedBillListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
-      deletedBillListInstance.onPageChange(newPage);
-      getDeletedBillList({ page: newPage });
+      deletedBillListInstance.updatePage(newPage);
+      const api = getDeletedBillListApi({ page: newPage });
+      getDeletedBillList(api);
     });
   }, [deletedBillListFiltersFormInstance, deletedBillListInstance, getDeletedBillList]);
 
   return (
     <>
       {isInitialDeletedBillListApiProcessing || isDeletedBillListApiProcessing ? (
-        <BillsSkeleton take={deletedBillListInfo.take} />
+        <BillsSkeleton take={deletedBillListInstance.getTake()} />
       ) : deletedBillListInstance.isListEmpty() ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {deletedBillListInfo.list.map((bill, index) => (
-              <BillCard key={index} index={index} bill={bill} listInfo={deletedBillListInfo} />
+            {deletedBillListInstance.getList().map((bill, index) => (
+              <BillCard key={index} index={index} bill={bill} listInstance={deletedBillListInstance} />
             ))}
           </MuiList>
 
-          <Pagination page={deletedBillListInfo.page} count={deletedBillListInfo.count} onPageChange={changePage} />
+          {deletedBillListInstance.getTotal() > deletedBillListInstance.getTake() && (
+            <Pagination
+              page={deletedBillListInstance.getPage()}
+              count={deletedBillListInstance.getCount()}
+              onPageChange={changePage}
+            />
+          )}
         </>
       )}
 
@@ -85,7 +108,7 @@ const List: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             deletedBillListFilterFormSubmition();
           }}
@@ -96,7 +119,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={deletedBillListFiltersForm.q}
-            onChange={event => deletedBillListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => deletedBillListFiltersFormInstance.onChange('q', event.target.value.trim())}
             helperText={deletedBillListFiltersFormInstance.getInputErrorMessage('q')}
             error={deletedBillListFiltersFormInstance.isInputInValid('q')}
             name="q"
@@ -108,7 +131,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedBillListFiltersForm.fromDate ? isoDate(deletedBillListFiltersForm.fromDate) : ''}
-            onChange={event => deletedBillListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
+            onChange={(event) => deletedBillListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
             helperText={deletedBillListFiltersFormInstance.getInputErrorMessage('fromDate')}
             error={deletedBillListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
@@ -120,7 +143,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedBillListFiltersForm.toDate ? isoDate(deletedBillListFiltersForm.toDate) : ''}
-            onChange={event => deletedBillListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
+            onChange={(event) => deletedBillListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
             helperText={deletedBillListFiltersFormInstance.getInputErrorMessage('toDate')}
             error={deletedBillListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}
@@ -132,7 +155,9 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={deletedBillListFiltersForm.deletedDate ? isoDate(deletedBillListFiltersForm.deletedDate) : ''}
-            onChange={event => deletedBillListFiltersFormInstance.onChange('deletedDate', getTime(event.target.value))}
+            onChange={(event) =>
+              deletedBillListFiltersFormInstance.onChange('deletedDate', getTime(event.target.value))
+            }
             helperText={deletedBillListFiltersFormInstance.getInputErrorMessage('deletedDate')}
             error={deletedBillListFiltersFormInstance.isInputInValid('deletedDate')}
             InputLabelProps={{ shrink: true }}

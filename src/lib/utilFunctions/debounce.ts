@@ -1,12 +1,11 @@
-export function debounce(debounceTimer: number, cb: (...args: any) => any) {
-  let initialDate = new Date().getTime();
-
-  return function (...args: any[]): any {
-    const tempDate = new Date().getTime();
-
-    if (initialDate < tempDate) {
-      cb.apply(window, args);
-      initialDate = tempDate + debounceTimer;
+export function debounce(timeout = 500) {
+  let timer: undefined | NodeJS.Timeout = undefined;
+  return (func: () => void) => {
+    if (timer) {
+      clearTimeout(timer);
     }
+    timer = setTimeout(() => {
+      func.apply({});
+    }, timeout);
   };
 }

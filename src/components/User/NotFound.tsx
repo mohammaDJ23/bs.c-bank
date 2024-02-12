@@ -6,14 +6,16 @@ import { Pathes } from '../../lib';
 
 const NotFound: FC = () => {
   const navigate = useNavigate();
-  const { getTokenInfo, isAdmin } = useAuth();
-  const userInfo = getTokenInfo();
-  const isUserInfoExist = !!userInfo;
+  const auth = useAuth();
+  const decodedToken = auth.getDecodedToken()!;
+  const isCurrentOwner = auth.isCurrentOwner();
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" flexDirection="column" gap="12px" mt="20px">
-      <Typography>Not found the user</Typography>
-      {isAdmin() ? (
+    <Box display="flex" alignItems="center" justifyContent="center" flexDirection="column" gap="10px" mt="34px">
+      <Typography fontSize={'16px'} fontWeight={'500'}>
+        Not found the user
+      </Typography>
+      {isCurrentOwner ? (
         <Button
           onClick={() => navigate(Pathes.USERS)}
           sx={{ textTransform: 'capitalize' }}
@@ -23,16 +25,14 @@ const NotFound: FC = () => {
           Navigate To The User List
         </Button>
       ) : (
-        isUserInfoExist && (
-          <Button
-            onClick={() => navigate(Pathes.USERS, { state: { previousUserId: userInfo.id } })}
-            sx={{ textTransform: 'capitalize' }}
-            variant="contained"
-            size="small"
-          >
-            Navigate To The User Page
-          </Button>
-        )
+        <Button
+          onClick={() => navigate(Pathes.USERS, { state: { previousUserId: decodedToken.id } })}
+          sx={{ textTransform: 'capitalize' }}
+          variant="contained"
+          size="small"
+        >
+          Navigate To The User Page
+        </Button>
       )}
     </Box>
   );

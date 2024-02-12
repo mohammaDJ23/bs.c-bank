@@ -8,6 +8,7 @@ import {
   specificDetailsReducer,
   paginationListReducer,
   FormReducer,
+  userServiceSocketReducer,
 } from './reducers';
 
 const reducers = combineReducers({
@@ -18,6 +19,7 @@ const reducers = combineReducers({
   specificDetails: specificDetailsReducer,
   paginationList: paginationListReducer,
   forms: FormReducer,
+  userServiceSocket: userServiceSocketReducer,
 });
 
 export const store = createStore(reducers, {}, applyMiddleware(thunk));

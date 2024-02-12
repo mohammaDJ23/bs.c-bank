@@ -1,52 +1,104 @@
 import { FC, useCallback, useEffect } from 'react';
 import { List as MuiList, Box, TextField, Button, Autocomplete } from '@mui/material';
-import { UserObj, UserListFilters, isoDate, getTime, UserRoles, UserList } from '../../lib';
+import { UserObj, UserListFilters, isoDate, getTime, UserRoles, UserList, ListAsObjectType, ListObj } from '../../lib';
 import Pagination from '../shared/Pagination';
-import { useForm, usePaginationList, useRequest } from '../../hooks';
+import { useAction, useAuth, useForm, usePaginationList, useRequest, useSelector } from '../../hooks';
 import { UsersApi, UsersApiConstructorType } from '../../apis';
 import Filter from '../shared/Filter';
 import EmptyList from './EmptyList';
-import { ModalNames } from '../../store';
+import { ModalNames, UsersStatusType } from '../../store';
 import UserSkeleton from '../shared/UsersSkeleton';
 import UserCard from '../shared/UserCard';
 
 const List: FC = () => {
-  const { request, isInitialApiProcessing, isApiProcessing } = useRequest();
+  const selectors = useSelector();
+  const actions = useAction();
+  const request = useRequest();
+  const auth = useAuth();
+  const isCurrentOwner = auth.isCurrentOwner();
   const userListInstance = usePaginationList(UserList);
   const userListFiltersFormInstance = useForm(UserListFilters);
   const userListFiltersForm = userListFiltersFormInstance.getForm();
-  const userListInfo = userListInstance.getFullInfo();
-  const isInitialUsersApiProcessing = isInitialApiProcessing(UsersApi);
-  const isUsersApiProcessing = isApiProcessing(UsersApi);
+  const isInitialUsersApiProcessing = request.isInitialApiProcessing(UsersApi);
+  const isUsersApiProcessing = request.isApiProcessing(UsersApi);
 
-  const getUsersList = useCallback(
+  useEffect(() => {
+    if (selectors.userServiceSocket.connection && isCurrentOwner) {
+      selectors.userServiceSocket.connection.on('users-status', (data: UsersStatusType) => {
+        const usersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
+        actions.setSpecificDetails('usersStatus', usersStatus);
+      });
+
+      selectors.userServiceSocket.connection.on('user-status', (data: UsersStatusType) => {
+        const userListAsObject = userListInstance.getListAsObject();
+        const [id] = Object.keys(data);
+        if (userListAsObject[id]) {
+          const usersStatus = Object.assign({}, selectors.specificDetails.usersStatus, data);
+          actions.setSpecificDetails('usersStatus', usersStatus);
+        }
+      });
+
+      return () => {
+        selectors.userServiceSocket.connection!.removeListener('users-status');
+        selectors.userServiceSocket.connection!.removeListener('user-status');
+      };
+    }
+  }, [selectors.userServiceSocket.connection, selectors.specificDetails.usersStatus, isCurrentOwner]);
+
+  const getUsersListApi = useCallback(
     (options: Partial<UsersApiConstructorType> = {}) => {
-      const apiData = Object.assign(
-        { take: userListInfo.take, page: userListInfo.page, ...options },
-        userListFiltersForm
-      );
-      const userApi = new UsersApi<UserObj>(apiData);
-      userApi.setInitialApi(!!apiData.isInitialApi);
-
-      request<[UserObj[], number], UsersApiConstructorType>(userApi).then(response => {
-        const [list, total] = response.data;
-        userListInstance.insertNewList({ total, list, page: apiData.page });
+      return new UsersApi({
+        take: userListInstance.getTake(),
+        page: userListInstance.getPage(),
+        filters: {
+          q: userListFiltersForm.q,
+          roles: userListFiltersForm.roles,
+          fromDate: userListFiltersForm.fromDate,
+          toDate: userListFiltersForm.toDate,
+        },
+        ...options,
       });
     },
-    [userListInfo, userListInstance, userListFiltersForm, request]
+    [userListFiltersForm]
+  );
+
+  const getUsersList = useCallback(
+    (api: UsersApi) => {
+      request.build<[UserObj[], number]>(api).then((response) => {
+        const [list, total] = response.data;
+        const listAsObject = list.reduce((acc, val) => {
+          acc[val.id] = val;
+          return acc;
+        }, {} as ListAsObjectType<UserObj>);
+        userListInstance.updateAndConcatList(list, api.api.params.page);
+        userListInstance.updateListAsObject(listAsObject);
+        userListInstance.updatePage(api.api.params.page);
+        userListInstance.updateTotal(total);
+
+        if (selectors.userServiceSocket.connection && isCurrentOwner) {
+          selectors.userServiceSocket.connection.emit('users-status', { ids: list.map((user) => user.id) });
+        }
+      });
+    },
+    [userListInstance, userListFiltersForm, request, selectors.userServiceSocket.connection]
   );
 
   useEffect(() => {
-    getUsersList({ isInitialApi: true });
+    const api = getUsersListApi();
+    api.setInitialApi();
+    getUsersList(api);
   }, []);
 
   const changePage = useCallback(
     (newPage: number) => {
-      userListInstance.onPageChange(newPage);
+      userListInstance.updatePage(newPage);
 
       if (userListInstance.isNewPageEqualToCurrentPage(newPage) || isUsersApiProcessing) return;
 
-      if (!userListInstance.isNewPageExist(newPage)) getUsersList({ page: newPage });
+      if (!userListInstance.isNewPageExist(newPage)) {
+        const api = getUsersListApi({ page: newPage });
+        getUsersList(api);
+      }
     },
     [userListInstance, isUsersApiProcessing, getUsersList]
   );
@@ -54,25 +106,32 @@ const List: FC = () => {
   const userListFilterFormSubmition = useCallback(() => {
     userListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
-      userListInstance.onPageChange(newPage);
-      getUsersList({ page: newPage });
+      userListInstance.updatePage(newPage);
+      const api = getUsersListApi({ page: newPage });
+      getUsersList(api);
     });
   }, [userListFiltersFormInstance, userListInstance, getUsersList]);
 
   return (
     <>
       {isInitialUsersApiProcessing || isUsersApiProcessing ? (
-        <UserSkeleton take={userListInfo.take} />
+        <UserSkeleton take={userListInstance.getTake()} />
       ) : userListInstance.isListEmpty() ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {userListInfo.list.map((user, index) => (
-              <UserCard key={index} index={index} user={user} listInfo={userListInfo} />
+            {userListInstance.getList().map((user, index) => (
+              <UserCard key={index} index={index} user={user} listInstance={userListInstance} />
             ))}
           </MuiList>
-          <Pagination page={userListInfo.page} count={userListInfo.count} onPageChange={changePage} />
+          {userListInstance.getTotal() > userListInstance.getTake() && (
+            <Pagination
+              page={userListInstance.getPage()}
+              count={userListInstance.getCount()}
+              onPageChange={changePage}
+            />
+          )}
         </>
       )}
 
@@ -84,7 +143,7 @@ const List: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             userListFilterFormSubmition();
           }}
@@ -95,7 +154,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={userListFiltersForm.q}
-            onChange={event => userListFiltersFormInstance.onChange('q', event.target.value)}
+            onChange={(event) => userListFiltersFormInstance.onChange('q', event.target.value.trim())}
             helperText={userListFiltersFormInstance.getInputErrorMessage('q')}
             error={userListFiltersFormInstance.isInputInValid('q')}
             name="q"
@@ -129,7 +188,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={userListFiltersForm.fromDate ? isoDate(userListFiltersForm.fromDate) : ''}
-            onChange={event => userListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
+            onChange={(event) => userListFiltersFormInstance.onChange('fromDate', getTime(event.target.value))}
             helperText={userListFiltersFormInstance.getInputErrorMessage('fromDate')}
             error={userListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
@@ -141,7 +200,7 @@ const List: FC = () => {
             type="date"
             variant="standard"
             value={userListFiltersForm.toDate ? isoDate(userListFiltersForm.toDate) : ''}
-            onChange={event => userListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
+            onChange={(event) => userListFiltersFormInstance.onChange('toDate', getTime(event.target.value))}
             helperText={userListFiltersFormInstance.getInputErrorMessage('toDate')}
             error={userListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}
