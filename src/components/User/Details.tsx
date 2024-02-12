@@ -34,14 +34,16 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const connectionSocket = selectors.userServiceSocket.connection;
 
   const getOptions = useCallback(() => {
-    const options = [
-      {
+    const options = [];
+
+    if (isUserEqualToCurrentUser || isCurrentOwner) {
+      options.push({
         label: 'Update',
         path: isCurrentOwner
           ? getDynamicPath(Pathes.UPDATE_USER_BY_OWNER, { id: user.id })
           : getDynamicPath(Pathes.UPDATE_USER, { id: user.id }),
-      },
-    ];
+      });
+    }
 
     if (isUserEqualToCurrentUser || ((isCurrentAdmin || isCurrentUser) && isOwner) || isCurrentOwner) {
       options.push({
@@ -171,7 +173,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
               {user.firstName} {user.lastName}
             </Typography>
           </Box>
-          {options.length > 0 && hasRoleAuthorized && (
+          {options.length > 0 && (
             <>
               <IconButton onClick={onMenuOpen}>
                 <MoreVert />
