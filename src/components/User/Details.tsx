@@ -36,7 +36,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const getOptions = useCallback(() => {
     const options = [];
 
-    if (isUserEqualToCurrentUser || isCurrentOwner) {
+    if (hasRoleAuthorized) {
       options.push({
         label: 'Update',
         path: isCurrentOwner
