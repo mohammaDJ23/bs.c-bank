@@ -112,6 +112,8 @@ const CreateBillContent: FC = () => {
     [createBillFrom, consumerListFiltersFormInstance]
   );
 
+  console.log(createBillFrom);
+
   return (
     <Navigation>
       <FormContainer>
@@ -246,8 +248,10 @@ const CreateBillContent: FC = () => {
             label="Date"
             type="date"
             variant="standard"
-            value={isoDate(createBillFrom.date)}
-            onChange={(event) => createBillFromInstance.onChange('date', getTime(event.target.value))}
+            value={createBillFrom.date ? isoDate(createBillFrom.date) : 'undefined'}
+            onChange={(event) =>
+              createBillFromInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
+            }
             helperText={createBillFromInstance.getInputErrorMessage('date')}
             error={createBillFromInstance.isInputInValid('date')}
             InputLabelProps={{ shrink: true }}

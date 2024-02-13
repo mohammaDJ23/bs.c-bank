@@ -254,8 +254,10 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           label="Date"
           type="date"
           variant="standard"
-          value={isoDate(updateBillForm.date)}
-          onChange={(event) => updateBillFormInstance.onChange('date', getTime(event.target.value))}
+          value={updateBillForm.date ? isoDate(updateBillForm.date) : 'undefined'}
+          onChange={(event) =>
+            updateBillFormInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
+          }
           helperText={updateBillFormInstance.getInputErrorMessage('date')}
           error={updateBillFormInstance.isInputInValid('date')}
           InputLabelProps={{ shrink: true }}

@@ -116,7 +116,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
           <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
             Received at:
           </Typography>{' '}
-          {moment(bill.date).format('LL')}
+          {bill.date ? moment(bill.date).format('LL') : '_'}
         </Typography>
         <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
           <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>

@@ -6,7 +6,7 @@ export interface BillObj {
   receiver: string;
   consumers: string[];
   description: string;
-  date: number;
+  date: number | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

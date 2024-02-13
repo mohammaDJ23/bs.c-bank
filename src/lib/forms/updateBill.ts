@@ -30,9 +30,9 @@ export class UpdateBill extends Form {
   description: string = '';
 
   @DefineRules([isDate])
-  @DefineVal(getTime())
+  @DefineVal(null)
   @DefineValidation()
-  date: number = getTime();
+  date: number | null = null;
 
   constructor({
     id = '0',
@@ -40,7 +40,7 @@ export class UpdateBill extends Form {
     receiver = '',
     consumers = [],
     description = '',
-    date = getTime(),
+    date = null,
   }: Partial<Omit<UpdateBill, keyof Form>> = {}) {
     super();
     this.id = id;

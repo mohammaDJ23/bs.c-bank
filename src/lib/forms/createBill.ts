@@ -31,10 +31,10 @@ export class CreateBill extends Form {
   description: string = '';
 
   @DefineRules([isDate])
-  @DefineVal(getTime())
+  @DefineVal(null)
   @CacheInput()
   @DefineValidation()
-  date: number = getTime();
+  date: number | null = null;
 
   constructor() {
     super();
@@ -42,6 +42,8 @@ export class CreateBill extends Form {
     this.receiver = this.getCachedInput('receiver');
     this.consumers = this.getCachedInput('consumers');
     this.description = this.getCachedInput('description');
-    this.date = +this.getCachedInput('date');
+
+    const cachedDate = this.getCachedInput('date');
+    this.date = cachedDate ? +cachedDate : null;
   }
 }
