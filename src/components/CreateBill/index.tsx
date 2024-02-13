@@ -112,8 +112,6 @@ const CreateBillContent: FC = () => {
     [createBillFrom, consumerListFiltersFormInstance]
   );
 
-  console.log(createBillFrom);
-
   return (
     <Navigation>
       <FormContainer>
