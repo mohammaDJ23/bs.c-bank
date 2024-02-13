@@ -14,7 +14,7 @@ export function DefineVal(initialValue?: any) {
   return function (target: any, prop: string) {
     const value: any = Reflect.getMetadata('design:type', target, prop)();
     const inputs = getInitialInputsValue(target);
-    const newInputs = Object.assign(inputs, { [prop]: initialValue || value });
+    const newInputs = Object.assign(inputs, { [prop]: initialValue !== undefined ? initialValue : value });
     setInitialInputsValue(newInputs, target);
   };
 }
