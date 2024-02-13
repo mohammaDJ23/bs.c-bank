@@ -7,9 +7,6 @@ const UserServiceConnectionSocketProvider: FC<PropsWithChildren> = ({ children }
 
   useEffect(() => {
     const socket = getUserServiceConnectionSocket();
-    socket.on('connect_error', (err: Error) => {
-      console.log(err);
-    });
     actions.setUserServiceConnectionSocket(socket);
   }, []);
 
