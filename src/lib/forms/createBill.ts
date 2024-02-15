@@ -1,6 +1,5 @@
 import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorators';
-import { getTime } from '../utilFunctions';
-import { isReceiver, isAmount, isDescription, isDate, isConsumers } from '../validations';
+import { isReceiver, isAmount, isDescription, isDate, isConsumers, isLocation } from '../validations';
 import { Form, IgnoreFormConstructor } from './formConstructor';
 
 export interface CreateBillObj extends IgnoreFormConstructor<CreateBill> {}
@@ -17,6 +16,12 @@ export class CreateBill extends Form {
   @CacheInput()
   @DefineValidation()
   receiver: string = '';
+
+  @DefineRules([isLocation])
+  @DefineVal()
+  @CacheInput()
+  @DefineValidation()
+  location: string = '';
 
   @DefineRules([isConsumers])
   @DefineVal()
