@@ -19,6 +19,8 @@ import {
   DeletedUserListFiltersObj,
   ConsumerListFiltersObj,
   ReceiverObj,
+  LocationListFiltersObj,
+  LocationObj,
 } from '../lib';
 import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
@@ -468,6 +470,19 @@ export class ReceiversApi extends RootApi {
     super(
       {
         url: '/api/v1/bank/receiver/all',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class LocationsApi extends RootApi {
+  constructor(params: ListParams<LocationObj> & FilterParams<Partial<LocationListFiltersObj>>) {
+    super(
+      {
+        url: '/api/v1/bank/location/all',
         method: 'get',
         params,
       },

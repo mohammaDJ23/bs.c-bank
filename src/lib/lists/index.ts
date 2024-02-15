@@ -6,6 +6,7 @@ import { NotificationList } from './notification';
 import { ConsumerList } from './consumer';
 import { AllBillList } from './allBill';
 import { ReceiverList } from './receivers';
+import { LocationList } from './locations';
 
 export * from './bill';
 export * from './list';
@@ -16,6 +17,7 @@ export * from './notification';
 export * from './consumer';
 export * from './allBill';
 export * from './receivers';
+export * from './locations';
 
 export const lists = {
   UserList,
@@ -26,4 +28,5 @@ export const lists = {
   ConsumerList,
   AllBillList,
   ReceiverList,
+  LocationList,
 };

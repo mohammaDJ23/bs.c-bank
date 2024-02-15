@@ -13,3 +13,4 @@ export * from './isUserRoles';
 export * from './isConsumers';
 export * from './isConsumer';
 export * from './isArrayOfNumbers';
+export * from './isLocation';
