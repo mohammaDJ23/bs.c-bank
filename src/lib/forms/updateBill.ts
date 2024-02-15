@@ -42,6 +42,7 @@ export class UpdateBill extends Form {
     id = '0',
     amount = '',
     receiver = '',
+    location = '',
     consumers = [],
     description = '',
     date = null,
@@ -50,6 +51,7 @@ export class UpdateBill extends Form {
     this.id = id;
     this.amount = amount;
     this.receiver = receiver;
+    this.location = location;
     this.consumers = consumers;
     this.description = description;
     this.date = date;

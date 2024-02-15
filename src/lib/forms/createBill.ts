@@ -45,6 +45,7 @@ export class CreateBill extends Form {
     super();
     this.amount = this.getCachedInput('amount');
     this.receiver = this.getCachedInput('receiver');
+    this.location = this.getCachedInput('location');
     this.consumers = this.getCachedInput('consumers');
     this.description = this.getCachedInput('description');
 
