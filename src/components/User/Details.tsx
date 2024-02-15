@@ -111,18 +111,21 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const deleteByUser = useCallback(() => {
     request
       .build<UserObj, number>(new DeleteUserApi())
-      .then(response => {
+      .then((response) => {
+        if (connectionSocket) {
+          connectionSocket.disconnect();
+        }
         actions.hideModal(ModalNames.CONFIRMATION);
         LocalStorage.clear();
         navigate(Pathes.LOGIN);
       })
-      .catch(err => actions.hideModal(ModalNames.CONFIRMATION));
-  }, []);
+      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+  }, [connectionSocket]);
 
   const deleteByOwner = useCallback(() => {
     request
       .build<UserObj, number>(new DeleteUserByOwnerApi(user.id))
-      .then(response => {
+      .then((response) => {
         actions.hideModal(ModalNames.CONFIRMATION);
         if (isUserEqualToCurrentUser) {
           LocalStorage.clear();
@@ -134,13 +137,13 @@ const Details: FC<DetailsImporation> = ({ user }) => {
           navigate(Pathes.USERS);
         }
       })
-      .catch(err => actions.hideModal(ModalNames.CONFIRMATION));
+      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
   }, [user, isUserEqualToCurrentUser]);
 
   const downloadBillReport = useCallback(() => {
     if (isDownloadBillReportApiProcessing) return;
 
-    request.build<Blob>(new DownloadBillReportApi(user.id)).then(response => {
+    request.build<Blob>(new DownloadBillReportApi(user.id)).then((response) => {
       const href = URL.createObjectURL(response.data);
       const link = document.createElement('a');
       link.href = href;
@@ -179,7 +182,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
                 <MoreVert />
               </IconButton>
               <Menu anchorEl={anchorEl} open={open} onClick={onMenuClose}>
-                {options.map(option => (
+                {options.map((option) => (
                   <MenuItem key={option.path} onClick={onMenuClick(option)}>
                     {option.label}
                   </MenuItem>
