@@ -397,51 +397,72 @@ const Dashboard: FC = () => {
             </Box>
           )}
 
-          {isCurrentOwnerOrAdmin &&
-            (isInitialDeletedUserQuantitiesApiProcessing ? (
-              <Skeleton width="100%" height="196px" />
-            ) : (
-              selectors.specificDetails.deletedUserQuantities && (
-                <Card>
-                  <CardContent>
-                    <Box display="flex" gap="20px" flexDirection="column">
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Total Deleted Users:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.deletedUserQuantities.quantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Deleted Owners:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Deleted Admins:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.deletedUserQuantities.adminQuantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Deleted Users:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.deletedUserQuantities.userQuantities}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
+          {isCurrentOwnerOrAdmin && (
+            <Box sx={{ width: '100%', height: '196px' }}>
+              {isInitialDeletedUserQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="100%" />
+              ) : isInitialDeletedUserQuantitiesApiFailed ? (
+                <Card style={{ height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography fontSize={'16px'} textAlign={'center'} fontWeight={'500'} color={'#d00000'}>
+                      Failed to load the deleted user quantities.
+                    </Typography>
+                  </Box>
                 </Card>
-              )
-            ))}
+              ) : (
+                isInitialDeletedUserQuantitiesApiSuccessed &&
+                selectors.specificDetails.deletedUserQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Total Deleted Users:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.deletedUserQuantities.quantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Deleted Owners:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Deleted Admins:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.deletedUserQuantities.adminQuantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Deleted Users:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.deletedUserQuantities.userQuantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
 
           {isCurrentOwnerOrAdmin &&
             (isInitialBillQuantitiesApiProcessing ? (
