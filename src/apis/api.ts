@@ -413,11 +413,11 @@ export class DownloadBillReportApi extends RootApi {
   }
 }
 
-export class BillQuantitiesApi extends RootApi {
+export class AllBillQuantitiesApi extends RootApi {
   constructor() {
     super(
       {
-        url: `/api/v1/bank/bill/quantities`,
+        url: `/api/v1/bank/bill/all/quantities`,
         method: 'get',
       },
       { baseURL: process.env.BANK_SERVICE }
