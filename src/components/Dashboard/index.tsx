@@ -74,11 +74,23 @@ const Dashboard: FC = () => {
   const isCurrentOwnerOrAdmin = isCurrentOwner || isCurrentAdmin;
   const snackbar = useSnackbar();
   const isInitialTotalAmountApiProcessing = request.isInitialApiProcessing(TotalAmountApi);
+  const isInitialTotalAmountApiFailed = request.isInitialProcessingApiFailed(TotalAmountApi);
+  const isInitialTotalAmountApiSuccessed = request.isInitialProcessingApiSuccessed(TotalAmountApi);
   const isInitialLastWeekBillsApiProcessing = request.isInitialApiProcessing(LastWeekBillsApi);
+  const isInitialLastWeekBillsApiFailed = request.isInitialProcessingApiFailed(LastWeekBillsApi);
+  const isInitialLastWeekBillsApiSuccessed = request.isInitialProcessingApiSuccessed(LastWeekBillsApi);
   const isPeriodAmountApiProcessing = request.isApiProcessing(PeriodAmountApi);
+  const isPeriodAmountApiFailed = request.isProcessingApiFailed(PeriodAmountApi);
+  const isPeriodAmountApiSuccessed = request.isProcessingApiSuccessed(PeriodAmountApi);
   const isInitialUserQuantitiesApiProcessing = request.isInitialApiProcessing(UserQuantitiesApi);
+  const isInitialUserQuantitiesApiFailed = request.isInitialProcessingApiFailed(UserQuantitiesApi);
+  const isInitialUserQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(UserQuantitiesApi);
   const isInitialDeletedUserQuantitiesApiProcessing = request.isInitialApiProcessing(DeletedUserQuantitiesApi);
+  const isInitialDeletedUserQuantitiesApiFailed = request.isInitialProcessingApiFailed(DeletedUserQuantitiesApi);
+  const isInitialDeletedUserQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(DeletedUserQuantitiesApi);
   const isInitialBillQuantitiesApiProcessing = request.isInitialApiProcessing(BillQuantitiesApi);
+  const isInitialBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(BillQuantitiesApi);
+  const isInitialBillQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(BillQuantitiesApi);
   const halfSecDebounce = useRef(debounce());
 
   useEffect(() => {
@@ -243,106 +255,147 @@ const Dashboard: FC = () => {
           flexDirection="column"
           gap="16px"
         >
-          {isInitialLastWeekBillsApiProcessing ? (
-            <Skeleton height="440px" width="100%" />
-          ) : (
-            chartData.length > 0 && (
-              <Card>
-                <CardContent>
-                  {(() => {
-                    const series = [
-                      {
-                        name: 'Bills',
-                        data: chartData.map((item) => item.billCounts),
-                      },
-                    ];
-
-                    if (isCurrentOwnerOrAdmin) {
-                      series.push({
-                        name: 'Users',
-                        data: chartData.map((item) => item.userCounts),
-                      });
-                    }
-
-                    return (
-                      <Chart
-                        options={{
-                          chart: {
-                            height: 380,
-                            type: 'area',
-                          },
-                          dataLabels: {
-                            enabled: false,
-                          },
-                          stroke: {
-                            curve: 'smooth',
-                          },
-                          xaxis: {
-                            type: 'category',
-                            categories: chartData.map((item) => item.date),
-                          },
-                          tooltip: {
-                            x: {
-                              format: 'dd/MM/yy',
-                            },
-                          },
-                        }}
-                        series={series}
-                        type="area"
-                        height={380}
-                      />
-                    );
-                  })()}
-                </CardContent>
+          <Box sx={{ width: '100%', height: '440px' }}>
+            {isInitialLastWeekBillsApiProcessing ? (
+              <Skeleton height="100%" width="100%" />
+            ) : isInitialLastWeekBillsApiFailed ? (
+              <Card style={{ height: '100%' }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography fontSize={'16px'} textAlign={'center'} fontWeight={'500'} color={'#d00000'}>
+                    Failed to load the chart.
+                  </Typography>
+                </Box>
               </Card>
-            )
-          )}
-
-          {isCurrentOwnerOrAdmin &&
-            (isInitialUserQuantitiesApiProcessing ? (
-              <Skeleton width="100%" height="196px" />
             ) : (
-              selectors.specificDetails.userQuantities && (
+              isInitialLastWeekBillsApiSuccessed &&
+              chartData.length > 0 && (
                 <Card>
                   <CardContent>
-                    <Box display="flex" gap="20px" flexDirection="column">
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Total Users:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.userQuantities.quantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Owners:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.userQuantities.ownerQuantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Admins:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.userQuantities.adminQuantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Users:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.userQuantities.userQuantities}
-                        </Typography>
-                      </Box>
-                    </Box>
+                    {(() => {
+                      const series = [
+                        {
+                          name: 'Bills',
+                          data: chartData.map((item) => item.billCounts),
+                        },
+                      ];
+
+                      if (isCurrentOwnerOrAdmin) {
+                        series.push({
+                          name: 'Users',
+                          data: chartData.map((item) => item.userCounts),
+                        });
+                      }
+
+                      return (
+                        <Chart
+                          options={{
+                            chart: {
+                              height: 380,
+                              type: 'area',
+                            },
+                            dataLabels: {
+                              enabled: false,
+                            },
+                            stroke: {
+                              curve: 'smooth',
+                            },
+                            xaxis: {
+                              type: 'category',
+                              categories: chartData.map((item) => item.date),
+                            },
+                            tooltip: {
+                              x: {
+                                format: 'dd/MM/yy',
+                              },
+                            },
+                          }}
+                          series={series}
+                          type="area"
+                          height={380}
+                        />
+                      );
+                    })()}
                   </CardContent>
                 </Card>
               )
-            ))}
+            )}
+          </Box>
+
+          {isCurrentOwnerOrAdmin && (
+            <Box sx={{ width: '100%', height: '196px' }}>
+              {isInitialUserQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="100%" />
+              ) : isInitialUserQuantitiesApiFailed ? (
+                <Card style={{ height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography fontSize={'16px'} textAlign={'center'} fontWeight={'500'} color={'#d00000'}>
+                      Failed to load the user quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialUserQuantitiesApiSuccessed &&
+                selectors.specificDetails.userQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Total Users:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.userQuantities.quantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Owners:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.userQuantities.ownerQuantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Admins:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.userQuantities.adminQuantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Users:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.userQuantities.userQuantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
 
           {isCurrentOwnerOrAdmin &&
             (isInitialDeletedUserQuantitiesApiProcessing ? (
