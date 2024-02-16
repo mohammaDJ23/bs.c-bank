@@ -256,7 +256,7 @@ const Dashboard: FC = () => {
         >
           <Box sx={{ width: '100%', height: '100%', minHeight: '435px' }}>
             {isInitialLastWeekBillsApiProcessing ? (
-              <Skeleton height="100%" width="100%" />
+              <Skeleton height="435px" width="100%" />
             ) : isInitialLastWeekBillsApiFailed ? (
               <Card style={{ height: '100%' }}>
                 <Box
@@ -338,7 +338,7 @@ const Dashboard: FC = () => {
           {isCurrentOwnerOrAdmin && (
             <Box sx={{ width: '100%', height: '100%', minHeight: '186px' }}>
               {isInitialUserQuantitiesApiProcessing ? (
-                <Skeleton width="100%" height="100%" />
+                <Skeleton width="100%" height="186px" />
               ) : isInitialUserQuantitiesApiFailed ? (
                 <Card style={{ height: '100%' }}>
                   <Box
@@ -409,9 +409,9 @@ const Dashboard: FC = () => {
           )}
 
           {isCurrentOwnerOrAdmin && (
-            <Box sx={{ width: '100%', height: '100$', minHeight: '184px' }}>
+            <Box sx={{ width: '100%', height: '100%', minHeight: '184px' }}>
               {isInitialDeletedUserQuantitiesApiProcessing ? (
-                <Skeleton width="100%" height="100%" />
+                <Skeleton width="100%" height="184px" />
               ) : isInitialDeletedUserQuantitiesApiFailed ? (
                 <Card style={{ height: '100%' }}>
                   <Box
@@ -484,7 +484,7 @@ const Dashboard: FC = () => {
           {isCurrentOwnerOrAdmin && (
             <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
               {isInitialBillQuantitiesApiProcessing ? (
-                <Skeleton width="100%" height="100%" />
+                <Skeleton width="100%" height="64px" />
               ) : isInitialBillQuantitiesApiFailed ? (
                 <Card style={{ height: '100%' }}>
                   <Box
@@ -532,7 +532,7 @@ const Dashboard: FC = () => {
 
           <Box sx={{ width: '100%', height: '100%', minHeight: totalAmountHeight || '158.5px' }}>
             {isInitialTotalAmountApiProcessing ? (
-              <Skeleton width="100%" height="100%" />
+              <Skeleton width="100%" height="158px" />
             ) : isInitialTotalAmountApiFailed ? (
               <Card style={{ height: '100%' }}>
                 <Box
