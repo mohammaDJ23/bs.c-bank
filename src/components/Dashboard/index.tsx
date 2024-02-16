@@ -5,6 +5,7 @@ import { DateRange } from '@mui/icons-material';
 import { grey } from '@mui/material/colors';
 import {
   AllBillQuantitiesApi,
+  AllDeletedBillQuantitiesApi,
   DeletedBillQuantitiesApi,
   DeletedUserQuantitiesApi,
   LastWeekBillsApi,
@@ -27,6 +28,7 @@ import {
   TotalAmount,
   UserQuantities,
   DeletedBillQuantities,
+  AllDeletedBillQuantities,
 } from '../../store';
 import Skeleton from '../shared/Skeleton';
 import Card from '../shared/Card';
@@ -95,6 +97,10 @@ const Dashboard: FC = () => {
   const isInitialDeletedBillQuantitiesApiProcessing = request.isInitialApiProcessing(DeletedBillQuantitiesApi);
   const isInitialDeletedBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(DeletedBillQuantitiesApi);
   const isInitialDeletedBillQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(DeletedBillQuantitiesApi);
+  const isInitialAllDeletedBillQuantitiesApiProcessing = request.isInitialApiProcessing(AllDeletedBillQuantitiesApi);
+  const isInitialAllDeletedBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(AllDeletedBillQuantitiesApi);
+  const isInitialAllDeletedBillQuantitiesApiSuccessed =
+    request.isInitialProcessingApiSuccessed(AllDeletedBillQuantitiesApi);
   const halfSecDebounce = useRef(debounce());
 
   useEffect(() => {
@@ -104,15 +110,23 @@ const Dashboard: FC = () => {
           Promise<AxiosResponse<UserQuantities>>,
           Promise<AxiosResponse<DeletedUserQuantities>>,
           Promise<AxiosResponse<LastWeekUsersObj[]>>,
-          Promise<AxiosResponse<AllBillQuantities>>
+          Promise<AxiosResponse<AllBillQuantities>>,
+          Promise<AxiosResponse<AllDeletedBillQuantities>>
         ]
       >([
         request.build(new UserQuantitiesApi().setInitialApi()),
         request.build(new DeletedUserQuantitiesApi().setInitialApi()),
         request.build(new LastWeekUsersApi().setInitialApi()),
         request.build(new AllBillQuantitiesApi().setInitialApi()),
+        request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
       ]).then(
-        ([userQuantitiesResponse, deletedUserQuantitiesResponse, lastWeekUsersResponse, billQuantitiesResponse]) => {
+        ([
+          userQuantitiesResponse,
+          deletedUserQuantitiesResponse,
+          lastWeekUsersResponse,
+          billQuantitiesResponse,
+          allDeletedBillQuantitiesResponse,
+        ]) => {
           if (userQuantitiesResponse.status === 'fulfilled')
             actions.setSpecificDetails('userQuantities', new UserQuantities(userQuantitiesResponse.value.data));
 
@@ -129,6 +143,9 @@ const Dashboard: FC = () => {
             const { quantities, amount } = billQuantitiesResponse.value.data;
             actions.setSpecificDetails('allBillQuantities', new AllBillQuantities(quantities, amount));
           }
+
+          if (allDeletedBillQuantitiesResponse.status === 'fulfilled')
+            actions.setSpecificDetails('allDeletedBillQuantities', allDeletedBillQuantitiesResponse.value.data);
         }
       );
     }
@@ -267,7 +284,7 @@ const Dashboard: FC = () => {
           alignItems="center"
           justifyContent="center"
           flexDirection="column"
-          gap="16px"
+          gap="12px"
         >
           <Box sx={{ width: '100%', height: '100%', minHeight: '435px' }}>
             {isInitialLastWeekBillsApiProcessing ? (
@@ -531,10 +548,59 @@ const Dashboard: FC = () => {
                       <Box display="flex" gap="20px" flexDirection="column">
                         <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
                           <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Total bill quantities of the users:{' '}
+                            All bill quantities:{' '}
                           </Typography>
                           <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
                             {selectors.specificDetails.allBillQuantities.quantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
+          {isCurrentOwnerOrAdmin && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+              {isInitialAllDeletedBillQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialAllDeletedBillQuantitiesApiFailed ? (
+                <Card style={{ height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the all deleted bill quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialAllDeletedBillQuantitiesApiSuccessed &&
+                selectors.specificDetails.allDeletedBillQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            All deleted bill quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.allDeletedBillQuantities.quantities}
                           </Typography>
                         </Box>
                       </Box>
@@ -661,7 +727,7 @@ const Dashboard: FC = () => {
                         })()}
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
                         <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Total bill quantities:{' '}
+                          Bill quantities:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
                           {selectors.specificDetails.totalAmount.quantities}
@@ -669,7 +735,7 @@ const Dashboard: FC = () => {
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
                         <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Total bill Amount:{' '}
+                          Bill Amount:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
                           {selectors.specificDetails.totalAmount.totalAmount}

@@ -425,6 +425,18 @@ export class AllBillQuantitiesApi extends RootApi {
   }
 }
 
+export class AllDeletedBillQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/bank/bill/all/deleted-quantities`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
 export class DeletedBillQuantitiesApi extends RootApi {
   constructor() {
     super(
