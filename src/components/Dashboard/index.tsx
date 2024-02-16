@@ -6,10 +6,12 @@ import { grey } from '@mui/material/colors';
 import {
   AllBillQuantitiesApi,
   AllDeletedBillQuantitiesApi,
+  AllNotificationQuantitiesApi,
   DeletedBillQuantitiesApi,
   DeletedUserQuantitiesApi,
   LastWeekBillsApi,
   LastWeekUsersApi,
+  NotificationQuantitiesApi,
   PeriodAmountApi,
   TotalAmountApi,
   UserQuantitiesApi,
@@ -29,6 +31,8 @@ import {
   UserQuantities,
   DeletedBillQuantities,
   AllDeletedBillQuantities,
+  NotificationQuantities,
+  AllNotificationQuantities,
 } from '../../store';
 import Skeleton from '../shared/Skeleton';
 import Card from '../shared/Card';
@@ -101,9 +105,33 @@ const Dashboard: FC = () => {
   const isInitialAllDeletedBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(AllDeletedBillQuantitiesApi);
   const isInitialAllDeletedBillQuantitiesApiSuccessed =
     request.isInitialProcessingApiSuccessed(AllDeletedBillQuantitiesApi);
+  const isInitialNotificationQuantitiesApiProcessing = request.isInitialApiProcessing(NotificationQuantitiesApi);
+  const isInitialNotificationQuantitiesApiFailed = request.isInitialProcessingApiFailed(NotificationQuantitiesApi);
+  const isInitialNotificationQuantitiesApiSuccessed =
+    request.isInitialProcessingApiSuccessed(NotificationQuantitiesApi);
+  const isInitialAllNotificationQuantitiesApiProcessing = request.isInitialApiProcessing(AllNotificationQuantitiesApi);
+  const isInitialAllNotificationQuantitiesApiFailed =
+    request.isInitialProcessingApiFailed(AllNotificationQuantitiesApi);
+  const isInitialAllNotificationQuantitiesApiSuccessed =
+    request.isInitialProcessingApiSuccessed(AllNotificationQuantitiesApi);
   const halfSecDebounce = useRef(debounce());
 
   useEffect(() => {
+    if (isCurrentOwner) {
+      Promise.allSettled<
+        [Promise<AxiosResponse<NotificationQuantities>>, Promise<AxiosResponse<AllNotificationQuantities>>]
+      >([
+        request.build(new NotificationQuantitiesApi().setInitialApi()),
+        request.build(new AllNotificationQuantitiesApi().setInitialApi()),
+      ]).then(([notificationQuantitiesResponse, allNotificationQuantitiesResponse]) => {
+        if (notificationQuantitiesResponse.status === 'fulfilled')
+          actions.setSpecificDetails('notificationQuantities', notificationQuantitiesResponse.value.data);
+
+        if (allNotificationQuantitiesResponse.status === 'fulfilled')
+          actions.setSpecificDetails('allNotificationQuantities', allNotificationQuantitiesResponse.value.data);
+      });
+    }
+
     if (isCurrentOwnerOrAdmin) {
       Promise.allSettled<
         [
@@ -503,6 +531,104 @@ const Dashboard: FC = () => {
                           </Typography>
                           <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
                             {selectors.specificDetails.deletedUserQuantities.userQuantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
+          {isCurrentOwner && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+              {isInitialAllNotificationQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialAllNotificationQuantitiesApiFailed ? (
+                <Card style={{ height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the all notification quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialAllNotificationQuantitiesApiSuccessed &&
+                selectors.specificDetails.allNotificationQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            All notification quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.allNotificationQuantities.quantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
+          {isCurrentOwner && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+              {isInitialNotificationQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialNotificationQuantitiesApiFailed ? (
+                <Card style={{ height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the notification quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialNotificationQuantitiesApiSuccessed &&
+                selectors.specificDetails.notificationQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Notification quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.notificationQuantities.quantities}
                           </Typography>
                         </Box>
                       </Box>

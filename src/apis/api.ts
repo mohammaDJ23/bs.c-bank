@@ -476,6 +476,30 @@ export class NotificationApi extends RootApi {
   }
 }
 
+export class NotificationQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/notification/quantities`,
+        method: 'get',
+      },
+      { baseURL: process.env.NOTIFICATION_SERVICE }
+    );
+  }
+}
+
+export class AllNotificationQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/notification/all/quantities`,
+        method: 'get',
+      },
+      { baseURL: process.env.NOTIFICATION_SERVICE }
+    );
+  }
+}
+
 export class ConsumersApi extends RootApi {
   constructor(params: ListParams<ConsumerObj> & FilterParams<Partial<ConsumerListFiltersObj>>) {
     super(

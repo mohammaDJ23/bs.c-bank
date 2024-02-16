@@ -42,6 +42,14 @@ export class DeletedBillQuantities {
   constructor(public quantities: string, public amount: string) {}
 }
 
+export class NotificationQuantities {
+  constructor(public quantities: string) {}
+}
+
+export class AllNotificationQuantities {
+  constructor(public quantities: string) {}
+}
+
 export interface LastWeekUsersObj {
   count: number;
   date: number;
@@ -102,6 +110,8 @@ export interface SpecificDetailsState {
   deletedUser: DeletedUserObj | null;
   deletedBill: BillObj | null;
   notification: NotificationObj | null;
+  notificationQuantities: NotificationQuantities | null;
+  allNotificationQuantities: AllNotificationQuantities | null;
   usersStatus: UsersStatusType;
 }
 
@@ -122,6 +132,8 @@ const initialState: SpecificDetailsState = {
   deletedUser: null,
   deletedBill: null,
   notification: null,
+  notificationQuantities: null,
+  allNotificationQuantities: null,
   usersStatus: {},
 };
 
@@ -151,6 +163,8 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     deletedUser: null,
     deletedBill: null,
     notification: null,
+    notificationQuantities: null,
+    allNotificationQuantities: null,
   };
 }
 
