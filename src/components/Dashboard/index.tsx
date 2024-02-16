@@ -65,6 +65,7 @@ function getDefaultSliderStep() {
 const Dashboard: FC = () => {
   const defaultSliderStep = getDefaultSliderStep();
   const [sliderStep, setSliderStep] = useState(defaultSliderStep);
+  const [totalAmountHeight, setTotalAmountHeight] = useState<string>('');
   const request = useRequest();
   const auth = useAuth();
   const actions = useAction();
@@ -80,8 +81,6 @@ const Dashboard: FC = () => {
   const isInitialLastWeekBillsApiFailed = request.isInitialProcessingApiFailed(LastWeekBillsApi);
   const isInitialLastWeekBillsApiSuccessed = request.isInitialProcessingApiSuccessed(LastWeekBillsApi);
   const isPeriodAmountApiProcessing = request.isApiProcessing(PeriodAmountApi);
-  const isPeriodAmountApiFailed = request.isProcessingApiFailed(PeriodAmountApi);
-  const isPeriodAmountApiSuccessed = request.isProcessingApiSuccessed(PeriodAmountApi);
   const isInitialUserQuantitiesApiProcessing = request.isInitialApiProcessing(UserQuantitiesApi);
   const isInitialUserQuantitiesApiFailed = request.isInitialProcessingApiFailed(UserQuantitiesApi);
   const isInitialUserQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(UserQuantitiesApi);
@@ -255,7 +254,7 @@ const Dashboard: FC = () => {
           flexDirection="column"
           gap="16px"
         >
-          <Box sx={{ width: '100%', height: '440px' }}>
+          <Box sx={{ width: '100%', height: '100%', minHeight: '435px' }}>
             {isInitialLastWeekBillsApiProcessing ? (
               <Skeleton height="100%" width="100%" />
             ) : isInitialLastWeekBillsApiFailed ? (
@@ -270,7 +269,13 @@ const Dashboard: FC = () => {
                     justifyContent: 'center',
                   }}
                 >
-                  <Typography fontSize={'16px'} textAlign={'center'} fontWeight={'500'} color={'#d00000'}>
+                  <Typography
+                    fontSize={'16px'}
+                    textAlign={'center'}
+                    fontWeight={'500'}
+                    color={'#d00000'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
                     Failed to load the chart.
                   </Typography>
                 </Box>
@@ -331,7 +336,7 @@ const Dashboard: FC = () => {
           </Box>
 
           {isCurrentOwnerOrAdmin && (
-            <Box sx={{ width: '100%', height: '196px' }}>
+            <Box sx={{ width: '100%', height: '100%', minHeight: '186px' }}>
               {isInitialUserQuantitiesApiProcessing ? (
                 <Skeleton width="100%" height="100%" />
               ) : isInitialUserQuantitiesApiFailed ? (
@@ -346,7 +351,13 @@ const Dashboard: FC = () => {
                       justifyContent: 'center',
                     }}
                   >
-                    <Typography fontSize={'16px'} textAlign={'center'} fontWeight={'500'} color={'#d00000'}>
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
                       Failed to load the user quantities.
                     </Typography>
                   </Box>
@@ -398,7 +409,7 @@ const Dashboard: FC = () => {
           )}
 
           {isCurrentOwnerOrAdmin && (
-            <Box sx={{ width: '100%', height: '196px' }}>
+            <Box sx={{ width: '100%', height: '100$', minHeight: '184px' }}>
               {isInitialDeletedUserQuantitiesApiProcessing ? (
                 <Skeleton width="100%" height="100%" />
               ) : isInitialDeletedUserQuantitiesApiFailed ? (
@@ -413,7 +424,13 @@ const Dashboard: FC = () => {
                       justifyContent: 'center',
                     }}
                   >
-                    <Typography fontSize={'16px'} textAlign={'center'} fontWeight={'500'} color={'#d00000'}>
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
                       Failed to load the deleted user quantities.
                     </Typography>
                   </Box>
@@ -465,9 +482,9 @@ const Dashboard: FC = () => {
           )}
 
           {isCurrentOwnerOrAdmin && (
-            <Box sx={{ width: '100%', height: '64px' }}>
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
               {isInitialBillQuantitiesApiProcessing ? (
-                <Skeleton width="100%" height="64px" />
+                <Skeleton width="100%" height="100%" />
               ) : isInitialBillQuantitiesApiFailed ? (
                 <Card style={{ height: '100%' }}>
                   <Box
@@ -480,7 +497,13 @@ const Dashboard: FC = () => {
                       justifyContent: 'center',
                     }}
                   >
-                    <Typography fontSize={'16px'} textAlign={'center'} fontWeight={'500'} color={'#d00000'}>
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
                       Failed to load the bill quantities.
                     </Typography>
                   </Box>
@@ -507,108 +530,142 @@ const Dashboard: FC = () => {
             </Box>
           )}
 
-          {isInitialTotalAmountApiProcessing ? (
-            <Skeleton width="100%" height="128px" />
-          ) : (
-            selectors.specificDetails.totalAmount &&
-            selectors.specificDetails.periodAmountFilter &&
-            selectors.specificDetails.billDates && (
-              <Card>
-                <CardContent>
-                  <Box display="flex" justifyContent="center" flexDirection="column" gap="20px">
-                    {selectors.specificDetails.billDates.start > 0 &&
-                      selectors.specificDetails.billDates.end > 0 &&
-                      selectors.specificDetails.billDates.end - selectors.specificDetails.billDates.start >
-                        getOneDayDate() &&
-                      (() => {
-                        const slider = (
-                          <Slider
-                            disabled={isPeriodAmountApiProcessing}
-                            value={[
-                              selectors.specificDetails.periodAmountFilter.start,
-                              selectors.specificDetails.periodAmountFilter.end,
-                            ]}
-                            step={sliderStep}
-                            min={selectors.specificDetails.billDates.start}
-                            max={selectors.specificDetails.billDates.end}
-                            onChange={changeSlider}
-                            valueLabelDisplay="off"
-                          />
-                        );
-
-                        return (
-                          <Box>
-                            <SmallSliderWrapper>{slider}</SmallSliderWrapper>
-                            <Box
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="space-between"
-                              gap="30px"
-                              position="relative"
-                            >
-                              <Box display="flex" alignItems="center" gap="5px">
-                                <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
-                                  {moment(selectors.specificDetails.periodAmountFilter.start).format('ll')}
-                                </Typography>
-                                <DateRange fontSize="small" sx={{ color: grey[600] }} />
-                              </Box>
-                              <Input
-                                disabled={isPeriodAmountApiProcessing}
-                                type="date"
-                                value={moment(selectors.specificDetails.periodAmountFilter.start).format('YYYY-MM-DD')}
-                                onChange={changeStartDate}
-                                sx={{
-                                  position: 'absolute',
-                                  top: '7px',
-                                  left: '-57px',
-                                  opacity: '0',
-                                }}
-                              />
-                              <LargSliderWrapper>{slider}</LargSliderWrapper>
-                              <Box display="flex" alignItems="center" gap="5px">
-                                <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
-                                  {moment(selectors.specificDetails.periodAmountFilter.end).format('ll')}
-                                </Typography>
-                                <DateRange fontSize="small" sx={{ color: grey[600] }} />
-                              </Box>
-                              <Input
-                                disabled={isPeriodAmountApiProcessing}
-                                type="date"
-                                value={moment(selectors.specificDetails.periodAmountFilter.end).format('YYYY-MM-DD')}
-                                onChange={changeEndDate}
-                                sx={{
-                                  position: 'absolute',
-                                  top: '7px',
-                                  right: '0px',
-                                  opacity: '0',
-                                  width: '20px',
-                                }}
-                              />
-                            </Box>
-                          </Box>
-                        );
-                      })()}
-                    <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
-                      <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                        Total bill quantities:{' '}
-                      </Typography>
-                      <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                        {selectors.specificDetails.totalAmount.quantities}
-                      </Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
-                      <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                        Total bill Amount:{' '}
-                      </Typography>
-                      <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                        {selectors.specificDetails.totalAmount.totalAmount}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </CardContent>
+          <Box sx={{ width: '100%', height: '100%', minHeight: totalAmountHeight || '158.5px' }}>
+            {isInitialTotalAmountApiProcessing ? (
+              <Skeleton width="100%" height="100%" />
+            ) : isInitialTotalAmountApiFailed ? (
+              <Card style={{ height: '100%' }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography
+                    fontSize={'16px'}
+                    textAlign={'center'}
+                    fontWeight={'500'}
+                    color={'#d00000'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    Failed to load the total amount of the bills and quantities.
+                  </Typography>
+                </Box>
               </Card>
-            )
-          )}
+            ) : (
+              isInitialTotalAmountApiSuccessed &&
+              selectors.specificDetails.totalAmount &&
+              selectors.specificDetails.periodAmountFilter &&
+              selectors.specificDetails.billDates && (
+                <Card
+                  ref={(ref) => {
+                    if (ref) {
+                      setTotalAmountHeight(window.getComputedStyle(ref).getPropertyValue('height'));
+                    }
+                  }}
+                >
+                  <CardContent>
+                    <Box display="flex" justifyContent="center" flexDirection="column" gap="20px">
+                      {selectors.specificDetails.billDates.start > 0 &&
+                        selectors.specificDetails.billDates.end > 0 &&
+                        selectors.specificDetails.billDates.end - selectors.specificDetails.billDates.start >
+                          getOneDayDate() &&
+                        (() => {
+                          const slider = (
+                            <Slider
+                              disabled={isPeriodAmountApiProcessing}
+                              value={[
+                                selectors.specificDetails.periodAmountFilter.start,
+                                selectors.specificDetails.periodAmountFilter.end,
+                              ]}
+                              step={sliderStep}
+                              min={selectors.specificDetails.billDates.start}
+                              max={selectors.specificDetails.billDates.end}
+                              onChange={changeSlider}
+                              valueLabelDisplay="off"
+                            />
+                          );
+
+                          return (
+                            <Box>
+                              <SmallSliderWrapper>{slider}</SmallSliderWrapper>
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="space-between"
+                                gap="30px"
+                                position="relative"
+                              >
+                                <Box display="flex" alignItems="center" gap="5px">
+                                  <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
+                                    {moment(selectors.specificDetails.periodAmountFilter.start).format('ll')}
+                                  </Typography>
+                                  <DateRange fontSize="small" sx={{ color: grey[600] }} />
+                                </Box>
+                                <Input
+                                  disabled={isPeriodAmountApiProcessing}
+                                  type="date"
+                                  value={moment(selectors.specificDetails.periodAmountFilter.start).format(
+                                    'YYYY-MM-DD'
+                                  )}
+                                  onChange={changeStartDate}
+                                  sx={{
+                                    position: 'absolute',
+                                    top: '7px',
+                                    left: '-57px',
+                                    opacity: '0',
+                                  }}
+                                />
+                                <LargSliderWrapper>{slider}</LargSliderWrapper>
+                                <Box display="flex" alignItems="center" gap="5px">
+                                  <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
+                                    {moment(selectors.specificDetails.periodAmountFilter.end).format('ll')}
+                                  </Typography>
+                                  <DateRange fontSize="small" sx={{ color: grey[600] }} />
+                                </Box>
+                                <Input
+                                  disabled={isPeriodAmountApiProcessing}
+                                  type="date"
+                                  value={moment(selectors.specificDetails.periodAmountFilter.end).format('YYYY-MM-DD')}
+                                  onChange={changeEndDate}
+                                  sx={{
+                                    position: 'absolute',
+                                    top: '7px',
+                                    right: '0px',
+                                    opacity: '0',
+                                    width: '20px',
+                                  }}
+                                />
+                              </Box>
+                            </Box>
+                          );
+                        })()}
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Total bill quantities:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {selectors.specificDetails.totalAmount.quantities}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Total bill Amount:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {selectors.specificDetails.totalAmount.totalAmount}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              )
+            )}
+          </Box>
         </Box>
       </MainContainer>
     </Navigation>
