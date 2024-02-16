@@ -413,11 +413,35 @@ export class DownloadBillReportApi extends RootApi {
   }
 }
 
-export class BillQuantitiesApi extends RootApi {
+export class AllBillQuantitiesApi extends RootApi {
   constructor() {
     super(
       {
-        url: `/api/v1/bank/bill/quantities`,
+        url: `/api/v1/bank/bill/all/quantities`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class AllDeletedBillQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/bank/bill/all/deleted-quantities`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class DeletedBillQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/bank/bill/deleted-quantities`,
         method: 'get',
       },
       { baseURL: process.env.BANK_SERVICE }
@@ -445,6 +469,30 @@ export class NotificationApi extends RootApi {
     super(
       {
         url: `/api/v1/notification/${id}`,
+        method: 'get',
+      },
+      { baseURL: process.env.NOTIFICATION_SERVICE }
+    );
+  }
+}
+
+export class NotificationQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/notification/quantities`,
+        method: 'get',
+      },
+      { baseURL: process.env.NOTIFICATION_SERVICE }
+    );
+  }
+}
+
+export class AllNotificationQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/notification/all/quantities`,
         method: 'get',
       },
       { baseURL: process.env.NOTIFICATION_SERVICE }

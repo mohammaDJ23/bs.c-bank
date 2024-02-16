@@ -4,10 +4,14 @@ import { Box, CardContent, Typography, Slider, Input, styled } from '@mui/materi
 import { DateRange } from '@mui/icons-material';
 import { grey } from '@mui/material/colors';
 import {
-  BillQuantitiesApi,
+  AllBillQuantitiesApi,
+  AllDeletedBillQuantitiesApi,
+  AllNotificationQuantitiesApi,
+  DeletedBillQuantitiesApi,
   DeletedUserQuantitiesApi,
   LastWeekBillsApi,
   LastWeekUsersApi,
+  NotificationQuantitiesApi,
   PeriodAmountApi,
   TotalAmountApi,
   UserQuantitiesApi,
@@ -17,7 +21,7 @@ import MainContainer from '../../layout/MainContainer';
 import { debounce, getTime } from '../../lib';
 import {
   BillDates,
-  BillQuantities,
+  AllBillQuantities,
   DeletedUserQuantities,
   LastWeekBillsObj,
   LastWeekReport,
@@ -25,6 +29,10 @@ import {
   PeriodAmountFilter,
   TotalAmount,
   UserQuantities,
+  DeletedBillQuantities,
+  AllDeletedBillQuantities,
+  NotificationQuantities,
+  AllNotificationQuantities,
 } from '../../store';
 import Skeleton from '../shared/Skeleton';
 import Card from '../shared/Card';
@@ -87,27 +95,66 @@ const Dashboard: FC = () => {
   const isInitialDeletedUserQuantitiesApiProcessing = request.isInitialApiProcessing(DeletedUserQuantitiesApi);
   const isInitialDeletedUserQuantitiesApiFailed = request.isInitialProcessingApiFailed(DeletedUserQuantitiesApi);
   const isInitialDeletedUserQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(DeletedUserQuantitiesApi);
-  const isInitialBillQuantitiesApiProcessing = request.isInitialApiProcessing(BillQuantitiesApi);
-  const isInitialBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(BillQuantitiesApi);
-  const isInitialBillQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(BillQuantitiesApi);
+  const isInitialAllBillQuantitiesApiProcessing = request.isInitialApiProcessing(AllBillQuantitiesApi);
+  const isInitialAllBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(AllBillQuantitiesApi);
+  const isInitialAllBillQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(AllBillQuantitiesApi);
+  const isInitialDeletedBillQuantitiesApiProcessing = request.isInitialApiProcessing(DeletedBillQuantitiesApi);
+  const isInitialDeletedBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(DeletedBillQuantitiesApi);
+  const isInitialDeletedBillQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(DeletedBillQuantitiesApi);
+  const isInitialAllDeletedBillQuantitiesApiProcessing = request.isInitialApiProcessing(AllDeletedBillQuantitiesApi);
+  const isInitialAllDeletedBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(AllDeletedBillQuantitiesApi);
+  const isInitialAllDeletedBillQuantitiesApiSuccessed =
+    request.isInitialProcessingApiSuccessed(AllDeletedBillQuantitiesApi);
+  const isInitialNotificationQuantitiesApiProcessing = request.isInitialApiProcessing(NotificationQuantitiesApi);
+  const isInitialNotificationQuantitiesApiFailed = request.isInitialProcessingApiFailed(NotificationQuantitiesApi);
+  const isInitialNotificationQuantitiesApiSuccessed =
+    request.isInitialProcessingApiSuccessed(NotificationQuantitiesApi);
+  const isInitialAllNotificationQuantitiesApiProcessing = request.isInitialApiProcessing(AllNotificationQuantitiesApi);
+  const isInitialAllNotificationQuantitiesApiFailed =
+    request.isInitialProcessingApiFailed(AllNotificationQuantitiesApi);
+  const isInitialAllNotificationQuantitiesApiSuccessed =
+    request.isInitialProcessingApiSuccessed(AllNotificationQuantitiesApi);
   const halfSecDebounce = useRef(debounce());
 
   useEffect(() => {
+    if (isCurrentOwner) {
+      Promise.allSettled<
+        [Promise<AxiosResponse<NotificationQuantities>>, Promise<AxiosResponse<AllNotificationQuantities>>]
+      >([
+        request.build(new NotificationQuantitiesApi().setInitialApi()),
+        request.build(new AllNotificationQuantitiesApi().setInitialApi()),
+      ]).then(([notificationQuantitiesResponse, allNotificationQuantitiesResponse]) => {
+        if (notificationQuantitiesResponse.status === 'fulfilled')
+          actions.setSpecificDetails('notificationQuantities', notificationQuantitiesResponse.value.data);
+
+        if (allNotificationQuantitiesResponse.status === 'fulfilled')
+          actions.setSpecificDetails('allNotificationQuantities', allNotificationQuantitiesResponse.value.data);
+      });
+    }
+
     if (isCurrentOwnerOrAdmin) {
       Promise.allSettled<
         [
           Promise<AxiosResponse<UserQuantities>>,
           Promise<AxiosResponse<DeletedUserQuantities>>,
           Promise<AxiosResponse<LastWeekUsersObj[]>>,
-          Promise<AxiosResponse<BillQuantities>>
+          Promise<AxiosResponse<AllBillQuantities>>,
+          Promise<AxiosResponse<AllDeletedBillQuantities>>
         ]
       >([
         request.build(new UserQuantitiesApi().setInitialApi()),
         request.build(new DeletedUserQuantitiesApi().setInitialApi()),
         request.build(new LastWeekUsersApi().setInitialApi()),
-        request.build(new BillQuantitiesApi().setInitialApi()),
+        request.build(new AllBillQuantitiesApi().setInitialApi()),
+        request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
       ]).then(
-        ([userQuantitiesResponse, deletedUserQuantitiesResponse, lastWeekUsersResponse, billQuantitiesResponse]) => {
+        ([
+          userQuantitiesResponse,
+          deletedUserQuantitiesResponse,
+          lastWeekUsersResponse,
+          billQuantitiesResponse,
+          allDeletedBillQuantitiesResponse,
+        ]) => {
           if (userQuantitiesResponse.status === 'fulfilled')
             actions.setSpecificDetails('userQuantities', new UserQuantities(userQuantitiesResponse.value.data));
 
@@ -122,16 +169,26 @@ const Dashboard: FC = () => {
 
           if (billQuantitiesResponse.status === 'fulfilled') {
             const { quantities, amount } = billQuantitiesResponse.value.data;
-            actions.setSpecificDetails('billQuantities', new BillQuantities(quantities, amount));
+            actions.setSpecificDetails('allBillQuantities', new AllBillQuantities(quantities, amount));
           }
+
+          if (allDeletedBillQuantitiesResponse.status === 'fulfilled')
+            actions.setSpecificDetails('allDeletedBillQuantities', allDeletedBillQuantitiesResponse.value.data);
         }
       );
     }
 
-    Promise.allSettled<[Promise<AxiosResponse<TotalAmount & BillDates>>, Promise<AxiosResponse<LastWeekBillsObj[]>>]>([
+    Promise.allSettled<
+      [
+        Promise<AxiosResponse<TotalAmount & BillDates>>,
+        Promise<AxiosResponse<LastWeekBillsObj[]>>,
+        Promise<AxiosResponse<DeletedBillQuantities>>
+      ]
+    >([
       request.build(new TotalAmountApi().setInitialApi()),
       request.build(new LastWeekBillsApi().setInitialApi()),
-    ]).then(([totalAmountResponse, lastWeekBillsResponse]) => {
+      request.build(new DeletedBillQuantitiesApi().setInitialApi()),
+    ]).then(([totalAmountResponse, lastWeekBillsResponse, deletedBillQuantitiesResponse]) => {
       if (totalAmountResponse.status === 'fulfilled') {
         const { start, end, totalAmount, quantities } = totalAmountResponse.value.data;
         actions.setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
@@ -141,6 +198,9 @@ const Dashboard: FC = () => {
 
       if (lastWeekBillsResponse.status === 'fulfilled')
         actions.setSpecificDetails('lastWeekBills', lastWeekBillsResponse.value.data);
+
+      if (deletedBillQuantitiesResponse.status === 'fulfilled')
+        actions.setSpecificDetails('deletedBillQuantities', deletedBillQuantitiesResponse.value.data);
     });
   }, []);
 
@@ -252,7 +312,7 @@ const Dashboard: FC = () => {
           alignItems="center"
           justifyContent="center"
           flexDirection="column"
-          gap="16px"
+          gap="12px"
         >
           <Box sx={{ width: '100%', height: '100%', minHeight: '435px' }}>
             {isInitialLastWeekBillsApiProcessing ? (
@@ -481,11 +541,109 @@ const Dashboard: FC = () => {
             </Box>
           )}
 
+          {isCurrentOwner && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+              {isInitialAllNotificationQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialAllNotificationQuantitiesApiFailed ? (
+                <Card style={{ height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the all notification quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialAllNotificationQuantitiesApiSuccessed &&
+                selectors.specificDetails.allNotificationQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            All notification quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.allNotificationQuantities.quantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
+          {isCurrentOwner && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+              {isInitialNotificationQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialNotificationQuantitiesApiFailed ? (
+                <Card style={{ height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the notification quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialNotificationQuantitiesApiSuccessed &&
+                selectors.specificDetails.notificationQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Notification quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.notificationQuantities.quantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
           {isCurrentOwnerOrAdmin && (
             <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
-              {isInitialBillQuantitiesApiProcessing ? (
+              {isInitialAllBillQuantitiesApiProcessing ? (
                 <Skeleton width="100%" height="64px" />
-              ) : isInitialBillQuantitiesApiFailed ? (
+              ) : isInitialAllBillQuantitiesApiFailed ? (
                 <Card style={{ height: '100%' }}>
                   <Box
                     sx={{
@@ -509,17 +667,66 @@ const Dashboard: FC = () => {
                   </Box>
                 </Card>
               ) : (
-                isInitialBillQuantitiesApiSuccessed &&
-                selectors.specificDetails.billQuantities && (
+                isInitialAllBillQuantitiesApiSuccessed &&
+                selectors.specificDetails.allBillQuantities && (
                   <Card>
                     <CardContent>
                       <Box display="flex" gap="20px" flexDirection="column">
                         <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
                           <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Total bill quantities of the users:{' '}
+                            All bill quantities:{' '}
                           </Typography>
                           <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.billQuantities.quantities}
+                            {selectors.specificDetails.allBillQuantities.quantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
+          {isCurrentOwnerOrAdmin && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+              {isInitialAllDeletedBillQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialAllDeletedBillQuantitiesApiFailed ? (
+                <Card style={{ height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the all deleted bill quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialAllDeletedBillQuantitiesApiSuccessed &&
+                selectors.specificDetails.allDeletedBillQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            All deleted bill quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.allDeletedBillQuantities.quantities}
                           </Typography>
                         </Box>
                       </Box>
@@ -646,7 +853,7 @@ const Dashboard: FC = () => {
                         })()}
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
                         <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Total bill quantities:{' '}
+                          Bill quantities:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
                           {selectors.specificDetails.totalAmount.quantities}
@@ -654,10 +861,57 @@ const Dashboard: FC = () => {
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
                         <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Total bill Amount:{' '}
+                          Bill Amount:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
                           {selectors.specificDetails.totalAmount.totalAmount}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              )
+            )}
+          </Box>
+
+          <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+            {isInitialDeletedBillQuantitiesApiProcessing ? (
+              <Skeleton width="100%" height="64px" />
+            ) : isInitialDeletedBillQuantitiesApiFailed ? (
+              <Card style={{ height: '100%' }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography
+                    fontSize={'16px'}
+                    textAlign={'center'}
+                    fontWeight={'500'}
+                    color={'#d00000'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    Failed to load the deleted bill quantities.
+                  </Typography>
+                </Box>
+              </Card>
+            ) : (
+              isInitialDeletedBillQuantitiesApiSuccessed &&
+              selectors.specificDetails.deletedBillQuantities && (
+                <Card>
+                  <CardContent>
+                    <Box display="flex" gap="20px" flexDirection="column">
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Deleted bill quantities:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {selectors.specificDetails.deletedBillQuantities.quantities}
                         </Typography>
                       </Box>
                     </Box>

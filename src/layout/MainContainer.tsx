@@ -21,10 +21,10 @@ const Content = styled('div')(({ theme }) => ({
   transition: 'all 0.3s',
   padding: '16px 24px',
   [theme.breakpoints.up('xl')]: {
-    maxWidth: '1550px',
+    maxWidth: '1200px',
   },
   [theme.breakpoints.down('xl')]: {
-    maxWidth: '100%',
+    maxWidth: '1200px',
   },
   [theme.breakpoints.down('sm')]: {
     padding: '16px',
