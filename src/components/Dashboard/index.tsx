@@ -464,27 +464,48 @@ const Dashboard: FC = () => {
             </Box>
           )}
 
-          {isCurrentOwnerOrAdmin &&
-            (isInitialBillQuantitiesApiProcessing ? (
-              <Skeleton width="100%" height="64px" />
-            ) : (
-              selectors.specificDetails.billQuantities && (
-                <Card>
-                  <CardContent>
-                    <Box display="flex" gap="20px" flexDirection="column">
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Total bill quantities of the users:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.billQuantities.quantities}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
+          {isCurrentOwnerOrAdmin && (
+            <Box sx={{ width: '100%', height: '64px' }}>
+              {isInitialBillQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialBillQuantitiesApiFailed ? (
+                <Card style={{ height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography fontSize={'16px'} textAlign={'center'} fontWeight={'500'} color={'#d00000'}>
+                      Failed to load the bill quantities.
+                    </Typography>
+                  </Box>
                 </Card>
-              )
-            ))}
+              ) : (
+                isInitialBillQuantitiesApiSuccessed &&
+                selectors.specificDetails.billQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Total bill quantities of the users:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.billQuantities.quantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
 
           {isInitialTotalAmountApiProcessing ? (
             <Skeleton width="100%" height="128px" />
