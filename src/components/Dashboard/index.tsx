@@ -318,11 +318,12 @@ const Dashboard: FC = () => {
             {isInitialLastWeekBillsApiProcessing ? (
               <Skeleton height="435px" width="100%" />
             ) : isInitialLastWeekBillsApiFailed ? (
-              <Card style={{ height: '100%' }}>
+              <Card style={{ height: '100%', minHeight: 'inherit' }}>
                 <Box
                   sx={{
                     width: '100%',
                     height: '100%',
+                    minHeight: 'inherit',
                     padding: '16px',
                     display: 'flex',
                     alignItems: 'center',
@@ -400,11 +401,12 @@ const Dashboard: FC = () => {
               {isInitialUserQuantitiesApiProcessing ? (
                 <Skeleton width="100%" height="186px" />
               ) : isInitialUserQuantitiesApiFailed ? (
-                <Card style={{ height: '100%' }}>
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
                   <Box
                     sx={{
                       width: '100%',
                       height: '100%',
+                      minHeight: 'inherit',
                       padding: '16px',
                       display: 'flex',
                       alignItems: 'center',
@@ -473,11 +475,12 @@ const Dashboard: FC = () => {
               {isInitialDeletedUserQuantitiesApiProcessing ? (
                 <Skeleton width="100%" height="184px" />
               ) : isInitialDeletedUserQuantitiesApiFailed ? (
-                <Card style={{ height: '100%' }}>
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
                   <Box
                     sx={{
                       width: '100%',
                       height: '100%',
+                      minHeight: 'inherit',
                       padding: '16px',
                       display: 'flex',
                       alignItems: 'center',
@@ -546,11 +549,12 @@ const Dashboard: FC = () => {
               {isInitialAllNotificationQuantitiesApiProcessing ? (
                 <Skeleton width="100%" height="64px" />
               ) : isInitialAllNotificationQuantitiesApiFailed ? (
-                <Card style={{ height: '100%' }}>
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
                   <Box
                     sx={{
                       width: '100%',
                       height: '100%',
+                      minHeight: 'inherit',
                       padding: '16px',
                       display: 'flex',
                       alignItems: 'center',
@@ -595,11 +599,12 @@ const Dashboard: FC = () => {
               {isInitialNotificationQuantitiesApiProcessing ? (
                 <Skeleton width="100%" height="64px" />
               ) : isInitialNotificationQuantitiesApiFailed ? (
-                <Card style={{ height: '100%' }}>
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
                   <Box
                     sx={{
                       width: '100%',
                       height: '100%',
+                      minHeight: 'inherit',
                       padding: '16px',
                       display: 'flex',
                       alignItems: 'center',
@@ -644,11 +649,12 @@ const Dashboard: FC = () => {
               {isInitialAllBillQuantitiesApiProcessing ? (
                 <Skeleton width="100%" height="64px" />
               ) : isInitialAllBillQuantitiesApiFailed ? (
-                <Card style={{ height: '100%' }}>
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
                   <Box
                     sx={{
                       width: '100%',
                       height: '100%',
+                      minHeight: 'inherit',
                       padding: '16px',
                       display: 'flex',
                       alignItems: 'center',
@@ -693,11 +699,12 @@ const Dashboard: FC = () => {
               {isInitialAllDeletedBillQuantitiesApiProcessing ? (
                 <Skeleton width="100%" height="64px" />
               ) : isInitialAllDeletedBillQuantitiesApiFailed ? (
-                <Card style={{ height: '100%' }}>
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
                   <Box
                     sx={{
                       width: '100%',
                       height: '100%',
+                      minHeight: 'inherit',
                       padding: '16px',
                       display: 'flex',
                       alignItems: 'center',
@@ -741,11 +748,12 @@ const Dashboard: FC = () => {
             {isInitialTotalAmountApiProcessing ? (
               <Skeleton width="100%" height="158px" />
             ) : isInitialTotalAmountApiFailed ? (
-              <Card style={{ height: '100%' }}>
+              <Card style={{ height: '100%', minHeight: 'inherit' }}>
                 <Box
                   sx={{
                     width: '100%',
                     height: '100%',
+                    minHeight: 'inherit',
                     padding: '16px',
                     display: 'flex',
                     alignItems: 'center',
@@ -878,11 +886,12 @@ const Dashboard: FC = () => {
             {isInitialDeletedBillQuantitiesApiProcessing ? (
               <Skeleton width="100%" height="64px" />
             ) : isInitialDeletedBillQuantitiesApiFailed ? (
-              <Card style={{ height: '100%' }}>
+              <Card style={{ height: '100%', minHeight: 'inherit' }}>
                 <Box
                   sx={{
                     width: '100%',
                     height: '100%',
+                    minHeight: 'inherit',
                     padding: '16px',
                     display: 'flex',
                     alignItems: 'center',
