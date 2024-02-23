@@ -7,6 +7,12 @@ export function useInitialMicro(app: MicroApp) {
     if (ref.current) {
       const { mount, unMount } = app(ref.current);
       mount();
+
+      return () => {
+        setTimeout(() => {
+          unMount();
+        });
+      };
     }
   }, []);
 
