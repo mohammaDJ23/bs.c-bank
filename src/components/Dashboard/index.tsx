@@ -190,8 +190,12 @@ const Dashboard: FC = () => {
       request.build(new DeletedBillQuantitiesApi().setInitialApi()),
     ]).then(([totalAmountResponse, lastWeekBillsResponse, deletedBillQuantitiesResponse]) => {
       if (totalAmountResponse.status === 'fulfilled') {
-        const { start, end, totalAmount, quantities } = totalAmountResponse.value.data;
-        actions.setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
+        const { start, end, totalAmount, quantities, dateLessQuantities, dateLessTotalAmount } =
+          totalAmountResponse.value.data;
+        actions.setSpecificDetails(
+          'totalAmount',
+          new TotalAmount(totalAmount, quantities, dateLessTotalAmount, dateLessQuantities)
+        );
         actions.setSpecificDetails('billDates', new BillDates(start, end));
         actions.setSpecificDetails('periodAmountFilter', new PeriodAmountFilter(start, end));
       }
@@ -232,7 +236,7 @@ const Dashboard: FC = () => {
 
     for (let i = 0; i < selectors.specificDetails.lastWeekBills.length; i++)
       chartData[i] = new LastWeekReport({
-        date: moment(selectors.specificDetails.lastWeekBills[i].date).format('l'),
+        date: selectors.specificDetails.lastWeekBills[i].date,
         billCounts: selectors.specificDetails.lastWeekBills[i].count,
         billAmount: selectors.specificDetails.lastWeekBills[i].amount,
       });
@@ -254,25 +258,37 @@ const Dashboard: FC = () => {
 
   function getNewTotalAmount(
     previousPeriodAmountFilter: PeriodAmountFilter,
+    previousTotalAmount: TotalAmount,
     newPeriodAmountFilter: PeriodAmountFilter
   ) {
     request
       .build<TotalAmount, PeriodAmountFilter>(new PeriodAmountApi(newPeriodAmountFilter))
       .then((response) => {
         const { totalAmount, quantities } = response.data;
-        actions.setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
+        actions.setSpecificDetails(
+          'totalAmount',
+          new TotalAmount(
+            totalAmount,
+            quantities,
+            previousTotalAmount.dateLessTotalAmount,
+            previousTotalAmount.dateLessQuantities
+          )
+        );
       })
       .catch((err) => actions.setSpecificDetails('periodAmountFilter', previousPeriodAmountFilter));
   }
 
   function changeStartDate(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const previousPeriodAmountFilter = selectors.specificDetails.periodAmountFilter!;
+    const previousTotalAmount = selectors.specificDetails.totalAmount!;
     const newPeriodAmountFilter = new PeriodAmountFilter(
       getNewDateValue(event.target.value),
       previousPeriodAmountFilter.end
     );
     actions.setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
-    halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
+    halfSecDebounce.current(() =>
+      getNewTotalAmount(previousPeriodAmountFilter, previousTotalAmount, newPeriodAmountFilter)
+    );
   }
 
   function changeSlider(evnet: Event, value: number | number[]) {
@@ -286,19 +302,25 @@ const Dashboard: FC = () => {
     } else setSliderStep(defaultSliderStep);
 
     const previousPeriodAmountFilter = selectors.specificDetails.periodAmountFilter!;
+    const previousTotalAmount = selectors.specificDetails.totalAmount!;
     const newPeriodAmountFilter = new PeriodAmountFilter(getTime(start), getTime(end));
     actions.setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
-    halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
+    halfSecDebounce.current(() =>
+      getNewTotalAmount(previousPeriodAmountFilter, previousTotalAmount, newPeriodAmountFilter)
+    );
   }
 
   function changeEndDate(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const previousPeriodAmountFilter = selectors.specificDetails.periodAmountFilter!;
+    const previousTotalAmount = selectors.specificDetails.totalAmount!;
     const newPeriodAmountFilter = new PeriodAmountFilter(
       previousPeriodAmountFilter.start,
       getNewDateValue(event.target.value)
     );
     actions.setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
-    halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
+    halfSecDebounce.current(() =>
+      getNewTotalAmount(previousPeriodAmountFilter, previousTotalAmount, newPeriodAmountFilter)
+    );
   }
 
   const chartData = getChartData();
@@ -372,10 +394,10 @@ const Dashboard: FC = () => {
                               enabled: false,
                             },
                             stroke: {
-                              curve: 'smooth',
+                              curve: 'straight',
                             },
                             xaxis: {
-                              type: 'category',
+                              type: 'datetime',
                               categories: chartData.map((item) => item.date),
                             },
                             tooltip: {
@@ -744,9 +766,9 @@ const Dashboard: FC = () => {
             </Box>
           )}
 
-          <Box sx={{ width: '100%', height: '100%', minHeight: totalAmountHeight || '158.5px' }}>
+          <Box sx={{ width: '100%', height: '100%', minHeight: totalAmountHeight || '322.5px' }}>
             {isInitialTotalAmountApiProcessing ? (
-              <Skeleton width="100%" height="158px" />
+              <Skeleton width="100%" height="322.5px" />
             ) : isInitialTotalAmountApiFailed ? (
               <Card style={{ height: '100%', minHeight: 'inherit' }}>
                 <Box
@@ -869,10 +891,44 @@ const Dashboard: FC = () => {
                       </Box>
                       <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
                         <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Bill Amount:{' '}
+                          Bill amounts:{' '}
                         </Typography>
                         <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
                           {selectors.specificDetails.totalAmount.totalAmount}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Date-less bill quantities:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {selectors.specificDetails.totalAmount.dateLessQuantities}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Date-less bill amounts:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {selectors.specificDetails.totalAmount.dateLessTotalAmount}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Quantities:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {Number(selectors.specificDetails.totalAmount.quantities) +
+                            Number(selectors.specificDetails.totalAmount.dateLessQuantities)}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Amounts:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {Number(selectors.specificDetails.totalAmount.dateLessTotalAmount) +
+                            Number(selectors.specificDetails.totalAmount.totalAmount)}
                         </Typography>
                       </Box>
                     </Box>
