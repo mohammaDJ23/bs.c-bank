@@ -7,12 +7,12 @@ export enum SpecificDetails {
 }
 
 export class LastWeekReport {
-  public date: string;
+  public date: number;
   public billCounts: number;
   public billAmount: string;
   public userCounts: number;
 
-  constructor({ date = '0', billCounts = 0, billAmount = '0', userCounts = 0 }: Partial<LastWeekReport> = {}) {
+  constructor({ date = 0, billCounts = 0, billAmount = '0', userCounts = 0 }: Partial<LastWeekReport> = {}) {
     this.date = date;
     this.billCounts = billCounts;
     this.billAmount = billAmount;
@@ -21,7 +21,12 @@ export class LastWeekReport {
 }
 
 export class TotalAmount {
-  constructor(public totalAmount: string, public quantities: string) {}
+  constructor(
+    public totalAmount: string,
+    public quantities: string,
+    public dateLessTotalAmount: string,
+    public dateLessQuantities: string
+  ) {}
 }
 
 export interface LastWeekBillsObj {
