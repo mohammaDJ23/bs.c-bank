@@ -11,31 +11,40 @@ import {
   getTime,
   isoDate,
   ReceiverObj,
+  LocationListFilters,
+  LocationList,
+  LocationObj,
 } from '../../lib';
 import { useForm, useRequest, useFocus, usePaginationList } from '../../hooks';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
-import { ConsumersApi, CreateBillApi, ReceiversApi } from '../../apis';
+import { ConsumersApi, CreateBillApi, LocationsApi, ReceiversApi } from '../../apis';
 import { useSnackbar } from 'notistack';
 import Navigation from '../../layout/Navigation';
 
 const CreateBillContent: FC = () => {
   const [consumers, setConsumers] = useState<string[]>([]);
   const [receviers, setReceivers] = useState<string[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
   const [isConsumerAutocompleteOpen, setIsConsumerAutocompleteOpen] = useState(false);
   const [isReceiverAutocompleteOpen, setIsReceiverAutocompleteOpen] = useState(false);
+  const [isLocationAutocompleteOpen, setIsLocationAutocompleteOpen] = useState(false);
   const createBillFromInstance = useForm(CreateBill);
   const consumerListFiltersFormInstance = useForm(ConsumerListFilters);
   const receiverListFiltersFormInstance = useForm(ReceiverListFilters);
+  const locationListFiltersFormInstance = useForm(LocationListFilters);
   const request = useRequest();
   const focus = useFocus();
   const isCreateBillApiProcessing = request.isApiProcessing(CreateBillApi);
   const isConsumersApiProcessing = request.isApiProcessing(ConsumersApi);
   const isReceiversApiProcessing = request.isApiProcessing(ReceiversApi);
+  const isLocationsApiProcessing = request.isApiProcessing(LocationsApi);
   const createBillFrom = createBillFromInstance.getForm();
   const consumerListFiltersForm = consumerListFiltersFormInstance.getForm();
   const receiverListFiltersForm = receiverListFiltersFormInstance.getForm();
+  const locationListFiltersForm = locationListFiltersFormInstance.getForm();
   const consumerListInstance = usePaginationList(ConsumerList);
   const receiverlistInstance = usePaginationList(ReceiverList);
+  const locationListInstance = usePaginationList(LocationList);
   const snackbar = useSnackbar();
   const oneSecDebounce = useRef(debounce(1000));
 
@@ -75,6 +84,36 @@ const CreateBillContent: FC = () => {
             receivers.splice(receivers.length, 0, ...list.map((receiver) => receiver.name));
             const newReceivers = new Set(receivers);
             setReceivers(Array.from(newReceivers));
+          });
+        });
+      });
+    },
+    [createBillFromInstance, receiverListFiltersFormInstance]
+  );
+
+  const onLocationChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const q = event.target.value.trim();
+      locationListFiltersFormInstance.onChange('q', q);
+      createBillFromInstance.onChange('location', q);
+
+      oneSecDebounce.current(() => {
+        locationListFiltersFormInstance.onSubmit(() => {
+          setIsLocationAutocompleteOpen(true);
+          const locationApi = new LocationsApi({
+            take: locationListInstance.getTake(),
+            page: locationListInstance.getPage(),
+            filters: { q },
+          });
+          request.build<[LocationObj[], number]>(locationApi).then((response) => {
+            const [list] = response.data;
+            const locations: string[] = [];
+            if (q.length) {
+              locations.splice(locations.length, 0, q);
+            }
+            locations.splice(locations.length, 0, ...list.map((location) => location.name));
+            const newLocations = new Set(locations);
+            setLocations(Array.from(newLocations));
           });
         });
       });
@@ -194,6 +233,60 @@ const CreateBillContent: FC = () => {
           </Box>
           <Box position={'relative'}>
             <Autocomplete
+              freeSolo
+              open={isLocationAutocompleteOpen}
+              onBlur={() => {
+                setLocations([]);
+                setIsLocationAutocompleteOpen(false);
+              }}
+              value={createBillFrom.location}
+              onChange={(event, value) => {
+                value = value || '';
+                createBillFromInstance.onChange('location', value);
+                locationListFiltersFormInstance.onChange('q', '');
+                setLocations([]);
+                setIsLocationAutocompleteOpen(false);
+              }}
+              disabled={isCreateBillApiProcessing}
+              options={locations}
+              filterOptions={(options) => options}
+              getOptionLabel={(option) => option}
+              clearIcon={false}
+              clearOnBlur
+              clearOnEscape
+              blurOnSelect
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  sx={{}}
+                  onBlur={(event) => {
+                    locationListFiltersFormInstance.onChange('q', '');
+                  }}
+                  onFocus={() => {
+                    setLocations([]);
+                    setIsLocationAutocompleteOpen(false);
+                  }}
+                  variant="standard"
+                  label="Location"
+                  value={locationListFiltersForm.q}
+                  onChange={onLocationChange}
+                  error={
+                    createBillFromInstance.isInputInValid('location') ||
+                    locationListFiltersFormInstance.isInputInValid('q')
+                  }
+                  helperText={
+                    createBillFromInstance.getInputErrorMessage('location') ||
+                    locationListFiltersFormInstance.getInputErrorMessage('q')
+                  }
+                />
+              )}
+            />
+            {isLocationsApiProcessing && (
+              <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
+            )}
+          </Box>
+          <Box position={'relative'}>
+            <Autocomplete
               multiple
               freeSolo
               open={isConsumerAutocompleteOpen}
@@ -246,8 +339,10 @@ const CreateBillContent: FC = () => {
             label="Date"
             type="date"
             variant="standard"
-            value={isoDate(createBillFrom.date)}
-            onChange={(event) => createBillFromInstance.onChange('date', getTime(event.target.value))}
+            value={createBillFrom.date ? isoDate(createBillFrom.date) : 'undefined'}
+            onChange={(event) =>
+              createBillFromInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
+            }
             helperText={createBillFromInstance.getInputErrorMessage('date')}
             error={createBillFromInstance.isInputInValid('date')}
             InputLabelProps={{ shrink: true }}

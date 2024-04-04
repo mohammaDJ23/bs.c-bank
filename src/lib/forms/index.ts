@@ -11,6 +11,7 @@ import { NotificationListFilters } from './notificationListFilters';
 import { ConsumerListFilters } from './consumerListFilters';
 import { AllBillListFilters } from './allBillListFilters';
 import { ReceiverListFilters } from './receiverListFilters';
+import { LocationListFilters } from './locationListFilters';
 
 export * from './createUser';
 export * from './formConstructor';
@@ -25,6 +26,7 @@ export * from './notificationListFilters';
 export * from './consumerListFilters';
 export * from './allBillListFilters';
 export * from './receiverListFilters';
+export * from './locationListFilters';
 
 export const forms = {
   CreateUser,
@@ -40,4 +42,5 @@ export const forms = {
   ConsumerListFilters,
   AllBillListFilters,
   ReceiverListFilters,
+  LocationListFilters,
 };

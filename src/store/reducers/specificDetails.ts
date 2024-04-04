@@ -7,12 +7,12 @@ export enum SpecificDetails {
 }
 
 export class LastWeekReport {
-  public date: string;
+  public date: number;
   public billCounts: number;
   public billAmount: string;
   public userCounts: number;
 
-  constructor({ date = '0', billCounts = 0, billAmount = '0', userCounts = 0 }: Partial<LastWeekReport> = {}) {
+  constructor({ date = 0, billCounts = 0, billAmount = '0', userCounts = 0 }: Partial<LastWeekReport> = {}) {
     this.date = date;
     this.billCounts = billCounts;
     this.billAmount = billAmount;
@@ -21,7 +21,12 @@ export class LastWeekReport {
 }
 
 export class TotalAmount {
-  constructor(public totalAmount: string, public quantities: string) {}
+  constructor(
+    public totalAmount: string,
+    public quantities: string,
+    public dateLessTotalAmount: string,
+    public dateLessQuantities: string
+  ) {}
 }
 
 export interface LastWeekBillsObj {
@@ -30,8 +35,24 @@ export interface LastWeekBillsObj {
   date: number;
 }
 
-export class BillQuantities {
+export class AllBillQuantities {
   constructor(public quantities: string, public amount: string) {}
+}
+
+export class AllDeletedBillQuantities {
+  constructor(public quantities: string, public amount: string) {}
+}
+
+export class DeletedBillQuantities {
+  constructor(public quantities: string, public amount: string) {}
+}
+
+export class NotificationQuantities {
+  constructor(public quantities: string) {}
+}
+
+export class AllNotificationQuantities {
+  constructor(public quantities: string) {}
 }
 
 export interface LastWeekUsersObj {
@@ -88,10 +109,14 @@ export interface SpecificDetailsState {
   billDates: BillDates | null;
   userQuantities: UserQuantities | null;
   deletedUserQuantities: DeletedUserQuantities | null;
-  billQuantities: BillQuantities | null;
+  allBillQuantities: AllBillQuantities | null;
+  deletedBillQuantities: DeletedBillQuantities | null;
+  allDeletedBillQuantities: AllDeletedBillQuantities | null;
   deletedUser: DeletedUserObj | null;
   deletedBill: BillObj | null;
   notification: NotificationObj | null;
+  notificationQuantities: NotificationQuantities | null;
+  allNotificationQuantities: AllNotificationQuantities | null;
   usersStatus: UsersStatusType;
 }
 
@@ -106,10 +131,14 @@ const initialState: SpecificDetailsState = {
   billDates: null,
   userQuantities: null,
   deletedUserQuantities: null,
-  billQuantities: null,
+  allBillQuantities: null,
+  allDeletedBillQuantities: null,
+  deletedBillQuantities: null,
   deletedUser: null,
   deletedBill: null,
   notification: null,
+  notificationQuantities: null,
+  allNotificationQuantities: null,
   usersStatus: {},
 };
 
@@ -133,10 +162,14 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     billDates: null,
     userQuantities: null,
     deletedUserQuantities: null,
-    billQuantities: null,
+    allBillQuantities: null,
+    allDeletedBillQuantities: null,
+    deletedBillQuantities: null,
     deletedUser: null,
     deletedBill: null,
     notification: null,
+    notificationQuantities: null,
+    allNotificationQuantities: null,
   };
 }
 

@@ -19,6 +19,8 @@ import {
   DeletedUserListFiltersObj,
   ConsumerListFiltersObj,
   ReceiverObj,
+  LocationListFiltersObj,
+  LocationObj,
 } from '../lib';
 import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
@@ -411,11 +413,35 @@ export class DownloadBillReportApi extends RootApi {
   }
 }
 
-export class BillQuantitiesApi extends RootApi {
+export class AllBillQuantitiesApi extends RootApi {
   constructor() {
     super(
       {
-        url: `/api/v1/bank/bill/quantities`,
+        url: `/api/v1/bank/bill/all/quantities`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class AllDeletedBillQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/bank/bill/all/deleted-quantities`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class DeletedBillQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/bank/bill/deleted-quantities`,
         method: 'get',
       },
       { baseURL: process.env.BANK_SERVICE }
@@ -450,6 +476,30 @@ export class NotificationApi extends RootApi {
   }
 }
 
+export class NotificationQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/notification/quantities`,
+        method: 'get',
+      },
+      { baseURL: process.env.NOTIFICATION_SERVICE }
+    );
+  }
+}
+
+export class AllNotificationQuantitiesApi extends RootApi {
+  constructor() {
+    super(
+      {
+        url: `/api/v1/notification/all/quantities`,
+        method: 'get',
+      },
+      { baseURL: process.env.NOTIFICATION_SERVICE }
+    );
+  }
+}
+
 export class ConsumersApi extends RootApi {
   constructor(params: ListParams<ConsumerObj> & FilterParams<Partial<ConsumerListFiltersObj>>) {
     super(
@@ -468,6 +518,19 @@ export class ReceiversApi extends RootApi {
     super(
       {
         url: '/api/v1/bank/receiver/all',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class LocationsApi extends RootApi {
+  constructor(params: ListParams<LocationObj> & FilterParams<Partial<LocationListFiltersObj>>) {
+    super(
+      {
+        url: '/api/v1/bank/location/all',
         method: 'get',
         params,
       },

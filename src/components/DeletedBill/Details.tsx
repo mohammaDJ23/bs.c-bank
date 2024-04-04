@@ -48,6 +48,12 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
           </Typography>{' '}
           {bill.receiver}
         </Typography>
+        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
+          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+            Location:
+          </Typography>{' '}
+          {bill.location}
+        </Typography>
         <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
           <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
             Consumers:{' '}

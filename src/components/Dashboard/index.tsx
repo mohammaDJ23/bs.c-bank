@@ -4,10 +4,14 @@ import { Box, CardContent, Typography, Slider, Input, styled } from '@mui/materi
 import { DateRange } from '@mui/icons-material';
 import { grey } from '@mui/material/colors';
 import {
-  BillQuantitiesApi,
+  AllBillQuantitiesApi,
+  AllDeletedBillQuantitiesApi,
+  AllNotificationQuantitiesApi,
+  DeletedBillQuantitiesApi,
   DeletedUserQuantitiesApi,
   LastWeekBillsApi,
   LastWeekUsersApi,
+  NotificationQuantitiesApi,
   PeriodAmountApi,
   TotalAmountApi,
   UserQuantitiesApi,
@@ -17,7 +21,7 @@ import MainContainer from '../../layout/MainContainer';
 import { debounce, getTime } from '../../lib';
 import {
   BillDates,
-  BillQuantities,
+  AllBillQuantities,
   DeletedUserQuantities,
   LastWeekBillsObj,
   LastWeekReport,
@@ -25,6 +29,10 @@ import {
   PeriodAmountFilter,
   TotalAmount,
   UserQuantities,
+  DeletedBillQuantities,
+  AllDeletedBillQuantities,
+  NotificationQuantities,
+  AllNotificationQuantities,
 } from '../../store';
 import Skeleton from '../shared/Skeleton';
 import Card from '../shared/Card';
@@ -65,6 +73,7 @@ function getDefaultSliderStep() {
 const Dashboard: FC = () => {
   const defaultSliderStep = getDefaultSliderStep();
   const [sliderStep, setSliderStep] = useState(defaultSliderStep);
+  const [totalAmountHeight, setTotalAmountHeight] = useState<string>('');
   const request = useRequest();
   const auth = useAuth();
   const actions = useAction();
@@ -74,29 +83,78 @@ const Dashboard: FC = () => {
   const isCurrentOwnerOrAdmin = isCurrentOwner || isCurrentAdmin;
   const snackbar = useSnackbar();
   const isInitialTotalAmountApiProcessing = request.isInitialApiProcessing(TotalAmountApi);
+  const isInitialTotalAmountApiFailed = request.isInitialProcessingApiFailed(TotalAmountApi);
+  const isInitialTotalAmountApiSuccessed = request.isInitialProcessingApiSuccessed(TotalAmountApi);
   const isInitialLastWeekBillsApiProcessing = request.isInitialApiProcessing(LastWeekBillsApi);
+  const isInitialLastWeekBillsApiFailed = request.isInitialProcessingApiFailed(LastWeekBillsApi);
+  const isInitialLastWeekBillsApiSuccessed = request.isInitialProcessingApiSuccessed(LastWeekBillsApi);
   const isPeriodAmountApiProcessing = request.isApiProcessing(PeriodAmountApi);
   const isInitialUserQuantitiesApiProcessing = request.isInitialApiProcessing(UserQuantitiesApi);
+  const isInitialUserQuantitiesApiFailed = request.isInitialProcessingApiFailed(UserQuantitiesApi);
+  const isInitialUserQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(UserQuantitiesApi);
   const isInitialDeletedUserQuantitiesApiProcessing = request.isInitialApiProcessing(DeletedUserQuantitiesApi);
-  const isInitialBillQuantitiesApiProcessing = request.isInitialApiProcessing(BillQuantitiesApi);
+  const isInitialDeletedUserQuantitiesApiFailed = request.isInitialProcessingApiFailed(DeletedUserQuantitiesApi);
+  const isInitialDeletedUserQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(DeletedUserQuantitiesApi);
+  const isInitialAllBillQuantitiesApiProcessing = request.isInitialApiProcessing(AllBillQuantitiesApi);
+  const isInitialAllBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(AllBillQuantitiesApi);
+  const isInitialAllBillQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(AllBillQuantitiesApi);
+  const isInitialDeletedBillQuantitiesApiProcessing = request.isInitialApiProcessing(DeletedBillQuantitiesApi);
+  const isInitialDeletedBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(DeletedBillQuantitiesApi);
+  const isInitialDeletedBillQuantitiesApiSuccessed = request.isInitialProcessingApiSuccessed(DeletedBillQuantitiesApi);
+  const isInitialAllDeletedBillQuantitiesApiProcessing = request.isInitialApiProcessing(AllDeletedBillQuantitiesApi);
+  const isInitialAllDeletedBillQuantitiesApiFailed = request.isInitialProcessingApiFailed(AllDeletedBillQuantitiesApi);
+  const isInitialAllDeletedBillQuantitiesApiSuccessed =
+    request.isInitialProcessingApiSuccessed(AllDeletedBillQuantitiesApi);
+  const isInitialNotificationQuantitiesApiProcessing = request.isInitialApiProcessing(NotificationQuantitiesApi);
+  const isInitialNotificationQuantitiesApiFailed = request.isInitialProcessingApiFailed(NotificationQuantitiesApi);
+  const isInitialNotificationQuantitiesApiSuccessed =
+    request.isInitialProcessingApiSuccessed(NotificationQuantitiesApi);
+  const isInitialAllNotificationQuantitiesApiProcessing = request.isInitialApiProcessing(AllNotificationQuantitiesApi);
+  const isInitialAllNotificationQuantitiesApiFailed =
+    request.isInitialProcessingApiFailed(AllNotificationQuantitiesApi);
+  const isInitialAllNotificationQuantitiesApiSuccessed =
+    request.isInitialProcessingApiSuccessed(AllNotificationQuantitiesApi);
   const halfSecDebounce = useRef(debounce());
 
   useEffect(() => {
+    if (isCurrentOwner) {
+      Promise.allSettled<
+        [Promise<AxiosResponse<NotificationQuantities>>, Promise<AxiosResponse<AllNotificationQuantities>>]
+      >([
+        request.build(new NotificationQuantitiesApi().setInitialApi()),
+        request.build(new AllNotificationQuantitiesApi().setInitialApi()),
+      ]).then(([notificationQuantitiesResponse, allNotificationQuantitiesResponse]) => {
+        if (notificationQuantitiesResponse.status === 'fulfilled')
+          actions.setSpecificDetails('notificationQuantities', notificationQuantitiesResponse.value.data);
+
+        if (allNotificationQuantitiesResponse.status === 'fulfilled')
+          actions.setSpecificDetails('allNotificationQuantities', allNotificationQuantitiesResponse.value.data);
+      });
+    }
+
     if (isCurrentOwnerOrAdmin) {
       Promise.allSettled<
         [
           Promise<AxiosResponse<UserQuantities>>,
           Promise<AxiosResponse<DeletedUserQuantities>>,
           Promise<AxiosResponse<LastWeekUsersObj[]>>,
-          Promise<AxiosResponse<BillQuantities>>
+          Promise<AxiosResponse<AllBillQuantities>>,
+          Promise<AxiosResponse<AllDeletedBillQuantities>>
         ]
       >([
         request.build(new UserQuantitiesApi().setInitialApi()),
         request.build(new DeletedUserQuantitiesApi().setInitialApi()),
         request.build(new LastWeekUsersApi().setInitialApi()),
-        request.build(new BillQuantitiesApi().setInitialApi()),
+        request.build(new AllBillQuantitiesApi().setInitialApi()),
+        request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
       ]).then(
-        ([userQuantitiesResponse, deletedUserQuantitiesResponse, lastWeekUsersResponse, billQuantitiesResponse]) => {
+        ([
+          userQuantitiesResponse,
+          deletedUserQuantitiesResponse,
+          lastWeekUsersResponse,
+          billQuantitiesResponse,
+          allDeletedBillQuantitiesResponse,
+        ]) => {
           if (userQuantitiesResponse.status === 'fulfilled')
             actions.setSpecificDetails('userQuantities', new UserQuantities(userQuantitiesResponse.value.data));
 
@@ -111,25 +169,42 @@ const Dashboard: FC = () => {
 
           if (billQuantitiesResponse.status === 'fulfilled') {
             const { quantities, amount } = billQuantitiesResponse.value.data;
-            actions.setSpecificDetails('billQuantities', new BillQuantities(quantities, amount));
+            actions.setSpecificDetails('allBillQuantities', new AllBillQuantities(quantities, amount));
           }
+
+          if (allDeletedBillQuantitiesResponse.status === 'fulfilled')
+            actions.setSpecificDetails('allDeletedBillQuantities', allDeletedBillQuantitiesResponse.value.data);
         }
       );
     }
 
-    Promise.allSettled<[Promise<AxiosResponse<TotalAmount & BillDates>>, Promise<AxiosResponse<LastWeekBillsObj[]>>]>([
+    Promise.allSettled<
+      [
+        Promise<AxiosResponse<TotalAmount & BillDates>>,
+        Promise<AxiosResponse<LastWeekBillsObj[]>>,
+        Promise<AxiosResponse<DeletedBillQuantities>>
+      ]
+    >([
       request.build(new TotalAmountApi().setInitialApi()),
       request.build(new LastWeekBillsApi().setInitialApi()),
-    ]).then(([totalAmountResponse, lastWeekBillsResponse]) => {
+      request.build(new DeletedBillQuantitiesApi().setInitialApi()),
+    ]).then(([totalAmountResponse, lastWeekBillsResponse, deletedBillQuantitiesResponse]) => {
       if (totalAmountResponse.status === 'fulfilled') {
-        const { start, end, totalAmount, quantities } = totalAmountResponse.value.data;
-        actions.setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
+        const { start, end, totalAmount, quantities, dateLessQuantities, dateLessTotalAmount } =
+          totalAmountResponse.value.data;
+        actions.setSpecificDetails(
+          'totalAmount',
+          new TotalAmount(totalAmount, quantities, dateLessTotalAmount, dateLessQuantities)
+        );
         actions.setSpecificDetails('billDates', new BillDates(start, end));
         actions.setSpecificDetails('periodAmountFilter', new PeriodAmountFilter(start, end));
       }
 
       if (lastWeekBillsResponse.status === 'fulfilled')
         actions.setSpecificDetails('lastWeekBills', lastWeekBillsResponse.value.data);
+
+      if (deletedBillQuantitiesResponse.status === 'fulfilled')
+        actions.setSpecificDetails('deletedBillQuantities', deletedBillQuantitiesResponse.value.data);
     });
   }, []);
 
@@ -161,7 +236,7 @@ const Dashboard: FC = () => {
 
     for (let i = 0; i < selectors.specificDetails.lastWeekBills.length; i++)
       chartData[i] = new LastWeekReport({
-        date: moment(selectors.specificDetails.lastWeekBills[i].date).format('l'),
+        date: selectors.specificDetails.lastWeekBills[i].date,
         billCounts: selectors.specificDetails.lastWeekBills[i].count,
         billAmount: selectors.specificDetails.lastWeekBills[i].amount,
       });
@@ -183,25 +258,37 @@ const Dashboard: FC = () => {
 
   function getNewTotalAmount(
     previousPeriodAmountFilter: PeriodAmountFilter,
+    previousTotalAmount: TotalAmount,
     newPeriodAmountFilter: PeriodAmountFilter
   ) {
     request
       .build<TotalAmount, PeriodAmountFilter>(new PeriodAmountApi(newPeriodAmountFilter))
       .then((response) => {
         const { totalAmount, quantities } = response.data;
-        actions.setSpecificDetails('totalAmount', new TotalAmount(totalAmount, quantities));
+        actions.setSpecificDetails(
+          'totalAmount',
+          new TotalAmount(
+            totalAmount,
+            quantities,
+            previousTotalAmount.dateLessTotalAmount,
+            previousTotalAmount.dateLessQuantities
+          )
+        );
       })
       .catch((err) => actions.setSpecificDetails('periodAmountFilter', previousPeriodAmountFilter));
   }
 
   function changeStartDate(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const previousPeriodAmountFilter = selectors.specificDetails.periodAmountFilter!;
+    const previousTotalAmount = selectors.specificDetails.totalAmount!;
     const newPeriodAmountFilter = new PeriodAmountFilter(
       getNewDateValue(event.target.value),
       previousPeriodAmountFilter.end
     );
     actions.setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
-    halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
+    halfSecDebounce.current(() =>
+      getNewTotalAmount(previousPeriodAmountFilter, previousTotalAmount, newPeriodAmountFilter)
+    );
   }
 
   function changeSlider(evnet: Event, value: number | number[]) {
@@ -215,19 +302,25 @@ const Dashboard: FC = () => {
     } else setSliderStep(defaultSliderStep);
 
     const previousPeriodAmountFilter = selectors.specificDetails.periodAmountFilter!;
+    const previousTotalAmount = selectors.specificDetails.totalAmount!;
     const newPeriodAmountFilter = new PeriodAmountFilter(getTime(start), getTime(end));
     actions.setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
-    halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
+    halfSecDebounce.current(() =>
+      getNewTotalAmount(previousPeriodAmountFilter, previousTotalAmount, newPeriodAmountFilter)
+    );
   }
 
   function changeEndDate(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const previousPeriodAmountFilter = selectors.specificDetails.periodAmountFilter!;
+    const previousTotalAmount = selectors.specificDetails.totalAmount!;
     const newPeriodAmountFilter = new PeriodAmountFilter(
       previousPeriodAmountFilter.start,
       getNewDateValue(event.target.value)
     );
     actions.setSpecificDetails('periodAmountFilter', newPeriodAmountFilter);
-    halfSecDebounce.current(() => getNewTotalAmount(previousPeriodAmountFilter, newPeriodAmountFilter));
+    halfSecDebounce.current(() =>
+      getNewTotalAmount(previousPeriodAmountFilter, previousTotalAmount, newPeriodAmountFilter)
+    );
   }
 
   const chartData = getChartData();
@@ -241,279 +334,657 @@ const Dashboard: FC = () => {
           alignItems="center"
           justifyContent="center"
           flexDirection="column"
-          gap="16px"
+          gap="12px"
         >
-          {isInitialLastWeekBillsApiProcessing ? (
-            <Skeleton height="440px" width="100%" />
-          ) : (
-            chartData.length > 0 && (
-              <Card>
-                <CardContent>
-                  {(() => {
-                    const series = [
-                      {
-                        name: 'Bills',
-                        data: chartData.map((item) => item.billCounts),
-                      },
-                    ];
+          <Box sx={{ width: '100%', height: '100%', minHeight: '435px' }}>
+            {isInitialLastWeekBillsApiProcessing ? (
+              <Skeleton height="435px" width="100%" />
+            ) : isInitialLastWeekBillsApiFailed ? (
+              <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: 'inherit',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography
+                    fontSize={'16px'}
+                    textAlign={'center'}
+                    fontWeight={'500'}
+                    color={'#d00000'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    Failed to load the chart.
+                  </Typography>
+                </Box>
+              </Card>
+            ) : (
+              isInitialLastWeekBillsApiSuccessed &&
+              chartData.length > 0 && (
+                <Card>
+                  <CardContent>
+                    {(() => {
+                      const series = [
+                        {
+                          name: 'Bills',
+                          data: chartData.map((item) => item.billCounts),
+                        },
+                      ];
 
-                    if (isCurrentOwnerOrAdmin) {
-                      series.push({
-                        name: 'Users',
-                        data: chartData.map((item) => item.userCounts),
-                      });
-                    }
+                      if (isCurrentOwnerOrAdmin) {
+                        series.push({
+                          name: 'Users',
+                          data: chartData.map((item) => item.userCounts),
+                        });
+                      }
 
-                    return (
-                      <Chart
-                        options={{
-                          chart: {
-                            height: 380,
-                            type: 'area',
-                          },
-                          dataLabels: {
-                            enabled: false,
-                          },
-                          stroke: {
-                            curve: 'smooth',
-                          },
-                          xaxis: {
-                            type: 'category',
-                            categories: chartData.map((item) => item.date),
-                          },
-                          tooltip: {
-                            x: {
-                              format: 'dd/MM/yy',
+                      return (
+                        <Chart
+                          options={{
+                            chart: {
+                              height: 380,
+                              type: 'area',
                             },
-                          },
-                        }}
-                        series={series}
-                        type="area"
-                        height={380}
-                      />
-                    );
-                  })()}
-                </CardContent>
-              </Card>
-            )
-          )}
-
-          {isCurrentOwnerOrAdmin &&
-            (isInitialUserQuantitiesApiProcessing ? (
-              <Skeleton width="100%" height="196px" />
-            ) : (
-              selectors.specificDetails.userQuantities && (
-                <Card>
-                  <CardContent>
-                    <Box display="flex" gap="20px" flexDirection="column">
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Total Users:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.userQuantities.quantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Owners:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.userQuantities.ownerQuantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Admins:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.userQuantities.adminQuantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Users:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.userQuantities.userQuantities}
-                        </Typography>
-                      </Box>
-                    </Box>
+                            dataLabels: {
+                              enabled: false,
+                            },
+                            stroke: {
+                              curve: 'straight',
+                            },
+                            xaxis: {
+                              type: 'datetime',
+                              categories: chartData.map((item) => item.date),
+                            },
+                            tooltip: {
+                              x: {
+                                format: 'dd/MM/yy',
+                              },
+                            },
+                          }}
+                          series={series}
+                          type="area"
+                          height={380}
+                        />
+                      );
+                    })()}
                   </CardContent>
                 </Card>
               )
-            ))}
+            )}
+          </Box>
 
-          {isCurrentOwnerOrAdmin &&
-            (isInitialDeletedUserQuantitiesApiProcessing ? (
-              <Skeleton width="100%" height="196px" />
-            ) : (
-              selectors.specificDetails.deletedUserQuantities && (
-                <Card>
-                  <CardContent>
-                    <Box display="flex" gap="20px" flexDirection="column">
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Total Deleted Users:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.deletedUserQuantities.quantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Deleted Owners:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Deleted Admins:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.deletedUserQuantities.adminQuantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Deleted Users:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.deletedUserQuantities.userQuantities}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              )
-            ))}
-
-          {isCurrentOwnerOrAdmin &&
-            (isInitialBillQuantitiesApiProcessing ? (
-              <Skeleton width="100%" height="64px" />
-            ) : (
-              selectors.specificDetails.billQuantities && (
-                <Card>
-                  <CardContent>
-                    <Box display="flex" gap="20px" flexDirection="column">
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Total bill quantities of the users:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.billQuantities.quantities}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              )
-            ))}
-
-          {isInitialTotalAmountApiProcessing ? (
-            <Skeleton width="100%" height="128px" />
-          ) : (
-            selectors.specificDetails.totalAmount &&
-            selectors.specificDetails.periodAmountFilter &&
-            selectors.specificDetails.billDates && (
-              <Card>
-                <CardContent>
-                  <Box display="flex" justifyContent="center" flexDirection="column" gap="20px">
-                    {selectors.specificDetails.billDates.start > 0 &&
-                      selectors.specificDetails.billDates.end > 0 &&
-                      selectors.specificDetails.billDates.end - selectors.specificDetails.billDates.start >
-                        getOneDayDate() &&
-                      (() => {
-                        const slider = (
-                          <Slider
-                            disabled={isPeriodAmountApiProcessing}
-                            value={[
-                              selectors.specificDetails.periodAmountFilter.start,
-                              selectors.specificDetails.periodAmountFilter.end,
-                            ]}
-                            step={sliderStep}
-                            min={selectors.specificDetails.billDates.start}
-                            max={selectors.specificDetails.billDates.end}
-                            onChange={changeSlider}
-                            valueLabelDisplay="off"
-                          />
-                        );
-
-                        return (
-                          <Box>
-                            <SmallSliderWrapper>{slider}</SmallSliderWrapper>
-                            <Box
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="space-between"
-                              gap="30px"
-                              position="relative"
-                            >
-                              <Box display="flex" alignItems="center" gap="5px">
-                                <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
-                                  {moment(selectors.specificDetails.periodAmountFilter.start).format('ll')}
-                                </Typography>
-                                <DateRange fontSize="small" sx={{ color: grey[600] }} />
-                              </Box>
-                              <Input
-                                disabled={isPeriodAmountApiProcessing}
-                                type="date"
-                                value={moment(selectors.specificDetails.periodAmountFilter.start).format('YYYY-MM-DD')}
-                                onChange={changeStartDate}
-                                sx={{
-                                  position: 'absolute',
-                                  top: '7px',
-                                  left: '-57px',
-                                  opacity: '0',
-                                }}
-                              />
-                              <LargSliderWrapper>{slider}</LargSliderWrapper>
-                              <Box display="flex" alignItems="center" gap="5px">
-                                <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
-                                  {moment(selectors.specificDetails.periodAmountFilter.end).format('ll')}
-                                </Typography>
-                                <DateRange fontSize="small" sx={{ color: grey[600] }} />
-                              </Box>
-                              <Input
-                                disabled={isPeriodAmountApiProcessing}
-                                type="date"
-                                value={moment(selectors.specificDetails.periodAmountFilter.end).format('YYYY-MM-DD')}
-                                onChange={changeEndDate}
-                                sx={{
-                                  position: 'absolute',
-                                  top: '7px',
-                                  right: '0px',
-                                  opacity: '0',
-                                  width: '20px',
-                                }}
-                              />
-                            </Box>
-                          </Box>
-                        );
-                      })()}
-                    <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
-                      <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                        Total bill quantities:{' '}
-                      </Typography>
-                      <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                        {selectors.specificDetails.totalAmount.quantities}
-                      </Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
-                      <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                        Total bill Amount:{' '}
-                      </Typography>
-                      <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                        {selectors.specificDetails.totalAmount.totalAmount}
-                      </Typography>
-                    </Box>
+          {isCurrentOwnerOrAdmin && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '186px' }}>
+              {isInitialUserQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="186px" />
+              ) : isInitialUserQuantitiesApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the user quantities.
+                    </Typography>
                   </Box>
-                </CardContent>
-              </Card>
-            )
+                </Card>
+              ) : (
+                isInitialUserQuantitiesApiSuccessed &&
+                selectors.specificDetails.userQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Total Users:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.userQuantities.quantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Owners:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.userQuantities.ownerQuantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Admins:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.userQuantities.adminQuantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Users:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.userQuantities.userQuantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
           )}
+
+          {isCurrentOwnerOrAdmin && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '184px' }}>
+              {isInitialDeletedUserQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="184px" />
+              ) : isInitialDeletedUserQuantitiesApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the deleted user quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialDeletedUserQuantitiesApiSuccessed &&
+                selectors.specificDetails.deletedUserQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Total Deleted Users:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.deletedUserQuantities.quantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Deleted Owners:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Deleted Admins:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.deletedUserQuantities.adminQuantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Deleted Users:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.deletedUserQuantities.userQuantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
+          {isCurrentOwner && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+              {isInitialAllNotificationQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialAllNotificationQuantitiesApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the all notification quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialAllNotificationQuantitiesApiSuccessed &&
+                selectors.specificDetails.allNotificationQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            All notification quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.allNotificationQuantities.quantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
+          {isCurrentOwner && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+              {isInitialNotificationQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialNotificationQuantitiesApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the notification quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialNotificationQuantitiesApiSuccessed &&
+                selectors.specificDetails.notificationQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Notification quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.notificationQuantities.quantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
+          {isCurrentOwnerOrAdmin && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+              {isInitialAllBillQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialAllBillQuantitiesApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the bill quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialAllBillQuantitiesApiSuccessed &&
+                selectors.specificDetails.allBillQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            All bill quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.allBillQuantities.quantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
+          {isCurrentOwnerOrAdmin && (
+            <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+              {isInitialAllDeletedBillQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="64px" />
+              ) : isInitialAllDeletedBillQuantitiesApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'16px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the all deleted bill quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialAllDeletedBillQuantitiesApiSuccessed &&
+                selectors.specificDetails.allDeletedBillQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            All deleted bill quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.allDeletedBillQuantities.quantities}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          )}
+
+          <Box sx={{ width: '100%', height: '100%', minHeight: totalAmountHeight || '322.5px' }}>
+            {isInitialTotalAmountApiProcessing ? (
+              <Skeleton width="100%" height="322.5px" />
+            ) : isInitialTotalAmountApiFailed ? (
+              <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: 'inherit',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography
+                    fontSize={'16px'}
+                    textAlign={'center'}
+                    fontWeight={'500'}
+                    color={'#d00000'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    Failed to load the total amount of the bills and quantities.
+                  </Typography>
+                </Box>
+              </Card>
+            ) : (
+              isInitialTotalAmountApiSuccessed &&
+              selectors.specificDetails.totalAmount &&
+              selectors.specificDetails.periodAmountFilter &&
+              selectors.specificDetails.billDates && (
+                <Card
+                  ref={(ref) => {
+                    if (ref) {
+                      setTotalAmountHeight(window.getComputedStyle(ref).getPropertyValue('height'));
+                    }
+                  }}
+                >
+                  <CardContent>
+                    <Box display="flex" justifyContent="center" flexDirection="column" gap="20px">
+                      {selectors.specificDetails.billDates.start > 0 &&
+                        selectors.specificDetails.billDates.end > 0 &&
+                        selectors.specificDetails.billDates.end - selectors.specificDetails.billDates.start >
+                          getOneDayDate() &&
+                        (() => {
+                          const slider = (
+                            <Slider
+                              disabled={isPeriodAmountApiProcessing}
+                              value={[
+                                selectors.specificDetails.periodAmountFilter.start,
+                                selectors.specificDetails.periodAmountFilter.end,
+                              ]}
+                              step={sliderStep}
+                              min={selectors.specificDetails.billDates.start}
+                              max={selectors.specificDetails.billDates.end}
+                              onChange={changeSlider}
+                              valueLabelDisplay="off"
+                            />
+                          );
+
+                          return (
+                            <Box>
+                              <SmallSliderWrapper>{slider}</SmallSliderWrapper>
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="space-between"
+                                gap="30px"
+                                position="relative"
+                              >
+                                <Box display="flex" alignItems="center" gap="5px">
+                                  <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
+                                    {moment(selectors.specificDetails.periodAmountFilter.start).format('ll')}
+                                  </Typography>
+                                  <DateRange fontSize="small" sx={{ color: grey[600] }} />
+                                </Box>
+                                <Input
+                                  disabled={isPeriodAmountApiProcessing}
+                                  type="date"
+                                  value={moment(selectors.specificDetails.periodAmountFilter.start).format(
+                                    'YYYY-MM-DD'
+                                  )}
+                                  onChange={changeStartDate}
+                                  sx={{
+                                    position: 'absolute',
+                                    top: '7px',
+                                    left: '-57px',
+                                    opacity: '0',
+                                  }}
+                                />
+                                <LargSliderWrapper>{slider}</LargSliderWrapper>
+                                <Box display="flex" alignItems="center" gap="5px">
+                                  <Typography fontSize="10px" whiteSpace="nowrap" color="rgba(0, 0, 0, 0.6)">
+                                    {moment(selectors.specificDetails.periodAmountFilter.end).format('ll')}
+                                  </Typography>
+                                  <DateRange fontSize="small" sx={{ color: grey[600] }} />
+                                </Box>
+                                <Input
+                                  disabled={isPeriodAmountApiProcessing}
+                                  type="date"
+                                  value={moment(selectors.specificDetails.periodAmountFilter.end).format('YYYY-MM-DD')}
+                                  onChange={changeEndDate}
+                                  sx={{
+                                    position: 'absolute',
+                                    top: '7px',
+                                    right: '0px',
+                                    opacity: '0',
+                                    width: '20px',
+                                  }}
+                                />
+                              </Box>
+                            </Box>
+                          );
+                        })()}
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Bill quantities:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {selectors.specificDetails.totalAmount.quantities}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Bill amounts:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {selectors.specificDetails.totalAmount.totalAmount}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Date-less bill quantities:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {selectors.specificDetails.totalAmount.dateLessQuantities}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Date-less bill amounts:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {selectors.specificDetails.totalAmount.dateLessTotalAmount}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Quantities:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {Number(selectors.specificDetails.totalAmount.quantities) +
+                            Number(selectors.specificDetails.totalAmount.dateLessQuantities)}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="20px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Amounts:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {Number(selectors.specificDetails.totalAmount.dateLessTotalAmount) +
+                            Number(selectors.specificDetails.totalAmount.totalAmount)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              )
+            )}
+          </Box>
+
+          <Box sx={{ width: '100%', height: '100%', minHeight: '64px' }}>
+            {isInitialDeletedBillQuantitiesApiProcessing ? (
+              <Skeleton width="100%" height="64px" />
+            ) : isInitialDeletedBillQuantitiesApiFailed ? (
+              <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: 'inherit',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography
+                    fontSize={'16px'}
+                    textAlign={'center'}
+                    fontWeight={'500'}
+                    color={'#d00000'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    Failed to load the deleted bill quantities.
+                  </Typography>
+                </Box>
+              </Card>
+            ) : (
+              isInitialDeletedBillQuantitiesApiSuccessed &&
+              selectors.specificDetails.deletedBillQuantities && (
+                <Card>
+                  <CardContent>
+                    <Box display="flex" gap="20px" flexDirection="column">
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                          Deleted bill quantities:{' '}
+                        </Typography>
+                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                          {selectors.specificDetails.deletedBillQuantities.quantities}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              )
+            )}
+          </Box>
         </Box>
       </MainContainer>
     </Navigation>

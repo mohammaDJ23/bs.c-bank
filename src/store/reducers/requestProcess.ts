@@ -81,10 +81,10 @@ function processingApiError(state: RequestProcessState, action: ProcessingApiErr
   delete newState.processingApis.successes[requestName];
   return {
     ...newState,
-    initialProcessingApis: {
-      ...newState.initialProcessingApis,
+    processingApis: {
+      ...newState.processingApis,
       errors: {
-        ...newState.initialProcessingApis.errors,
+        ...newState.processingApis.errors,
         [requestName]: true,
       },
     },

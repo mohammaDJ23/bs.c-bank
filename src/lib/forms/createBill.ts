@@ -1,6 +1,5 @@
 import { DefineRules, DefineVal, CacheInput, DefineValidation } from '../decorators';
-import { getTime } from '../utilFunctions';
-import { isReceiver, isAmount, isDescription, isDate, isConsumers } from '../validations';
+import { isReceiver, isAmount, isDescription, isDate, isConsumers, isLocation } from '../validations';
 import { Form, IgnoreFormConstructor } from './formConstructor';
 
 export interface CreateBillObj extends IgnoreFormConstructor<CreateBill> {}
@@ -18,6 +17,12 @@ export class CreateBill extends Form {
   @DefineValidation()
   receiver: string = '';
 
+  @DefineRules([isLocation])
+  @DefineVal()
+  @CacheInput()
+  @DefineValidation()
+  location: string = '';
+
   @DefineRules([isConsumers])
   @DefineVal()
   @CacheInput()
@@ -31,17 +36,20 @@ export class CreateBill extends Form {
   description: string = '';
 
   @DefineRules([isDate])
-  @DefineVal(getTime())
+  @DefineVal(null)
   @CacheInput()
   @DefineValidation()
-  date: number = getTime();
+  date: number | null = null;
 
   constructor() {
     super();
     this.amount = this.getCachedInput('amount');
     this.receiver = this.getCachedInput('receiver');
+    this.location = this.getCachedInput('location');
     this.consumers = this.getCachedInput('consumers');
     this.description = this.getCachedInput('description');
-    this.date = +this.getCachedInput('date');
+
+    const cachedDate = this.getCachedInput('date');
+    this.date = cachedDate ? +cachedDate : null;
   }
 }

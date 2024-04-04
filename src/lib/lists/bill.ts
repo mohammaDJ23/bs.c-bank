@@ -4,9 +4,10 @@ export interface BillObj {
   id: string;
   amount: string;
   receiver: string;
+  location: string;
   consumers: string[];
   description: string;
-  date: number;
+  date: number | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
