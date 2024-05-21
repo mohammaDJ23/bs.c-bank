@@ -52,7 +52,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
   const consumerListInstance = usePaginationList(ConsumerList);
   const receiverlistInstance = usePaginationList(ReceiverList);
   const locationListInstance = usePaginationList(LocationList);
-  const oneSecDebounce = useRef(debounce(1000));
+  const oneQuarterDebounce = useRef(debounce(250));
   const updateBillForm = updateBillFormInstance.getForm();
   const snackbar = useSnackbar();
 
@@ -60,14 +60,14 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
     updateBillFormInstance.onSubmit(() => {
       request
         .build<UpdateBill, UpdateBill>(new UpdateBillApi(updateBillForm))
-        .then((response) => {
+        .then(response => {
           const billId = params.id as string;
           actions.hideModal(ModalNames.CONFIRMATION);
           updateBillFormInstance.resetForm();
           snackbar.enqueueSnackbar({ message: 'You have updated the bill successfully.', variant: 'success' });
           navigate(getDynamicPath(Pathes.BILL, { id: billId }));
         })
-        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+        .catch(err => actions.hideModal(ModalNames.CONFIRMATION));
     });
   }, [updateBillForm, updateBillFormInstance, params, request]);
 
@@ -77,7 +77,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
       receiverListFiltersFormInstance.onChange('q', q);
       updateBillFormInstance.onChange('receiver', q);
 
-      oneSecDebounce.current(() => {
+      oneQuarterDebounce.current(() => {
         receiverListFiltersFormInstance.onSubmit(() => {
           setIsReceiverAutocompleteOpen(true);
           const receiverApi = new ReceiversApi({
@@ -85,13 +85,13 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             page: receiverlistInstance.getPage(),
             filters: { q },
           });
-          request.build<[ReceiverObj[], number]>(receiverApi).then((response) => {
+          request.build<[ReceiverObj[], number]>(receiverApi).then(response => {
             const [list] = response.data;
             const receivers: string[] = [];
             if (q.length) {
               receivers.splice(receivers.length, 0, q);
             }
-            receivers.splice(receivers.length, 0, ...list.map((receiver) => receiver.name));
+            receivers.splice(receivers.length, 0, ...list.map(receiver => receiver.name));
             const newReceivers = new Set(receivers);
             setReceivers(Array.from(newReceivers));
           });
@@ -107,7 +107,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
       locationListFiltersFormInstance.onChange('q', q);
       updateBillFormInstance.onChange('location', q);
 
-      oneSecDebounce.current(() => {
+      oneQuarterDebounce.current(() => {
         locationListFiltersFormInstance.onSubmit(() => {
           setIsLocationAutocompleteOpen(true);
           const locationApi = new LocationsApi({
@@ -115,13 +115,13 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             page: locationListInstance.getPage(),
             filters: { q },
           });
-          request.build<[LocationObj[], number]>(locationApi).then((response) => {
+          request.build<[LocationObj[], number]>(locationApi).then(response => {
             const [list] = response.data;
             const locations: string[] = [];
             if (q.length) {
               locations.splice(locations.length, 0, q);
             }
-            locations.splice(locations.length, 0, ...list.map((location) => location.name));
+            locations.splice(locations.length, 0, ...list.map(location => location.name));
             const newLocations = new Set(locations);
             setLocations(Array.from(newLocations));
           });
@@ -136,7 +136,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
       const q = event.target.value.trim();
       consumerListFiltersFormInstance.onChange('q', q);
 
-      oneSecDebounce.current(() => {
+      oneQuarterDebounce.current(() => {
         consumerListFiltersFormInstance.onSubmit(() => {
           setIsConsumerAutocompleteOpen(true);
           const consumersApi = new ConsumersApi({
@@ -144,14 +144,14 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             page: consumerListInstance.getPage(),
             filters: { q },
           });
-          request.build<[ConsumerObj[], number]>(consumersApi).then((response) => {
+          request.build<[ConsumerObj[], number]>(consumersApi).then(response => {
             const [list] = response.data;
             const consumers: string[] = [];
             if (q.length) {
               consumers.splice(consumers.length, 0, q);
             }
             consumers.splice(consumers.length, 0, ...updateBillForm.consumers);
-            consumers.splice(consumers.length, 0, ...list.map((consumer) => consumer.name));
+            consumers.splice(consumers.length, 0, ...list.map(consumer => consumer.name));
             const newConsumers = new Set(consumers);
             setConsumers(Array.from(newConsumers));
           });
@@ -170,7 +170,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
         display="flex"
         flexDirection="column"
         gap="20px"
-        onSubmit={(event) => {
+        onSubmit={event => {
           event.preventDefault();
           updateBillFormInstance.confirmation();
         }}
@@ -180,7 +180,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           variant="standard"
           type="number"
           value={updateBillForm.amount}
-          onChange={(event) => updateBillFormInstance.onChange('amount', Number(event.target.value).toString())}
+          onChange={event => updateBillFormInstance.onChange('amount', Number(event.target.value).toString())}
           helperText={updateBillFormInstance.getInputErrorMessage('amount')}
           error={updateBillFormInstance.isInputInValid('amount')}
           disabled={isUpdateBillApiProcessing}
@@ -203,17 +203,17 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             }}
             disabled={isUpdateBillApiProcessing}
             options={receviers}
-            filterOptions={(options) => options}
-            getOptionLabel={(option) => option}
+            filterOptions={options => options}
+            getOptionLabel={option => option}
             clearIcon={false}
             clearOnBlur
             clearOnEscape
             blurOnSelect
-            renderInput={(params) => (
+            renderInput={params => (
               <TextField
                 {...params}
                 sx={{}}
-                onBlur={(event) => {
+                onBlur={event => {
                   receiverListFiltersFormInstance.onChange('q', '');
                 }}
                 onFocus={() => {
@@ -257,17 +257,17 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             }}
             disabled={isUpdateBillApiProcessing}
             options={locations}
-            filterOptions={(options) => options}
-            getOptionLabel={(option) => option}
+            filterOptions={options => options}
+            getOptionLabel={option => option}
             clearIcon={false}
             clearOnBlur
             clearOnEscape
             blurOnSelect
-            renderInput={(params) => (
+            renderInput={params => (
               <TextField
                 {...params}
                 sx={{}}
-                onBlur={(event) => {
+                onBlur={event => {
                   locationListFiltersFormInstance.onChange('q', '');
                 }}
                 onFocus={() => {
@@ -310,13 +310,13 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             }}
             disabled={isUpdateBillApiProcessing}
             options={consumers}
-            filterOptions={(options) => options}
-            getOptionLabel={(option) => option}
+            filterOptions={options => options}
+            getOptionLabel={option => option}
             clearIcon={false}
             clearOnBlur
             clearOnEscape
             blurOnSelect
-            renderInput={(params) => (
+            renderInput={params => (
               <TextField
                 {...params}
                 sx={{}}
@@ -348,7 +348,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           type="date"
           variant="standard"
           value={updateBillForm.date ? isoDate(updateBillForm.date) : 'undefined'}
-          onChange={(event) =>
+          onChange={event =>
             updateBillFormInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
           }
           helperText={updateBillFormInstance.getInputErrorMessage('date')}
@@ -363,7 +363,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           multiline
           variant="standard"
           value={updateBillForm.description}
-          onChange={(event) => updateBillFormInstance.onChange('description', event.target.value)}
+          onChange={event => updateBillFormInstance.onChange('description', event.target.value)}
           helperText={updateBillFormInstance.getInputErrorMessage('description')}
           error={updateBillFormInstance.isInputInValid('description')}
           disabled={isUpdateBillApiProcessing}
