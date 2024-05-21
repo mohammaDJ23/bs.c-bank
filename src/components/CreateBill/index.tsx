@@ -46,11 +46,11 @@ const CreateBillContent: FC = () => {
   const receiverlistInstance = usePaginationList(ReceiverList);
   const locationListInstance = usePaginationList(LocationList);
   const snackbar = useSnackbar();
-  const oneSecDebounce = useRef(debounce(1000));
+  const oneQuarterDebounce = useRef(debounce(250));
 
   const formSubmition = useCallback(() => {
     createBillFromInstance.onSubmit(() => {
-      request.build<CreateBill, CreateBill>(new CreateBillApi(createBillFrom)).then((response) => {
+      request.build<CreateBill, CreateBill>(new CreateBillApi(createBillFrom)).then(response => {
         createBillFromInstance.resetForm();
         snackbar.enqueueSnackbar({ message: 'Your bill was created successfully.', variant: 'success' });
       });
@@ -67,7 +67,7 @@ const CreateBillContent: FC = () => {
       receiverListFiltersFormInstance.onChange('q', q);
       createBillFromInstance.onChange('receiver', q);
 
-      oneSecDebounce.current(() => {
+      oneQuarterDebounce.current(() => {
         receiverListFiltersFormInstance.onSubmit(() => {
           setIsReceiverAutocompleteOpen(true);
           const receiverApi = new ReceiversApi({
@@ -75,13 +75,13 @@ const CreateBillContent: FC = () => {
             page: receiverlistInstance.getPage(),
             filters: { q },
           });
-          request.build<[ReceiverObj[], number]>(receiverApi).then((response) => {
+          request.build<[ReceiverObj[], number]>(receiverApi).then(response => {
             const [list] = response.data;
             const receivers: string[] = [];
             if (q.length) {
               receivers.splice(receivers.length, 0, q);
             }
-            receivers.splice(receivers.length, 0, ...list.map((receiver) => receiver.name));
+            receivers.splice(receivers.length, 0, ...list.map(receiver => receiver.name));
             const newReceivers = new Set(receivers);
             setReceivers(Array.from(newReceivers));
           });
@@ -97,7 +97,7 @@ const CreateBillContent: FC = () => {
       locationListFiltersFormInstance.onChange('q', q);
       createBillFromInstance.onChange('location', q);
 
-      oneSecDebounce.current(() => {
+      oneQuarterDebounce.current(() => {
         locationListFiltersFormInstance.onSubmit(() => {
           setIsLocationAutocompleteOpen(true);
           const locationApi = new LocationsApi({
@@ -105,13 +105,13 @@ const CreateBillContent: FC = () => {
             page: locationListInstance.getPage(),
             filters: { q },
           });
-          request.build<[LocationObj[], number]>(locationApi).then((response) => {
+          request.build<[LocationObj[], number]>(locationApi).then(response => {
             const [list] = response.data;
             const locations: string[] = [];
             if (q.length) {
               locations.splice(locations.length, 0, q);
             }
-            locations.splice(locations.length, 0, ...list.map((location) => location.name));
+            locations.splice(locations.length, 0, ...list.map(location => location.name));
             const newLocations = new Set(locations);
             setLocations(Array.from(newLocations));
           });
@@ -126,7 +126,7 @@ const CreateBillContent: FC = () => {
       const q = event.target.value.trim();
       consumerListFiltersFormInstance.onChange('q', q);
 
-      oneSecDebounce.current(() => {
+      oneQuarterDebounce.current(() => {
         consumerListFiltersFormInstance.onSubmit(() => {
           setIsConsumerAutocompleteOpen(true);
           const consumersApi = new ConsumersApi({
@@ -134,14 +134,14 @@ const CreateBillContent: FC = () => {
             page: consumerListInstance.getPage(),
             filters: { q },
           });
-          request.build<[ConsumerObj[], number]>(consumersApi).then((response) => {
+          request.build<[ConsumerObj[], number]>(consumersApi).then(response => {
             const [list] = response.data;
             const consumers: string[] = [];
             if (q.length) {
               consumers.splice(consumers.length, 0, q);
             }
             consumers.splice(consumers.length, 0, ...createBillFrom.consumers);
-            consumers.splice(consumers.length, 0, ...list.map((consumer) => consumer.name));
+            consumers.splice(consumers.length, 0, ...list.map(consumer => consumer.name));
             const newConsumers = new Set(consumers);
             setConsumers(Array.from(newConsumers));
           });
@@ -161,7 +161,7 @@ const CreateBillContent: FC = () => {
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={(event) => {
+          onSubmit={event => {
             event.preventDefault();
             formSubmition();
           }}
@@ -171,7 +171,7 @@ const CreateBillContent: FC = () => {
             variant="standard"
             type="number"
             value={createBillFrom.amount}
-            onChange={(event) => createBillFromInstance.onChange('amount', Number(event.target.value).toString())}
+            onChange={event => createBillFromInstance.onChange('amount', Number(event.target.value).toString())}
             helperText={createBillFromInstance.getInputErrorMessage('amount')}
             error={createBillFromInstance.isInputInValid('amount')}
             disabled={isCreateBillApiProcessing}
@@ -195,17 +195,17 @@ const CreateBillContent: FC = () => {
               }}
               disabled={isCreateBillApiProcessing}
               options={receviers}
-              filterOptions={(options) => options}
-              getOptionLabel={(option) => option}
+              filterOptions={options => options}
+              getOptionLabel={option => option}
               clearIcon={false}
               clearOnBlur
               clearOnEscape
               blurOnSelect
-              renderInput={(params) => (
+              renderInput={params => (
                 <TextField
                   {...params}
                   sx={{}}
-                  onBlur={(event) => {
+                  onBlur={event => {
                     receiverListFiltersFormInstance.onChange('q', '');
                   }}
                   onFocus={() => {
@@ -249,17 +249,17 @@ const CreateBillContent: FC = () => {
               }}
               disabled={isCreateBillApiProcessing}
               options={locations}
-              filterOptions={(options) => options}
-              getOptionLabel={(option) => option}
+              filterOptions={options => options}
+              getOptionLabel={option => option}
               clearIcon={false}
               clearOnBlur
               clearOnEscape
               blurOnSelect
-              renderInput={(params) => (
+              renderInput={params => (
                 <TextField
                   {...params}
                   sx={{}}
-                  onBlur={(event) => {
+                  onBlur={event => {
                     locationListFiltersFormInstance.onChange('q', '');
                   }}
                   onFocus={() => {
@@ -302,13 +302,13 @@ const CreateBillContent: FC = () => {
               }}
               disabled={isCreateBillApiProcessing}
               options={consumers}
-              filterOptions={(options) => options}
-              getOptionLabel={(option) => option}
+              filterOptions={options => options}
+              getOptionLabel={option => option}
               clearIcon={false}
               clearOnBlur
               clearOnEscape
               blurOnSelect
-              renderInput={(params) => (
+              renderInput={params => (
                 <TextField
                   {...params}
                   sx={{}}
@@ -340,7 +340,7 @@ const CreateBillContent: FC = () => {
             type="date"
             variant="standard"
             value={createBillFrom.date ? isoDate(createBillFrom.date) : 'undefined'}
-            onChange={(event) =>
+            onChange={event =>
               createBillFromInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
             }
             helperText={createBillFromInstance.getInputErrorMessage('date')}
@@ -355,7 +355,7 @@ const CreateBillContent: FC = () => {
             multiline
             variant="standard"
             value={createBillFrom.description}
-            onChange={(event) => createBillFromInstance.onChange('description', event.target.value)}
+            onChange={event => createBillFromInstance.onChange('description', event.target.value)}
             helperText={createBillFromInstance.getInputErrorMessage('description')}
             error={createBillFromInstance.isInputInValid('description')}
             disabled={isCreateBillApiProcessing}
