@@ -147,8 +147,8 @@ const Details: FC<DetailsImporation> = ({ user }) => {
       const href = URL.createObjectURL(response.data);
       const link = document.createElement('a');
       link.href = href;
-      link.setAttribute('download', `${user.firstName}-${user.lastName}.xlsx`);
-      document.body.appendChild(link);
+      link.setAttribute('download', `${user.firstName}-${user.lastName}-${new Date().toISOString()}.xlsx`);
+      document.body.appendChild(link)
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(href);
