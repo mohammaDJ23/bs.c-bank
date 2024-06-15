@@ -21,6 +21,7 @@ const CreateUserContent: FC = () => {
       request.build<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
         createUserFormInstance.resetForm();
         snackbar.enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
+        focus('firstName');
       });
     });
   }, [createUserFormInstance, form, request]);
