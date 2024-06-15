@@ -53,6 +53,7 @@ const CreateBillContent: FC = () => {
       request.build<CreateBill, CreateBill>(new CreateBillApi(createBillFrom)).then(response => {
         createBillFromInstance.resetForm();
         snackbar.enqueueSnackbar({ message: 'Your bill was created successfully.', variant: 'success' });
+        focus('amount');
       });
     });
   }, [createBillFromInstance, createBillFrom, request]);
