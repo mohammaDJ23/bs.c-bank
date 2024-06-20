@@ -526,6 +526,33 @@ export class ReceiversApi extends RootApi {
   }
 }
 
+export class ReceiverApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: `/api/v1/bank/receiver/${id}`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class DeleteReceiverApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: '/api/v1/bank/receiver/delete',
+        method: 'delete',
+        params: {
+          id,
+        },
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
 export class LocationsApi extends RootApi {
   constructor(params: ListParams<LocationObj> & FilterParams<Partial<LocationListFiltersObj>>) {
     super(

@@ -40,6 +40,7 @@ export enum Pathes {
   UPDATE_USER_BY_OWNER = '/bank/owner/update-user/:id',
   UPDATE_USER = '/bank/update-user/:id',
   UPDATE_BILL = '/bank/update-bill/:id',
+  UPDATE_RECEIVER = '/bank/update-receiver/:id',
   USER = '/bank/users/:id',
   BILL = '/bank/bills/:id',
   NOTIFICATION = '/bank/notifications/:id',
@@ -47,7 +48,7 @@ export enum Pathes {
   DELETED_BILL = '/bank/bills/:id/deleted',
   CHAT = '/bank/chat',
   RECEIVERS = '/bank/receivers',
-  RECEIVER = '/bank/receivers/:id'
+  RECEIVER = '/bank/receivers/:id',
 }
 
 export const routes = [
