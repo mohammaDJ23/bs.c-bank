@@ -21,6 +21,7 @@ import {
   ReceiverObj,
   LocationListFiltersObj,
   LocationObj,
+  UpdateReceiver,
 } from '../lib';
 import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
@@ -532,6 +533,22 @@ export class ReceiverApi extends RootApi {
       {
         url: `/api/v1/bank/receiver/${id}`,
         method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class UpdateReceiverApi extends RootApi<UpdateReceiver> {
+  constructor(data: UpdateReceiver) {
+    super(
+      {
+        url: '/api/v1/bank/receiver/update',
+        method: 'put',
+        data,
+        headers: {
+          'Content-type': 'application/json',
+        },
       },
       { baseURL: process.env.BANK_SERVICE }
     );

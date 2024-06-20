@@ -24,6 +24,7 @@ const DeletedBill = lazy(() => import('../../pages/DeletedBill'));
 const Chat = lazy(() => import('../../pages/Chat'));
 const Receivers = lazy(() => import('../../pages/Receivers'));
 const Receiver = lazy(() => import('../../pages/Receiver'));
+const UpdateReceiver = lazy(() => import('../../pages/UpdateReceiver'));
 
 export enum Pathes {
   BANK = '/bank/*',
@@ -66,6 +67,7 @@ export const routes = [
   { title: 'Update user by owner', path: Pathes.UPDATE_USER_BY_OWNER, element: <UpdateUserByOwner />, needAuth: true },
   { title: 'Update user', path: Pathes.UPDATE_USER, element: <UpdateUserByUser />, needAuth: true },
   { title: 'Update bill', path: Pathes.UPDATE_BILL, element: <UpdateBill />, needAuth: true },
+  { title: 'Update receiver', path: Pathes.UPDATE_RECEIVER, element: <UpdateReceiver />, needAuth: true },
   { title: 'User', path: Pathes.USER, element: <User />, needAuth: true },
   { title: 'Bill', path: Pathes.BILL, element: <Bill />, needAuth: true },
   { title: 'Receiver', path: Pathes.RECEIVER, element: <Receiver />, needAuth: true },
