@@ -3,7 +3,7 @@ import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
 import { ReceiverList, ReceiverListFilters, ReceiverObj } from '../../lib';
 import { useForm, usePaginationList, useRequest } from '../../hooks';
-import { ReceiversApi, ReceiversApiConstructorType } from '../../apis';
+import { ReceiversApi } from '../../apis';
 import ReceiversSkeleton from '../shared/ReceiversSkeleton';
 import EmptyList from './EmptyList';
 import Filter from '../shared/Filter';
@@ -18,36 +18,19 @@ const List: FC = () => {
   const isInitialReceiversApiProcessing = request.isInitialApiProcessing(ReceiversApi);
   const isReceiversApiProcessing = request.isApiProcessing(ReceiversApi);
 
-  const getReceiversListApi = useCallback(
-    (options: Partial<ReceiversApiConstructorType> = {}) => {
-      return new ReceiversApi({
-        take: receiverListInstance.getTake(),
-        page: receiverListInstance.getPage(),
-        filters: {
-          q: receiverListFiltersForm.q,
-        },
-        ...options,
-      });
-    },
-    [receiverListFiltersForm]
-  );
-
   const getReceiversList = useCallback(
-    (api: ReceiversApi) => {
-      request.build<[ReceiverObj[], number], ReceiverObj>(api).then((response) => {
-        const [list, total] = response.data;
-        receiverListInstance.updateAndConcatList(list, api.api.params.page);
-        receiverListInstance.updatePage(api.api.params.page);
-        receiverListInstance.updateTotal(total);
-      });
-    },
-    [receiverListInstance, receiverListFiltersForm, request]
+    async (api: ReceiversApi) =>
+      request.build<[ReceiverObj[], number], ReceiverObj>(api).then((response) => response.data),
+    [request]
   );
 
   useEffect(() => {
-    const api = getReceiversListApi();
+    const api = new ReceiversApi();
     api.setInitialApi();
-    getReceiversList(api);
+    getReceiversList(api).then(([list, total]) => {
+      receiverListInstance.updateAndConcatList(list, 1);
+      receiverListInstance.updateTotal(total);
+    });
   }, []);
 
   const changePage = useCallback(
@@ -57,8 +40,11 @@ const List: FC = () => {
       if (receiverListInstance.isNewPageEqualToCurrentPage(newPage) || isReceiversApiProcessing) return;
 
       if (!receiverListInstance.isNewPageExist(newPage)) {
-        const api = getReceiversListApi({ page: newPage });
-        getReceiversList(api);
+        getReceiversList(new ReceiversApi({ page: newPage })).then(([list, total]) => {
+          receiverListInstance.updateAndConcatList(list, newPage);
+          receiverListInstance.updatePage(newPage);
+          receiverListInstance.updateTotal(total);
+        });
       }
     },
     [isReceiversApiProcessing, receiverListInstance, getReceiversList]
@@ -68,8 +54,10 @@ const List: FC = () => {
     receiverListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       receiverListInstance.updatePage(newPage);
-      const api = getReceiversListApi({ page: newPage });
-      getReceiversList(api);
+      getReceiversList(new ReceiversApi({ page: newPage })).then(([list, total]) => {
+        receiverListInstance.updateAndConcatList(list, newPage);
+        receiverListInstance.updateTotal(total);
+      });
     });
   }, [receiverListFiltersFormInstance, receiverListInstance, getReceiversList]);
 

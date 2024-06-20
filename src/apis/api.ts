@@ -514,7 +514,7 @@ export class ConsumersApi extends RootApi {
 }
 
 export class ReceiversApi extends RootApi {
-  constructor(params: ListParams<ReceiverObj> & FilterParams<Partial<ReceiverListFiltersObj>>) {
+  constructor(params: Partial<ListParams<ReceiverObj> & FilterParams<Partial<ReceiverListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/receiver/all',
@@ -525,8 +525,6 @@ export class ReceiversApi extends RootApi {
     );
   }
 }
-
-export type ReceiversApiConstructorType = ConstructorParameters<typeof ReceiversApi>[0];
 
 export class LocationsApi extends RootApi {
   constructor(params: ListParams<LocationObj> & FilterParams<Partial<LocationListFiltersObj>>) {

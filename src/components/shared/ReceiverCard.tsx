@@ -2,7 +2,7 @@ import { PropsWithChildren, FC } from 'react';
 import { ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
-import {  Pathes, ReceiverList, ReceiverObj, getDynamicPath } from '../../lib';
+import { Pathes, ReceiverList, ReceiverObj, getDynamicPath } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
 import { usePaginationList } from '../../hooks';
@@ -16,7 +16,7 @@ interface ReceiverCardImportation extends PropsWithChildren {
 
 const ReceiverCard: FC<ReceiverCardImportation> = ({ receiver, index, listInstance }) => {
   const navigate = useNavigate();
-  
+
   return (
     <Card
       key={index}
