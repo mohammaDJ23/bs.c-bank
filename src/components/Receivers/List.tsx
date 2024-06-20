@@ -40,26 +40,40 @@ const List: FC = () => {
       if (receiverListInstance.isNewPageEqualToCurrentPage(newPage) || isReceiversApiProcessing) return;
 
       if (!receiverListInstance.isNewPageExist(newPage)) {
-        getReceiversList(new ReceiversApi({ page: newPage })).then(([list, total]) => {
+        getReceiversList(
+          new ReceiversApi({
+            page: newPage,
+            filters: {
+              q: receiverListFiltersForm.q,
+            },
+          })
+        ).then(([list, total]) => {
           receiverListInstance.updateAndConcatList(list, newPage);
           receiverListInstance.updatePage(newPage);
           receiverListInstance.updateTotal(total);
         });
       }
     },
-    [isReceiversApiProcessing, receiverListInstance, getReceiversList]
+    [isReceiversApiProcessing, receiverListInstance, receiverListFiltersForm, getReceiversList]
   );
 
   const receiverListFilterFormSubmition = useCallback(() => {
     receiverListFiltersFormInstance.onSubmit(() => {
       const newPage = 1;
       receiverListInstance.updatePage(newPage);
-      getReceiversList(new ReceiversApi({ page: newPage })).then(([list, total]) => {
+      getReceiversList(
+        new ReceiversApi({
+          page: newPage,
+          filters: {
+            q: receiverListFiltersForm.q,
+          },
+        })
+      ).then(([list, total]) => {
         receiverListInstance.updateAndConcatList(list, newPage);
         receiverListInstance.updateTotal(total);
       });
     });
-  }, [receiverListFiltersFormInstance, receiverListInstance, getReceiversList]);
+  }, [receiverListFiltersFormInstance, receiverListInstance, receiverListFiltersForm, getReceiversList]);
 
   return (
     <>
