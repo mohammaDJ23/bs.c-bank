@@ -526,6 +526,8 @@ export class ReceiversApi extends RootApi {
   }
 }
 
+export type ReceiversApiConstructorType = ConstructorParameters<typeof ReceiversApi>[0];
+
 export class LocationsApi extends RootApi {
   constructor(params: ListParams<LocationObj> & FilterParams<Partial<LocationListFiltersObj>>) {
     super(
