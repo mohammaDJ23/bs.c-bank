@@ -22,6 +22,9 @@ const DeletedUser = lazy(() => import('../../pages/DeletedUser'));
 const DeletedBills = lazy(() => import('../../pages/DeletedBills'));
 const DeletedBill = lazy(() => import('../../pages/DeletedBill'));
 const Chat = lazy(() => import('../../pages/Chat'));
+const Receivers = lazy(() => import('../../pages/Receivers'));
+const Receiver = lazy(() => import('../../pages/Receiver'));
+const UpdateReceiver = lazy(() => import('../../pages/UpdateReceiver'));
 
 export enum Pathes {
   BANK = '/bank/*',
@@ -38,12 +41,15 @@ export enum Pathes {
   UPDATE_USER_BY_OWNER = '/bank/owner/update-user/:id',
   UPDATE_USER = '/bank/update-user/:id',
   UPDATE_BILL = '/bank/update-bill/:id',
+  UPDATE_RECEIVER = '/bank/update-receiver/:id',
   USER = '/bank/users/:id',
   BILL = '/bank/bills/:id',
   NOTIFICATION = '/bank/notifications/:id',
   DELETED_USER = '/bank/users/:id/deleted',
   DELETED_BILL = '/bank/bills/:id/deleted',
   CHAT = '/bank/chat',
+  RECEIVERS = '/bank/receivers',
+  RECEIVER = '/bank/receivers/:id',
 }
 
 export const routes = [
@@ -52,6 +58,7 @@ export const routes = [
   { title: 'All bills', path: Pathes.ALL_BILLS, element: <AllBills />, needAuth: true },
   { title: 'Deleted bills', path: Pathes.DELETED_bILLS, element: <DeletedBills />, needAuth: true },
   { title: 'Users', path: Pathes.USERS, element: <Users />, needAuth: true },
+  { title: 'Receivers', path: Pathes.RECEIVERS, element: <Receivers />, needAuth: true },
   { path: Pathes.CHAT, element: <Chat />, needAuth: true },
   { title: 'Deleted users', path: Pathes.DELETED_USERS, element: <DeletedUsers />, needAuth: true },
   { title: 'Notifications', path: Pathes.NOTIFICATIONS, element: <Notifications />, needAuth: true },
@@ -60,8 +67,10 @@ export const routes = [
   { title: 'Update user by owner', path: Pathes.UPDATE_USER_BY_OWNER, element: <UpdateUserByOwner />, needAuth: true },
   { title: 'Update user', path: Pathes.UPDATE_USER, element: <UpdateUserByUser />, needAuth: true },
   { title: 'Update bill', path: Pathes.UPDATE_BILL, element: <UpdateBill />, needAuth: true },
+  { title: 'Update receiver', path: Pathes.UPDATE_RECEIVER, element: <UpdateReceiver />, needAuth: true },
   { title: 'User', path: Pathes.USER, element: <User />, needAuth: true },
   { title: 'Bill', path: Pathes.BILL, element: <Bill />, needAuth: true },
+  { title: 'Receiver', path: Pathes.RECEIVER, element: <Receiver />, needAuth: true },
   { title: 'Notification', path: Pathes.NOTIFICATION, element: <Notification />, needAuth: true },
   { title: 'Deleted User', path: Pathes.DELETED_USER, element: <DeletedUser />, needAuth: true },
   { title: 'Deleted Bill', path: Pathes.DELETED_BILL, element: <DeletedBill />, needAuth: true },

@@ -23,6 +23,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import NotificationIcon from '@mui/icons-material/Notifications';
 import ChatIcon from '@mui/icons-material/Chat';
+import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import { styled } from '@mui/material/styles';
 import { LocalStorage, Pathes, routes, UserRoles } from '../lib';
@@ -188,6 +189,12 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         icon: <LayersClearIcon />,
         path: Pathes.DELETED_bILLS,
         redirectPath: Pathes.DELETED_bILLS,
+      },
+      {
+        title: 'Receivers',
+        icon: <CallReceivedIcon />,
+        path: Pathes.RECEIVERS,
+        redirectPath: Pathes.RECEIVERS,
       },
       {
         title: 'All bills',

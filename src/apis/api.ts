@@ -21,6 +21,7 @@ import {
   ReceiverObj,
   LocationListFiltersObj,
   LocationObj,
+  UpdateReceiver,
 } from '../lib';
 import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
@@ -514,12 +515,55 @@ export class ConsumersApi extends RootApi {
 }
 
 export class ReceiversApi extends RootApi {
-  constructor(params: ListParams<ReceiverObj> & FilterParams<Partial<ReceiverListFiltersObj>>) {
+  constructor(params: Partial<ListParams<ReceiverObj> & FilterParams<Partial<ReceiverListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/receiver/all',
         method: 'get',
         params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class ReceiverApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: `/api/v1/bank/receiver/${id}`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class UpdateReceiverApi extends RootApi<UpdateReceiver> {
+  constructor(data: UpdateReceiver) {
+    super(
+      {
+        url: '/api/v1/bank/receiver/update',
+        method: 'put',
+        data,
+        headers: {
+          'Content-type': 'application/json',
+        },
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class DeleteReceiverApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: '/api/v1/bank/receiver/delete',
+        method: 'delete',
+        params: {
+          id,
+        },
       },
       { baseURL: process.env.BANK_SERVICE }
     );
