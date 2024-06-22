@@ -1,11 +1,15 @@
+import { ConsumerObj } from './consumer';
 import { BaseList } from './list';
+import { LocationObj } from './locations';
+import { ReceiverObj } from './receivers';
 import { UserObj } from './user';
 
 export interface BillWithUserObj {
   id: string;
   amount: string;
-  receiver: string;
-  consumers: string[];
+  receiver: ReceiverObj;
+  location: LocationObj;
+  consumers: ConsumerObj[];
   description: string;
   date: number;
   createdAt: Date;
