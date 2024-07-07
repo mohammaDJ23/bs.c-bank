@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button, Autocomplete } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { AllBillList, AllBillListFilters, getTime, isoDate, BillWithUserObj, UserRoles } from '../../lib';
+import { AllBillList, AllBillListFilters, getTime, isoDate, BillObj, UserRoles } from '../../lib';
 import { useForm, usePaginationList, useRequest } from '../../hooks';
 import { AllBillsApi, AllBillsApiConstructorType } from '../../apis';
 import BillsSkeleton from '../shared/BillsSkeleton';
@@ -37,7 +37,7 @@ const List: FC = () => {
 
   const getAllBillsList = useCallback(
     (api: AllBillsApi) => {
-      request.build<[BillWithUserObj[], number]>(api).then((response) => {
+      request.build<[BillObj[], number]>(api).then((response) => {
         const [list, total] = response.data;
         allBillListInstance.updateAndConcatList(list, api.api.params.page);
         allBillListInstance.updatePage(api.api.params.page);
