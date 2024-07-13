@@ -12,7 +12,6 @@ import {
   AllBillListFiltersObj,
   UserObj,
   BillObj,
-  BillWithUserObj,
   ConsumerObj,
   NotificationObj,
   UserListFiltersObj,
@@ -173,7 +172,7 @@ export class BillsApi extends RootApi {
 export type BillsApiConstructorType = ConstructorParameters<typeof BillsApi>[0];
 
 export class AllBillsApi extends RootApi {
-  constructor(params: ListParams<BillWithUserObj> & FilterParams<Partial<AllBillListFiltersObj>>) {
+  constructor(params: ListParams<BillObj> & FilterParams<Partial<AllBillListFiltersObj>>) {
     super(
       {
         url: '/api/v1/bank/owner/bill/all',
