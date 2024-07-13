@@ -3,13 +3,13 @@ import { ListItem, ListItemButton, ListItemText, Typography } from '@mui/materia
 import { Box } from '@mui/system';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
-import { AllBillList, BillWithUserObj, getDynamicPath, Pathes } from '../../lib';
+import { AllBillList, BillObj, deletedAtColor, getDynamicPath, Pathes } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
 import { useAuth, usePaginationList } from '../../hooks';
 
 interface BillCardImportation extends PropsWithChildren {
-  bill: BillWithUserObj;
+  bill: BillObj;
   index: number;
   listInstance: ReturnType<typeof usePaginationList<AllBillList>>;
 }
@@ -49,9 +49,19 @@ const BillWithUserCard: FC<BillCardImportation> = ({ bill, index, listInstance }
           <Box display="flex" flexDirection="column" alignItems="start" width="100%" gap="8px">
             <Box component="div" mb={'8px'}>
               <ListItemText
-                primaryTypographyProps={{ fontSize: '14px', fontWeight: 'bold' }}
                 sx={{ margin: '0' }}
-                primary={`${bill.receiver} received ${bill.amount} at ${moment(bill.date).format('ll')}`}
+                primary={
+                  <Typography component={'p'} sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                    <Typography
+                      component={'span'}
+                      sx={{ fontSize: '14px', fontWeight: 'bold' }}
+                      color={bill.receiver.deletedAt ? deletedAtColor() : ''}
+                    >
+                      {bill.receiver.name}
+                    </Typography>{' '}
+                    received {bill.amount} {bill.date ? `at ${moment(bill.date).format('ll')}` : ''}
+                  </Typography>
+                }
               />
             </Box>
 
@@ -79,7 +89,7 @@ const BillWithUserCard: FC<BillCardImportation> = ({ bill, index, listInstance }
                     </Typography>
                     {bill.consumers.map((consumer) => (
                       <Box
-                        key={consumer}
+                        key={consumer.id}
                         component={'span'}
                         sx={{
                           backgroundColor: '#e6e6e6',
@@ -93,9 +103,13 @@ const BillWithUserCard: FC<BillCardImportation> = ({ bill, index, listInstance }
                       >
                         <Typography
                           component={'span'}
-                          sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', textAlign: 'center' }}
+                          sx={{
+                            fontSize: '12px',
+                            textAlign: 'center',
+                            color: `${consumer.deletedAt ? deletedAtColor() : 'rgba(0, 0, 0, 0.6)'}`,
+                          }}
                         >
-                          {consumer}
+                          {consumer.name}
                         </Typography>
                       </Box>
                     ))}

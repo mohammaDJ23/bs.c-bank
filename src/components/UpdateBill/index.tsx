@@ -26,9 +26,9 @@ const UpdateBillContent: FC = () => {
           new UpdateBill({
             id: response.data.id,
             amount: response.data.amount,
-            receiver: response.data.receiver,
-            location: response.data.location,
-            consumers: response.data.consumers,
+            receiver: response.data.receiver.name,
+            location: response.data.location.name,
+            consumers: response.data.consumers.map((consumer) => consumer.name),
             description: response.data.description,
             date: response.data.date,
           })

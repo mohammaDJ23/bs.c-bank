@@ -5,7 +5,7 @@ import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
 import { FC, useCallback, useState } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
-import { BillObj, getDynamicPath, Pathes } from '../../lib';
+import { BillObj, deletedAtColor, getDynamicPath, Pathes } from '../../lib';
 import { ModalNames } from '../../store';
 import { DeleteBillApi } from '../../apis';
 
@@ -73,17 +73,25 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
             ))}
           </Menu>
         </Box>
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
+        <Typography
+          component={'p'}
+          fontSize="12px"
+          color={`${bill.receiver.deletedAt ? deletedAtColor() : 'rgba(0, 0, 0, 0.6)'}`}
+        >
           <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
             Receiver:
           </Typography>{' '}
-          {bill.receiver}
+          {bill.receiver.name}
         </Typography>
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
+        <Typography
+          component={'p'}
+          fontSize="12px"
+          color={`${bill.location.deletedAt ? deletedAtColor() : 'rgba(0, 0, 0, 0.6)'}`}
+        >
           <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
             Location:
           </Typography>{' '}
-          {bill.location}
+          {bill.location.name}
         </Typography>
         <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
           <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
@@ -91,7 +99,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
           </Typography>
           {bill.consumers.map((consumer) => (
             <Box
-              key={consumer}
+              key={consumer.id}
               component={'span'}
               sx={{
                 backgroundColor: '#e6e6e6',
@@ -105,9 +113,13 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
             >
               <Typography
                 component={'span'}
-                sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)', textAlign: 'center' }}
+                sx={{
+                  fontSize: '12px',
+                  textAlign: 'center',
+                  color: `${consumer.deletedAt ? deletedAtColor() : 'rgba(0, 0, 0, 0.6)'}`,
+                }}
               >
-                {consumer}
+                {consumer.name}
               </Typography>
             </Box>
           ))}
