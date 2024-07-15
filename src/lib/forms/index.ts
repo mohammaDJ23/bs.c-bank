@@ -13,6 +13,7 @@ import { AllBillListFilters } from './allBillListFilters';
 import { ReceiverListFilters } from './receiverListFilters';
 import { LocationListFilters } from './locationListFilters';
 import { UpdateReceiver } from './updateReceiver';
+import { UpdateLocation } from './updateLocation';
 
 export * from './createUser';
 export * from './formConstructor';
@@ -29,6 +30,7 @@ export * from './allBillListFilters';
 export * from './receiverListFilters';
 export * from './locationListFilters';
 export * from './updateReceiver';
+export * from './updateLocation';
 
 export const forms = {
   CreateUser,
@@ -46,4 +48,5 @@ export const forms = {
   ReceiverListFilters,
   LocationListFilters,
   UpdateReceiver,
+  UpdateLocation,
 };

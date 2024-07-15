@@ -21,6 +21,7 @@ import {
   LocationListFiltersObj,
   LocationObj,
   UpdateReceiver,
+  UpdateLocation,
 } from '../lib';
 import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
@@ -602,6 +603,22 @@ export class DeleteLocationApi extends RootApi {
         method: 'delete',
         params: {
           id,
+        },
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class UpdateLocationApi extends RootApi<UpdateLocation> {
+  constructor(data: UpdateLocation) {
+    super(
+      {
+        url: '/api/v1/bank/location/update',
+        method: 'put',
+        data,
+        headers: {
+          'Content-type': 'application/json',
         },
       },
       { baseURL: process.env.BANK_SERVICE }
