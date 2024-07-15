@@ -21,6 +21,8 @@ import {
   LocationListFiltersObj,
   LocationObj,
   UpdateReceiver,
+  UpdateLocation,
+  UpdateConsumer,
 } from '../lib';
 import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
@@ -501,12 +503,55 @@ export class AllNotificationQuantitiesApi extends RootApi {
 }
 
 export class ConsumersApi extends RootApi {
-  constructor(params: ListParams<ConsumerObj> & FilterParams<Partial<ConsumerListFiltersObj>>) {
+  constructor(params: Partial<ListParams<ConsumerObj> & FilterParams<Partial<ConsumerListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/consumer/all',
         method: 'get',
         params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class ConsumerApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: `/api/v1/bank/consumer/${id}`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class DeleteConsumerApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: '/api/v1/bank/consumer/delete',
+        method: 'delete',
+        params: {
+          id,
+        },
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class UpdateConsumerApi extends RootApi<UpdateConsumer> {
+  constructor(data: UpdateConsumer) {
+    super(
+      {
+        url: '/api/v1/bank/consumer/update',
+        method: 'put',
+        data,
+        headers: {
+          'Content-type': 'application/json',
+        },
       },
       { baseURL: process.env.BANK_SERVICE }
     );
@@ -570,12 +615,55 @@ export class DeleteReceiverApi extends RootApi {
 }
 
 export class LocationsApi extends RootApi {
-  constructor(params: ListParams<LocationObj> & FilterParams<Partial<LocationListFiltersObj>>) {
+  constructor(params: Partial<ListParams<LocationObj> & FilterParams<Partial<LocationListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/location/all',
         method: 'get',
         params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class LocaitonApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: `/api/v1/bank/location/${id}`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class DeleteLocationApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: '/api/v1/bank/location/delete',
+        method: 'delete',
+        params: {
+          id,
+        },
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class UpdateLocationApi extends RootApi<UpdateLocation> {
+  constructor(data: UpdateLocation) {
+    super(
+      {
+        url: '/api/v1/bank/location/update',
+        method: 'put',
+        data,
+        headers: {
+          'Content-type': 'application/json',
+        },
       },
       { baseURL: process.env.BANK_SERVICE }
     );

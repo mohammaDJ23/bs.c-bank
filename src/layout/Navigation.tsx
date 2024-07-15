@@ -25,6 +25,8 @@ import NotificationIcon from '@mui/icons-material/Notifications';
 import ChatIcon from '@mui/icons-material/Chat';
 import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { styled } from '@mui/material/styles';
 import { LocalStorage, Pathes, routes, UserRoles } from '../lib';
 import { useAuth, useSelector } from '../hooks';
@@ -195,6 +197,18 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         icon: <CallReceivedIcon />,
         path: Pathes.RECEIVERS,
         redirectPath: Pathes.RECEIVERS,
+      },
+      {
+        title: 'Locations',
+        icon: <LocationOnIcon />,
+        path: Pathes.LOCATIONS,
+        redirectPath: Pathes.LOCATIONS,
+      },
+      {
+        title: 'Consumers',
+        icon: <AddShoppingCartIcon />,
+        path: Pathes.CONSUMERS,
+        redirectPath: Pathes.CONSUMERS,
       },
       {
         title: 'All bills',

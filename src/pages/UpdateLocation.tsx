@@ -1,13 +1,13 @@
 import { FC } from 'react';
-import UpdateReceiverContent from '../components/UpdateReceiver';
+import UpdateLocationContent from '../components/UpdateLocation';
 import ClearStateProvider from '../lib/providers/ClearStateProvider';
 
-const UpdateReceiver: FC = () => {
+const UpdateLocation: FC = () => {
   return (
     <ClearStateProvider>
-      <UpdateReceiverContent />
+      <UpdateLocationContent />
     </ClearStateProvider>
   );
 };
 
-export default UpdateReceiver;
+export default UpdateLocation;

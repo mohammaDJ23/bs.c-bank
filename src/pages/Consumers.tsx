@@ -1,13 +1,13 @@
 import { FC } from 'react';
-import UpdateReceiverContent from '../components/UpdateReceiver';
 import ClearStateProvider from '../lib/providers/ClearStateProvider';
+import ConsumersContent from '../components/Consumers';
 
-const UpdateReceiver: FC = () => {
+const Consumers: FC = () => {
   return (
     <ClearStateProvider>
-      <UpdateReceiverContent />
+      <ConsumersContent />
     </ClearStateProvider>
   );
 };
 
-export default UpdateReceiver;
+export default Consumers;
