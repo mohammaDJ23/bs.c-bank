@@ -30,6 +30,7 @@ const Location = lazy(() => import('../../pages/Location'));
 const Consumer = lazy(() => import('../../pages/Consumer'));
 const UpdateReceiver = lazy(() => import('../../pages/UpdateReceiver'));
 const UpdateLocation = lazy(() => import('../../pages/UpdateLocation'));
+const UpdateConsumer = lazy(() => import('../../pages/UpdateConsumer'));
 
 export enum Pathes {
   BANK = '/bank/*',
@@ -82,6 +83,7 @@ export const routes = [
   { title: 'Update bill', path: Pathes.UPDATE_BILL, element: <UpdateBill />, needAuth: true },
   { title: 'Update receiver', path: Pathes.UPDATE_RECEIVER, element: <UpdateReceiver />, needAuth: true },
   { title: 'Update location', path: Pathes.UPDATE_LOCATION, element: <UpdateLocation />, needAuth: true },
+  { title: 'Update consumer', path: Pathes.UPDATE_CONSUMER, element: <UpdateConsumer />, needAuth: true },
   { title: 'User', path: Pathes.USER, element: <User />, needAuth: true },
   { title: 'Bill', path: Pathes.BILL, element: <Bill />, needAuth: true },
   { title: 'Receiver', path: Pathes.RECEIVER, element: <Receiver />, needAuth: true },
