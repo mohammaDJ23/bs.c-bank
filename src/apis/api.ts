@@ -514,6 +514,33 @@ export class ConsumersApi extends RootApi {
   }
 }
 
+export class ConsumerApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: `/api/v1/bank/consumer/${id}`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class DeleteConsumerApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: '/api/v1/bank/consumer/delete',
+        method: 'delete',
+        params: {
+          id,
+        },
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
 export class ReceiversApi extends RootApi {
   constructor(params: Partial<ListParams<ReceiverObj> & FilterParams<Partial<ReceiverListFiltersObj>>> = {}) {
     super(

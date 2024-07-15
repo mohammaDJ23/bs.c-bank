@@ -27,6 +27,7 @@ const Locations = lazy(() => import('../../pages/Locations'));
 const Consumers = lazy(() => import('../../pages/Consumers'));
 const Receiver = lazy(() => import('../../pages/Receiver'));
 const Location = lazy(() => import('../../pages/Location'));
+const Consumer = lazy(() => import('../../pages/Consumer'));
 const UpdateReceiver = lazy(() => import('../../pages/UpdateReceiver'));
 const UpdateLocation = lazy(() => import('../../pages/UpdateLocation'));
 
@@ -47,6 +48,7 @@ export enum Pathes {
   UPDATE_BILL = '/bank/update-bill/:id',
   UPDATE_RECEIVER = '/bank/update-receiver/:id',
   UPDATE_LOCATION = '/bank/update-location/:id',
+  UPDATE_CONSUMER = '/bank/update-consumer/:id',
   USER = '/bank/users/:id',
   BILL = '/bank/bills/:id',
   NOTIFICATION = '/bank/notifications/:id',
@@ -84,6 +86,7 @@ export const routes = [
   { title: 'Bill', path: Pathes.BILL, element: <Bill />, needAuth: true },
   { title: 'Receiver', path: Pathes.RECEIVER, element: <Receiver />, needAuth: true },
   { title: 'Location', path: Pathes.LOCATION, element: <Location />, needAuth: true },
+  { title: 'Consumer', path: Pathes.CONSUMER, element: <Consumer />, needAuth: true },
   { title: 'Notification', path: Pathes.NOTIFICATION, element: <Notification />, needAuth: true },
   { title: 'Deleted User', path: Pathes.DELETED_USER, element: <DeletedUser />, needAuth: true },
   { title: 'Deleted Bill', path: Pathes.DELETED_BILL, element: <DeletedBill />, needAuth: true },
