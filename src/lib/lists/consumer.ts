@@ -6,7 +6,6 @@ export interface ConsumerObj {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  userId: number;
 }
 
 export class ConsumerList<T = ConsumerObj> extends BaseList<T> {

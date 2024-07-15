@@ -6,7 +6,6 @@ export interface LocationObj {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  userId: number;
 }
 
 export class LocationList<T = LocationObj> extends BaseList<T> {

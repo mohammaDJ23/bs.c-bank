@@ -2,7 +2,7 @@ import { FC } from 'react';
 import ClearStateProvider from '../lib/providers/ClearStateProvider';
 import ReceiverContent from '../components/Receiver';
 
-const Receivers: FC = () => {
+const Receiver: FC = () => {
   return (
     <ClearStateProvider>
       <ReceiverContent />
@@ -10,4 +10,4 @@ const Receivers: FC = () => {
   );
 };
 
-export default Receivers;
+export default Receiver;
