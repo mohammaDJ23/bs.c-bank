@@ -502,7 +502,7 @@ export class AllNotificationQuantitiesApi extends RootApi {
 }
 
 export class ConsumersApi extends RootApi {
-  constructor(params: ListParams<ConsumerObj> & FilterParams<Partial<ConsumerListFiltersObj>>) {
+  constructor(params: Partial<ListParams<ConsumerObj> & FilterParams<Partial<ConsumerListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/consumer/all',
