@@ -6,7 +6,6 @@ export interface ReceiverObj {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  userId: number;
 }
 
 export class ReceiverList<T = ReceiverObj> extends BaseList<T> {

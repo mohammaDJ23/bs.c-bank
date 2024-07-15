@@ -570,7 +570,7 @@ export class DeleteReceiverApi extends RootApi {
 }
 
 export class LocationsApi extends RootApi {
-  constructor(params: ListParams<LocationObj> & FilterParams<Partial<LocationListFiltersObj>>) {
+  constructor(params: Partial<ListParams<LocationObj> & FilterParams<Partial<LocationListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/location/all',
