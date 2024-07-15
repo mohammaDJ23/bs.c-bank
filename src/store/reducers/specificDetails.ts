@@ -1,6 +1,7 @@
 import {
   BillObj,
   DeletedUserObj,
+  LocationObj,
   NotificationObj,
   ReceiverObj,
   UserObj,
@@ -111,6 +112,7 @@ export interface SpecificDetailsState {
   userWithBillInfo: UserWithBillInfoObj | null;
   bill: BillObj | null;
   receiver: ReceiverObj | null;
+  location: LocationObj | null;
   totalAmount: TotalAmount | null;
   periodAmountFilter: PeriodAmountFilter | null;
   lastWeekBills: LastWeekBillsObj[];
@@ -134,6 +136,7 @@ const initialState: SpecificDetailsState = {
   userWithBillInfo: null,
   bill: null,
   receiver: null,
+  location: null,
   totalAmount: null,
   periodAmountFilter: null,
   lastWeekBills: [],
@@ -166,6 +169,7 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     userWithBillInfo: null,
     bill: null,
     receiver: null,
+    location: null,
     totalAmount: null,
     periodAmountFilter: null,
     lastWeekBills: [],

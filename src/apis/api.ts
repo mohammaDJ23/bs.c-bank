@@ -581,3 +581,30 @@ export class LocationsApi extends RootApi {
     );
   }
 }
+
+export class LocaitonApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: `/api/v1/bank/location/${id}`,
+        method: 'get',
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class DeleteLocationApi extends RootApi {
+  constructor(id: number) {
+    super(
+      {
+        url: '/api/v1/bank/location/delete',
+        method: 'delete',
+        params: {
+          id,
+        },
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
