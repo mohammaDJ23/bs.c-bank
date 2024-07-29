@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import FormContainer from '../../layout/FormContainer';
 import { Box, TextField, Button, Autocomplete, CircularProgress } from '@mui/material';
 import {
@@ -14,6 +15,7 @@ import {
   LocationListFilters,
   LocationList,
   LocationObj,
+  wait,
 } from '../../lib';
 import { useForm, useRequest, useFocus, usePaginationList } from '../../hooks';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
@@ -47,10 +49,11 @@ const CreateBillContent: FC = () => {
   const locationListInstance = usePaginationList(LocationList);
   const snackbar = useSnackbar();
   const oneQuarterDebounce = useRef(debounce(250));
+  const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     createBillFromInstance.onSubmit(() => {
-      request.build<CreateBill, CreateBill>(new CreateBillApi(createBillFrom)).then(response => {
+      request.build<CreateBill, CreateBill>(new CreateBillApi(createBillFrom)).then((response) => {
         createBillFromInstance.resetForm();
         snackbar.enqueueSnackbar({ message: 'Your bill was created successfully.', variant: 'success' });
         focus('amount');
@@ -76,13 +79,13 @@ const CreateBillContent: FC = () => {
             page: receiverlistInstance.getPage(),
             filters: { q },
           });
-          request.build<[ReceiverObj[], number]>(receiverApi).then(response => {
+          request.build<[ReceiverObj[], number]>(receiverApi).then((response) => {
             const [list] = response.data;
             const receivers: string[] = [];
             if (q.length) {
               receivers.splice(receivers.length, 0, q);
             }
-            receivers.splice(receivers.length, 0, ...list.map(receiver => receiver.name));
+            receivers.splice(receivers.length, 0, ...list.map((receiver) => receiver.name));
             const newReceivers = new Set(receivers);
             setReceivers(Array.from(newReceivers));
           });
@@ -106,13 +109,13 @@ const CreateBillContent: FC = () => {
             page: locationListInstance.getPage(),
             filters: { q },
           });
-          request.build<[LocationObj[], number]>(locationApi).then(response => {
+          request.build<[LocationObj[], number]>(locationApi).then((response) => {
             const [list] = response.data;
             const locations: string[] = [];
             if (q.length) {
               locations.splice(locations.length, 0, q);
             }
-            locations.splice(locations.length, 0, ...list.map(location => location.name));
+            locations.splice(locations.length, 0, ...list.map((location) => location.name));
             const newLocations = new Set(locations);
             setLocations(Array.from(newLocations));
           });
@@ -135,14 +138,14 @@ const CreateBillContent: FC = () => {
             page: consumerListInstance.getPage(),
             filters: { q },
           });
-          request.build<[ConsumerObj[], number]>(consumersApi).then(response => {
+          request.build<[ConsumerObj[], number]>(consumersApi).then((response) => {
             const [list] = response.data;
             const consumers: string[] = [];
             if (q.length) {
               consumers.splice(consumers.length, 0, q);
             }
             consumers.splice(consumers.length, 0, ...createBillFrom.consumers);
-            consumers.splice(consumers.length, 0, ...list.map(consumer => consumer.name));
+            consumers.splice(consumers.length, 0, ...list.map((consumer) => consumer.name));
             const newConsumers = new Set(consumers);
             setConsumers(Array.from(newConsumers));
           });
@@ -152,33 +155,53 @@ const CreateBillContent: FC = () => {
     [createBillFrom, consumerListFiltersFormInstance]
   );
 
+  useEffect(() => {
+    (async () => {
+      let el = document.getElementById(formElIdRef.current);
+      if (el) {
+        for (const node of Array.from(el.childNodes)) {
+          // @ts-ignore
+          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          // @ts-ignore
+          node.style.opacity = 1;
+          // @ts-ignore
+          node.style.transform = 'translateX(0)';
+
+          await wait();
+        }
+      }
+    })();
+  }, []);
+
   return (
     <Navigation>
       <FormContainer>
         <Box
           component="form"
           noValidate
+          id={formElIdRef.current}
           autoComplete="off"
           display="flex"
           flexDirection="column"
           gap="20px"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             formSubmition();
           }}
         >
           <TextField
+            sx={{ opacity: 0, transform: 'translateX(10px)' }}
             label="Amount"
             variant="standard"
             type="number"
             value={createBillFrom.amount}
-            onChange={event => createBillFromInstance.onChange('amount', Number(event.target.value).toString())}
+            onChange={(event) => createBillFromInstance.onChange('amount', Number(event.target.value).toString())}
             helperText={createBillFromInstance.getInputErrorMessage('amount')}
             error={createBillFromInstance.isInputInValid('amount')}
             disabled={isCreateBillApiProcessing}
             name="amount"
           />
-          <Box position={'relative'}>
+          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(20px)' }}>
             <Autocomplete
               freeSolo
               open={isReceiverAutocompleteOpen}
@@ -196,17 +219,17 @@ const CreateBillContent: FC = () => {
               }}
               disabled={isCreateBillApiProcessing}
               options={receviers}
-              filterOptions={options => options}
-              getOptionLabel={option => option}
+              filterOptions={(options) => options}
+              getOptionLabel={(option) => option}
               clearIcon={false}
               clearOnBlur
               clearOnEscape
               blurOnSelect
-              renderInput={params => (
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   sx={{}}
-                  onBlur={event => {
+                  onBlur={(event) => {
                     receiverListFiltersFormInstance.onChange('q', '');
                   }}
                   onFocus={() => {
@@ -232,7 +255,7 @@ const CreateBillContent: FC = () => {
               <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
             )}
           </Box>
-          <Box position={'relative'}>
+          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(30px)' }}>
             <Autocomplete
               freeSolo
               open={isLocationAutocompleteOpen}
@@ -250,17 +273,17 @@ const CreateBillContent: FC = () => {
               }}
               disabled={isCreateBillApiProcessing}
               options={locations}
-              filterOptions={options => options}
-              getOptionLabel={option => option}
+              filterOptions={(options) => options}
+              getOptionLabel={(option) => option}
               clearIcon={false}
               clearOnBlur
               clearOnEscape
               blurOnSelect
-              renderInput={params => (
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   sx={{}}
-                  onBlur={event => {
+                  onBlur={(event) => {
                     locationListFiltersFormInstance.onChange('q', '');
                   }}
                   onFocus={() => {
@@ -286,7 +309,7 @@ const CreateBillContent: FC = () => {
               <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
             )}
           </Box>
-          <Box position={'relative'}>
+          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(40px)' }}>
             <Autocomplete
               multiple
               freeSolo
@@ -303,13 +326,13 @@ const CreateBillContent: FC = () => {
               }}
               disabled={isCreateBillApiProcessing}
               options={consumers}
-              filterOptions={options => options}
-              getOptionLabel={option => option}
+              filterOptions={(options) => options}
+              getOptionLabel={(option) => option}
               clearIcon={false}
               clearOnBlur
               clearOnEscape
               blurOnSelect
-              renderInput={params => (
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   sx={{}}
@@ -337,11 +360,12 @@ const CreateBillContent: FC = () => {
             )}
           </Box>
           <TextField
+            sx={{ opacity: 0, transform: 'translateX(50px)' }}
             label="Date"
             type="date"
             variant="standard"
             value={createBillFrom.date ? isoDate(createBillFrom.date) : 'undefined'}
-            onChange={event =>
+            onChange={(event) =>
               createBillFromInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
             }
             helperText={createBillFromInstance.getInputErrorMessage('date')}
@@ -350,18 +374,26 @@ const CreateBillContent: FC = () => {
             disabled={isCreateBillApiProcessing}
           />
           <TextField
+            sx={{ opacity: 0, transform: 'translateX(60px)' }}
             label="Description"
             type="text"
             rows="5"
             multiline
             variant="standard"
             value={createBillFrom.description}
-            onChange={event => createBillFromInstance.onChange('description', event.target.value)}
+            onChange={(event) => createBillFromInstance.onChange('description', event.target.value)}
             helperText={createBillFromInstance.getInputErrorMessage('description')}
             error={createBillFromInstance.isInputInValid('description')}
             disabled={isCreateBillApiProcessing}
           />
-          <Box component="div" display="flex" alignItems="center" gap="10px" marginTop="20px">
+          <Box
+            component="div"
+            display="flex"
+            alignItems="center"
+            gap="10px"
+            marginTop="20px"
+            sx={{ opacity: 0, transform: 'translateX(70px)' }}
+          >
             <Button
               disabled={isCreateBillApiProcessing || !createBillFromInstance.isFormValid()}
               variant="contained"

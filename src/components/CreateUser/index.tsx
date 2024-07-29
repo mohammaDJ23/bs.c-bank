@@ -1,9 +1,10 @@
 import FormContainer from '../../layout/FormContainer';
+import { v4 as uuid } from 'uuid';
 import { Box, TextField, Button, Select, FormControl, MenuItem, InputLabel, FormHelperText } from '@mui/material';
-import { CreateUser } from '../../lib';
+import { CreateUser, wait } from '../../lib';
 import { useAuth, useForm, useRequest, useFocus } from '../../hooks';
 import { CreateUserApi } from '../../apis';
-import { FC, useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect, useRef } from 'react';
 import { useSnackbar } from 'notistack';
 import Navigation from '../../layout/Navigation';
 
@@ -15,6 +16,7 @@ const CreateUserContent: FC = () => {
   const isCreateUserApiProcessing = request.isApiProcessing(CreateUserApi);
   const form = createUserFormInstance.getForm();
   const snackbar = useSnackbar();
+  const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     createUserFormInstance.onSubmit(() => {
@@ -30,10 +32,29 @@ const CreateUserContent: FC = () => {
     focus('firstName');
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      let el = document.getElementById(formElIdRef.current);
+      if (el) {
+        for (const node of Array.from(el.childNodes)) {
+          // @ts-ignore
+          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          // @ts-ignore
+          node.style.opacity = 1;
+          // @ts-ignore
+          node.style.transform = 'translateX(0)';
+
+          await wait();
+        }
+      }
+    })();
+  }, []);
+
   return (
     <Navigation>
       <FormContainer>
         <Box
+          id={formElIdRef.current}
           component="form"
           noValidate
           autoComplete="off"
@@ -46,6 +67,7 @@ const CreateUserContent: FC = () => {
           }}
         >
           <TextField
+            sx={{ opacity: 0, transform: 'translateX(10px)' }}
             label="First Name"
             variant="standard"
             type="text"
@@ -57,6 +79,7 @@ const CreateUserContent: FC = () => {
             name="firstName"
           />
           <TextField
+            sx={{ opacity: 0, transform: 'translateX(20px)' }}
             label="Last Name"
             variant="standard"
             type="text"
@@ -67,6 +90,7 @@ const CreateUserContent: FC = () => {
             disabled={isCreateUserApiProcessing}
           />
           <TextField
+            sx={{ opacity: 0, transform: 'translateX(30px)' }}
             label="Email"
             type="email"
             variant="standard"
@@ -77,6 +101,7 @@ const CreateUserContent: FC = () => {
             disabled={isCreateUserApiProcessing}
           />
           <TextField
+            sx={{ opacity: 0, transform: 'translateX(40px)' }}
             label="Password"
             type="password"
             variant="standard"
@@ -88,6 +113,7 @@ const CreateUserContent: FC = () => {
             disabled={isCreateUserApiProcessing}
           />
           <TextField
+            sx={{ opacity: 0, transform: 'translateX(50px)' }}
             label="Phone"
             type="text"
             variant="standard"
@@ -97,7 +123,7 @@ const CreateUserContent: FC = () => {
             error={createUserFormInstance.isInputInValid('phone')}
             disabled={isCreateUserApiProcessing}
           />
-          <FormControl variant="standard">
+          <FormControl variant="standard" sx={{ opacity: 0, transform: 'translateX(60px)' }}>
             <InputLabel id="role">Role</InputLabel>
             <Select
               disabled={isCreateUserApiProcessing}
@@ -118,7 +144,14 @@ const CreateUserContent: FC = () => {
               <FormHelperText>{createUserFormInstance.getInputErrorMessage('role')}</FormHelperText>
             )}
           </FormControl>
-          <Box component="div" display="flex" alignItems="center" gap="10px" marginTop="20px">
+          <Box
+            sx={{ opacity: 0, transform: 'translateX(70px)' }}
+            component="div"
+            display="flex"
+            alignItems="center"
+            gap="10px"
+            marginTop="20px"
+          >
             <Button
               disabled={isCreateUserApiProcessing || !createUserFormInstance.isFormValid()}
               variant="contained"
