@@ -14,8 +14,10 @@ import {
   ReceiverListFilters,
   ReceiverObj,
   UpdateBill,
+  wait,
 } from '../../lib';
-import { ChangeEvent, FC, useCallback, useRef, useState } from 'react';
+import { v4 as uuid } from 'uuid';
+import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Box, TextField, Button, Autocomplete, CircularProgress } from '@mui/material';
 import Modal from '../shared/Modal';
 import { useAction, useForm, usePaginationList, useRequest } from '../../hooks';
@@ -55,19 +57,20 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
   const oneQuarterDebounce = useRef(debounce(250));
   const updateBillForm = updateBillFormInstance.getForm();
   const snackbar = useSnackbar();
+  const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     updateBillFormInstance.onSubmit(() => {
       request
         .build<UpdateBill, UpdateBill>(new UpdateBillApi(updateBillForm))
-        .then(response => {
+        .then((response) => {
           const billId = params.id as string;
           actions.hideModal(ModalNames.CONFIRMATION);
           updateBillFormInstance.resetForm();
           snackbar.enqueueSnackbar({ message: 'You have updated the bill successfully.', variant: 'success' });
           navigate(getDynamicPath(Pathes.BILL, { id: billId }));
         })
-        .catch(err => actions.hideModal(ModalNames.CONFIRMATION));
+        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
     });
   }, [updateBillForm, updateBillFormInstance, params, request]);
 
@@ -85,13 +88,13 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             page: receiverlistInstance.getPage(),
             filters: { q },
           });
-          request.build<[ReceiverObj[], number]>(receiverApi).then(response => {
+          request.build<[ReceiverObj[], number]>(receiverApi).then((response) => {
             const [list] = response.data;
             const receivers: string[] = [];
             if (q.length) {
               receivers.splice(receivers.length, 0, q);
             }
-            receivers.splice(receivers.length, 0, ...list.map(receiver => receiver.name));
+            receivers.splice(receivers.length, 0, ...list.map((receiver) => receiver.name));
             const newReceivers = new Set(receivers);
             setReceivers(Array.from(newReceivers));
           });
@@ -115,13 +118,13 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             page: locationListInstance.getPage(),
             filters: { q },
           });
-          request.build<[LocationObj[], number]>(locationApi).then(response => {
+          request.build<[LocationObj[], number]>(locationApi).then((response) => {
             const [list] = response.data;
             const locations: string[] = [];
             if (q.length) {
               locations.splice(locations.length, 0, q);
             }
-            locations.splice(locations.length, 0, ...list.map(location => location.name));
+            locations.splice(locations.length, 0, ...list.map((location) => location.name));
             const newLocations = new Set(locations);
             setLocations(Array.from(newLocations));
           });
@@ -144,14 +147,14 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             page: consumerListInstance.getPage(),
             filters: { q },
           });
-          request.build<[ConsumerObj[], number]>(consumersApi).then(response => {
+          request.build<[ConsumerObj[], number]>(consumersApi).then((response) => {
             const [list] = response.data;
             const consumers: string[] = [];
             if (q.length) {
               consumers.splice(consumers.length, 0, q);
             }
             consumers.splice(consumers.length, 0, ...updateBillForm.consumers);
-            consumers.splice(consumers.length, 0, ...list.map(consumer => consumer.name));
+            consumers.splice(consumers.length, 0, ...list.map((consumer) => consumer.name));
             const newConsumers = new Set(consumers);
             setConsumers(Array.from(newConsumers));
           });
@@ -161,31 +164,51 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
     [updateBillForm, consumerListFiltersFormInstance]
   );
 
+  useEffect(() => {
+    (async () => {
+      let el = document.getElementById(formElIdRef.current);
+      if (el) {
+        for (const node of Array.from(el.childNodes)) {
+          // @ts-ignore
+          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          // @ts-ignore
+          node.style.opacity = 1;
+          // @ts-ignore
+          node.style.transform = 'translateX(0)';
+
+          await wait();
+        }
+      }
+    })();
+  }, []);
+
   return (
     <>
       <Box
+        id={formElIdRef.current}
         component="form"
         noValidate
         autoComplete="off"
         display="flex"
         flexDirection="column"
         gap="20px"
-        onSubmit={event => {
+        onSubmit={(event) => {
           event.preventDefault();
           updateBillFormInstance.confirmation();
         }}
       >
         <TextField
+          sx={{ opacity: 0, transform: 'translateX(10px)' }}
           label="Amount"
           variant="standard"
           type="number"
           value={updateBillForm.amount}
-          onChange={event => updateBillFormInstance.onChange('amount', Number(event.target.value).toString())}
+          onChange={(event) => updateBillFormInstance.onChange('amount', Number(event.target.value).toString())}
           helperText={updateBillFormInstance.getInputErrorMessage('amount')}
           error={updateBillFormInstance.isInputInValid('amount')}
           disabled={isUpdateBillApiProcessing}
         />
-        <Box position={'relative'}>
+        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(20px)' }}>
           <Autocomplete
             freeSolo
             open={isReceiverAutocompleteOpen}
@@ -203,17 +226,17 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             }}
             disabled={isUpdateBillApiProcessing}
             options={receviers}
-            filterOptions={options => options}
-            getOptionLabel={option => option}
+            filterOptions={(options) => options}
+            getOptionLabel={(option) => option}
             clearIcon={false}
             clearOnBlur
             clearOnEscape
             blurOnSelect
-            renderInput={params => (
+            renderInput={(params) => (
               <TextField
                 {...params}
                 sx={{}}
-                onBlur={event => {
+                onBlur={(event) => {
                   receiverListFiltersFormInstance.onChange('q', '');
                 }}
                 onFocus={() => {
@@ -239,7 +262,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
           )}
         </Box>
-        <Box position={'relative'}>
+        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(30px)' }}>
           <Autocomplete
             freeSolo
             open={isLocationAutocompleteOpen}
@@ -257,17 +280,17 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             }}
             disabled={isUpdateBillApiProcessing}
             options={locations}
-            filterOptions={options => options}
-            getOptionLabel={option => option}
+            filterOptions={(options) => options}
+            getOptionLabel={(option) => option}
             clearIcon={false}
             clearOnBlur
             clearOnEscape
             blurOnSelect
-            renderInput={params => (
+            renderInput={(params) => (
               <TextField
                 {...params}
                 sx={{}}
-                onBlur={event => {
+                onBlur={(event) => {
                   locationListFiltersFormInstance.onChange('q', '');
                 }}
                 onFocus={() => {
@@ -293,7 +316,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
           )}
         </Box>
-        <Box position={'relative'}>
+        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(40px)' }}>
           <Autocomplete
             multiple
             freeSolo
@@ -310,13 +333,13 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             }}
             disabled={isUpdateBillApiProcessing}
             options={consumers}
-            filterOptions={options => options}
-            getOptionLabel={option => option}
+            filterOptions={(options) => options}
+            getOptionLabel={(option) => option}
             clearIcon={false}
             clearOnBlur
             clearOnEscape
             blurOnSelect
-            renderInput={params => (
+            renderInput={(params) => (
               <TextField
                 {...params}
                 sx={{}}
@@ -344,11 +367,12 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           )}
         </Box>
         <TextField
+          sx={{ opacity: 0, transform: 'translateX(50px)' }}
           label="Date"
           type="date"
           variant="standard"
           value={updateBillForm.date ? isoDate(updateBillForm.date) : 'undefined'}
-          onChange={event =>
+          onChange={(event) =>
             updateBillFormInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
           }
           helperText={updateBillFormInstance.getInputErrorMessage('date')}
@@ -357,18 +381,26 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           disabled={isUpdateBillApiProcessing}
         />
         <TextField
+          sx={{ opacity: 0, transform: 'translateX(60px)' }}
           label="Description"
           type="text"
           rows="5"
           multiline
           variant="standard"
           value={updateBillForm.description}
-          onChange={event => updateBillFormInstance.onChange('description', event.target.value)}
+          onChange={(event) => updateBillFormInstance.onChange('description', event.target.value)}
           helperText={updateBillFormInstance.getInputErrorMessage('description')}
           error={updateBillFormInstance.isInputInValid('description')}
           disabled={isUpdateBillApiProcessing}
         />
-        <Box component="div" display="flex" alignItems="center" gap="10px" marginTop="20px">
+        <Box
+          sx={{ opacity: 0, transform: 'translateX(70px)' }}
+          component="div"
+          display="flex"
+          alignItems="center"
+          gap="10px"
+          marginTop="20px"
+        >
           <Button
             disabled={isUpdateBillApiProcessing || !updateBillFormInstance.isFormValid()}
             variant="contained"
