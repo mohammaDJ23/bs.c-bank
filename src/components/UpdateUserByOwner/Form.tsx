@@ -1,5 +1,13 @@
-import { FC, useCallback } from 'react';
-import { AccessTokenObj, getDynamicPath, getUserRoles, Pathes, reInitializeToken, UpdateUserByOwner } from '../../lib';
+import { FC, useCallback, useEffect, useRef } from 'react';
+import {
+  AccessTokenObj,
+  getDynamicPath,
+  getUserRoles,
+  Pathes,
+  reInitializeToken,
+  UpdateUserByOwner,
+  wait,
+} from '../../lib';
 import Modal from '../shared/Modal';
 import { ModalNames } from '../../store';
 import { useAction, useAuth, useForm, useRequest } from '../../hooks';
@@ -7,6 +15,7 @@ import { Box, TextField, Button, Select, FormControl, MenuItem, InputLabel, Form
 import { UpdateUserByOwnerApi } from '../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import { v4 as uuid } from 'uuid';
 
 interface FormImportation {
   formInstance: ReturnType<typeof useForm<UpdateUserByOwner>>;
@@ -22,6 +31,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
   const snackbar = useSnackbar();
   const auth = useAuth();
   const decodedToken = auth.getDecodedToken();
+  const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     formInstance.onSubmit(() => {
@@ -47,9 +57,30 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
     });
   }, [formInstance, form, params, request]);
 
+  useEffect(() => {
+    (async () => {
+      await wait(10);
+
+      let el = document.getElementById(formElIdRef.current);
+      if (el) {
+        for (const node of Array.from(el.childNodes)) {
+          // @ts-ignore
+          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          // @ts-ignore
+          node.style.opacity = 1;
+          // @ts-ignore
+          node.style.transform = 'translateX(0)';
+
+          await wait();
+        }
+      }
+    })();
+  }, []);
+
   return (
     <>
       <Box
+        id={formElIdRef.current}
         component="form"
         noValidate
         autoComplete="off"
@@ -62,6 +93,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
         }}
       >
         <TextField
+          sx={{ opacity: 0, transform: 'translateX(10px)' }}
           label="First Name"
           variant="standard"
           type="text"
@@ -72,6 +104,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           disabled={isUpdateUserByOwnerApiProcessing}
         />
         <TextField
+          sx={{ opacity: 0, transform: 'translateX(20px)' }}
           label="Last Name"
           variant="standard"
           type="text"
@@ -82,6 +115,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           disabled={isUpdateUserByOwnerApiProcessing}
         />
         <TextField
+          sx={{ opacity: 0, transform: 'translateX(30px)' }}
           label="Email"
           type="email"
           variant="standard"
@@ -92,6 +126,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           disabled={isUpdateUserByOwnerApiProcessing}
         />
         <TextField
+          sx={{ opacity: 0, transform: 'translateX(40px)' }}
           label="Phone"
           type="text"
           variant="standard"
@@ -101,7 +136,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           error={formInstance.isInputInValid('phone')}
           disabled={isUpdateUserByOwnerApiProcessing}
         />
-        <FormControl variant="standard">
+        <FormControl variant="standard" sx={{ opacity: 0, transform: 'translateX(50px)' }}>
           <InputLabel id="role">Role</InputLabel>
           <Select
             labelId="role"
@@ -121,7 +156,14 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
             <FormHelperText>{formInstance.getInputErrorMessage('role')}</FormHelperText>
           )}
         </FormControl>
-        <Box component="div" display="flex" alignItems="center" gap="10px" marginTop="20px">
+        <Box
+          sx={{ opacity: 0, transform: 'translateX(60px)' }}
+          component="div"
+          display="flex"
+          alignItems="center"
+          gap="10px"
+          marginTop="20px"
+        >
           <Button
             disabled={isUpdateUserByOwnerApiProcessing || !formInstance.isFormValid()}
             variant="contained"
