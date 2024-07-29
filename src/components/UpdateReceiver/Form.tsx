@@ -1,5 +1,5 @@
-import { getDynamicPath, Pathes, ReceiverObj, UpdateReceiver } from '../../lib';
-import { FC, useCallback } from 'react';
+import { getDynamicPath, Pathes, ReceiverObj, UpdateReceiver, wait } from '../../lib';
+import { FC, useCallback, useEffect, useRef } from 'react';
 import { Box, TextField, Button } from '@mui/material';
 import Modal from '../shared/Modal';
 import { useAction, useForm, useRequest } from '../../hooks';
@@ -7,6 +7,7 @@ import { ModalNames } from '../../store';
 import { UpdateReceiverApi } from '../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import { v4 as uuid } from 'uuid';
 
 interface FormImportation {
   formInstance: ReturnType<typeof useForm<UpdateReceiver>>;
@@ -20,6 +21,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateReceiverFormInstance })
   const isUpdateReceiverApiProcessing = request.isApiProcessing(UpdateReceiverApi);
   const updateReceiverForm = updateReceiverFormInstance.getForm();
   const snackbar = useSnackbar();
+  const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     updateReceiverFormInstance.onSubmit(() => {
@@ -36,9 +38,30 @@ const Form: FC<FormImportation> = ({ formInstance: updateReceiverFormInstance })
     });
   }, [updateReceiverForm, updateReceiverFormInstance, params, request]);
 
+  useEffect(() => {
+    (async () => {
+      await wait(10);
+
+      let el = document.getElementById(formElIdRef.current);
+      if (el) {
+        for (const node of Array.from(el.childNodes)) {
+          // @ts-ignore
+          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          // @ts-ignore
+          node.style.opacity = 1;
+          // @ts-ignore
+          node.style.transform = 'translateX(0)';
+
+          await wait();
+        }
+      }
+    })();
+  }, []);
+
   return (
     <>
       <Box
+        id={formElIdRef.current}
         component="form"
         noValidate
         autoComplete="off"
@@ -51,6 +74,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateReceiverFormInstance })
         }}
       >
         <TextField
+          sx={{ opacity: 0, transform: 'translateX(10px)' }}
           label="Name"
           variant="standard"
           type="text"
@@ -61,7 +85,14 @@ const Form: FC<FormImportation> = ({ formInstance: updateReceiverFormInstance })
           disabled={isUpdateReceiverApiProcessing}
         />
 
-        <Box component="div" display="flex" alignItems="center" gap="10px" marginTop="20px">
+        <Box
+          sx={{ opacity: 0, transform: 'translateX(20px)' }}
+          component="div"
+          display="flex"
+          alignItems="center"
+          gap="10px"
+          marginTop="20px"
+        >
           <Button
             disabled={isUpdateReceiverApiProcessing || !updateReceiverFormInstance.isFormValid()}
             variant="contained"
