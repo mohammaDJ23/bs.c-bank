@@ -45,6 +45,7 @@ const Carousel: FC<Props> = ({ children, infinity = false, timer = 2000, showArr
   const contentElRef = useRef<HTMLElement | null>(null);
   const slideWidthRef = useRef(0);
   const movingRef = useRef(true);
+  const infinityRef = useRef(infinity);
 
   function getContainerEl() {
     return containerElRef.current!;
@@ -199,13 +200,19 @@ const Carousel: FC<Props> = ({ children, infinity = false, timer = 2000, showArr
     (async () => {
       for (;;) {
         await wait(timer);
-        next();
+        if (infinityRef.current) {
+          next();
+        }
       }
     })();
   }, []);
 
   return (
-    <Container ref={containerElRef}>
+    <Container
+      ref={containerElRef}
+      onMouseEnter={() => (infinityRef.current = false)}
+      onMouseLeave={() => (infinityRef.current = infinity)}
+    >
       {showArrows && (
         <Box
           onClick={() => prev()}
