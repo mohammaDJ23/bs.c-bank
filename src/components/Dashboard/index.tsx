@@ -9,8 +9,8 @@ import {
   AllNotificationQuantitiesApi,
   DeletedBillQuantitiesApi,
   DeletedUserQuantitiesApi,
-  LastWeekBillsApi,
-  LastWeekUsersApi,
+  LastYearBillsApi,
+  LastYearUsersApi,
   NotificationQuantitiesApi,
   PeriodAmountApi,
   TotalAmountApi,
@@ -88,9 +88,9 @@ const Dashboard: FC = () => {
   const isInitialTotalAmountApiProcessing = request.isInitialApiProcessing(TotalAmountApi);
   const isInitialTotalAmountApiFailed = request.isInitialProcessingApiFailed(TotalAmountApi);
   const isInitialTotalAmountApiSuccessed = request.isInitialProcessingApiSuccessed(TotalAmountApi);
-  const isInitialLastWeekBillsApiProcessing = request.isInitialApiProcessing(LastWeekBillsApi);
-  const isInitialLastWeekBillsApiFailed = request.isInitialProcessingApiFailed(LastWeekBillsApi);
-  const isInitialLastWeekBillsApiSuccessed = request.isInitialProcessingApiSuccessed(LastWeekBillsApi);
+  const isInitialLastWeekBillsApiProcessing = request.isInitialApiProcessing(LastYearBillsApi);
+  const isInitialLastWeekBillsApiFailed = request.isInitialProcessingApiFailed(LastYearBillsApi);
+  const isInitialLastWeekBillsApiSuccessed = request.isInitialProcessingApiSuccessed(LastYearBillsApi);
   const isPeriodAmountApiProcessing = request.isApiProcessing(PeriodAmountApi);
   const isInitialUserQuantitiesApiProcessing = request.isInitialApiProcessing(UserQuantitiesApi);
   const isInitialUserQuantitiesApiFailed = request.isInitialProcessingApiFailed(UserQuantitiesApi);
@@ -147,7 +147,7 @@ const Dashboard: FC = () => {
       >([
         request.build(new UserQuantitiesApi().setInitialApi()),
         request.build(new DeletedUserQuantitiesApi().setInitialApi()),
-        request.build(new LastWeekUsersApi().setInitialApi()),
+        request.build(new LastYearUsersApi().setInitialApi()),
         request.build(new AllBillQuantitiesApi().setInitialApi()),
         request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
       ]).then(
@@ -189,7 +189,7 @@ const Dashboard: FC = () => {
       ]
     >([
       request.build(new TotalAmountApi().setInitialApi()),
-      request.build(new LastWeekBillsApi().setInitialApi()),
+      request.build(new LastYearBillsApi().setInitialApi()),
       request.build(new DeletedBillQuantitiesApi().setInitialApi()),
     ]).then(([totalAmountResponse, lastWeekBillsResponse, deletedBillQuantitiesResponse]) => {
       if (totalAmountResponse.status === 'fulfilled') {

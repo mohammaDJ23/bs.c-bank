@@ -342,11 +342,11 @@ export class PeriodAmountApi extends RootApi<PeriodAmountFilter> {
   }
 }
 
-export class LastWeekBillsApi extends RootApi {
+export class LastYearBillsApi extends RootApi {
   constructor() {
     super(
       {
-        url: '/api/v1/bank/bill/last-week',
+        url: '/api/v1/bank/bill/last-year',
         method: 'get',
       },
       { baseURL: process.env.BANK_SERVICE }
@@ -378,11 +378,11 @@ export class DeletedUserQuantitiesApi extends RootApi {
   }
 }
 
-export class LastWeekUsersApi extends RootApi {
+export class LastYearUsersApi extends RootApi {
   constructor() {
     super(
       {
-        url: '/api/v1/user/last-week',
+        url: '/api/v1/user/last-year',
         method: 'get',
       },
       { baseURL: process.env.USER_SERVICE }
