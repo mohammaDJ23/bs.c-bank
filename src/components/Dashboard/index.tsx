@@ -785,7 +785,7 @@ const Dashboard: FC = () => {
                             color={'#d00000'}
                             sx={{ wordBreak: 'break-word' }}
                           >
-                            Failed to load the notification quantities.
+                            Failed to load your notification quantities.
                           </Typography>
                         </Box>
                       </Card>
@@ -797,7 +797,7 @@ const Dashboard: FC = () => {
                             <Box display="flex" gap="20px" flexDirection="column">
                               <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
                                 <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  Notification quantities:{' '}
+                                  Your notification quantities:{' '}
                                 </Typography>
                                 <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
                                   {selectors.specificDetails.notificationQuantities.quantities}
