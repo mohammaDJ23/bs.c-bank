@@ -24,7 +24,6 @@ import {
   UpdateLocation,
   UpdateConsumer,
 } from '../lib';
-import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
 import { ReceiverListFiltersObj } from '../lib/forms/receiverListFilters';
 
@@ -314,28 +313,12 @@ export class DeleteUserByOwnerApi extends RootApi {
   }
 }
 
-export class TotalAmountApi extends RootApi {
+export class BillQuantitiesApi extends RootApi {
   constructor() {
     super(
       {
-        url: '/api/v1/bank/bill/total-amount',
+        url: '/api/v1/bank/bill/quantities',
         method: 'get',
-      },
-      { baseURL: process.env.BANK_SERVICE }
-    );
-  }
-}
-
-export class PeriodAmountApi extends RootApi<PeriodAmountFilter> {
-  constructor(data: PeriodAmountFilter) {
-    super(
-      {
-        url: '/api/v1/bank/bill/period-amount',
-        method: 'post',
-        data,
-        headers: {
-          'Content-type': 'application/json',
-        },
       },
       { baseURL: process.env.BANK_SERVICE }
     );
