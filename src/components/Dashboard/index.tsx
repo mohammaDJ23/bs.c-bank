@@ -40,6 +40,7 @@ import moment from 'moment';
 import { useSnackbar } from 'notistack';
 import Navigation from '../../layout/Navigation';
 import Chart from 'react-apexcharts';
+import VerticalCarousel from '../shared/VerticalCarousel';
 
 const LargSliderWrapper = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {

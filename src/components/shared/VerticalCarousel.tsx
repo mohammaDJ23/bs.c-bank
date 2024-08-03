@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 import { FC, PropsWithChildren, useEffect, useRef } from 'react';
 import { styled } from '@mui/material/styles';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { wait } from '../../lib';
 
 const Container = styled(Box)(({ theme }) => ({
@@ -10,10 +10,10 @@ const Container = styled(Box)(({ theme }) => ({
   overflow: 'hidden',
   position: 'relative',
   '&:hover': {
-    'div[data-arrow="carousel-left-arrow"]': {
+    'div[data-arrow="carousel-up-arrow"]': {
       opacity: 1,
     },
-    'div[data-arrow="carousel-right-arrow"]': {
+    'div[data-arrow="carousel-down-arrow"]': {
       opacity: 1,
     },
   },
@@ -28,7 +28,7 @@ const Content = styled(Box)(({ theme }) => ({
     position: 'absolute',
     zIndex: 1,
     height: '100%',
-    transition: 'left 0.6s cubic-bezier(0.47, 0.13, 0.15, 0.89);',
+    transition: 'top 0.6s cubic-bezier(0.47, 0.13, 0.15, 0.89);',
   },
 }));
 
@@ -39,7 +39,7 @@ interface Props extends PropsWithChildren {
   height?: string;
 }
 
-const HorizonCarousel: FC<Props> = ({
+const VerticalCarousel: FC<Props> = ({
   children,
   infinity = false,
   timer = 2000,
@@ -49,7 +49,7 @@ const HorizonCarousel: FC<Props> = ({
   const screenSizeRef = useRef(0);
   const containerElRef = useRef<HTMLElement | null>(null);
   const contentElRef = useRef<HTMLElement | null>(null);
-  const slideWidthRef = useRef(0);
+  const slideHeightRef = useRef(0);
   const movingRef = useRef(true);
   const infinityRef = useRef(infinity);
 
@@ -89,21 +89,21 @@ const HorizonCarousel: FC<Props> = ({
   }
 
   function setSlides() {
-    slideWidthRef.current = getContainerEl().offsetWidth / screenSizeRef.current;
-    let left = -slideWidthRef.current;
+    slideHeightRef.current = getContainerEl().offsetHeight / screenSizeRef.current;
+    let top = -slideHeightRef.current;
     Array.from(getContentEl().children).forEach((child) => {
       // @ts-ignore
-      child.style.width = `${slideWidthRef.current}px`;
+      child.style.height = `${slideHeightRef.current}px`;
       // @ts-ignore
-      child.style.left = `${left}px`;
-      left += slideWidthRef.current;
+      child.style.top = `${top}px`;
+      top += slideHeightRef.current;
     });
   }
 
   function initResize() {
     setScreenSize();
     setSlides();
-    moveSlidesRight();
+    moveSlidesUp();
   }
 
   function onResize() {
@@ -122,7 +122,7 @@ const HorizonCarousel: FC<Props> = ({
   function addClone() {
     const clonedLastSlide = getLastElementChild().cloneNode(true);
     // @ts-ignore
-    clonedLastSlide.style.left = `-${slideWidthRef.current}px`;
+    clonedLastSlide.style.top = `-${slideHeightRef.current}px`;
     getContentEl().insertBefore(clonedLastSlide, getFirstChild());
   }
 
@@ -132,16 +132,16 @@ const HorizonCarousel: FC<Props> = ({
 
   /**
    *
-   * next
+   * down
    *
    */
 
-  function next() {
+  function down() {
     if (movingRef.current) {
       movingRef.current = false;
       removeClone();
       getFirstElementChild().addEventListener('transitionend', replaceToEnd);
-      moveSlidesLeft();
+      moveSlidesDown();
     }
   }
 
@@ -150,30 +150,30 @@ const HorizonCarousel: FC<Props> = ({
     getContentEl().removeChild(firstSlide);
     getContentEl().appendChild(firstSlide);
     // @ts-ignore
-    firstSlide.style.left = `${(getContentEl().children.length - 1) * slideWidthRef.current}px`;
+    firstSlide.style.top = `${(getContentEl().children.length - 1) * slideHeightRef.current}px`;
     addClone();
     movingRef.current = true;
     firstSlide.removeEventListener('transitionend', replaceToEnd);
   }
 
-  function moveSlidesLeft() {
-    let maxWidth = (getContentEl().children.length - 1) * slideWidthRef.current;
+  function moveSlidesDown() {
+    let maxHeight = (getContentEl().children.length - 1) * slideHeightRef.current;
     Array.from(getContentEl().children)
       .reverse()
       .forEach((child) => {
-        maxWidth -= slideWidthRef.current;
+        maxHeight -= slideHeightRef.current;
         // @ts-ignore
-        child.style.left = `${maxWidth}px`;
+        child.style.top = `${maxHeight}px`;
       });
   }
 
   /**
    *
-   * prev
+   * up
    *
    */
 
-  function prev() {
+  function up() {
     if (movingRef.current) {
       movingRef.current = false;
       const lastSlide = getLastChild();
@@ -181,7 +181,7 @@ const HorizonCarousel: FC<Props> = ({
       getContentEl().insertBefore(lastSlide, getFirstChild());
       removeClone();
       getFirstElementChild().addEventListener('transitionend', activateAgain);
-      moveSlidesRight();
+      moveSlidesUp();
     }
   }
 
@@ -190,12 +190,12 @@ const HorizonCarousel: FC<Props> = ({
     getFirstElementChild().removeEventListener('transitionend', activateAgain);
   }
 
-  function moveSlidesRight() {
-    let left = 0;
+  function moveSlidesUp() {
+    let top = 0;
     Array.from(getContentEl().children).forEach((child) => {
       // @ts-ignore
-      child.style.left = `${left}px`;
-      left += slideWidthRef.current;
+      child.style.top = `${top}px`;
+      top += slideHeightRef.current;
     });
     addClone();
   }
@@ -207,7 +207,7 @@ const HorizonCarousel: FC<Props> = ({
       for (;;) {
         await wait(timer);
         if (infinityRef.current) {
-          next();
+          down();
         }
       }
     })();
@@ -222,15 +222,15 @@ const HorizonCarousel: FC<Props> = ({
     >
       {showArrows && (
         <Box
-          onClick={() => prev()}
-          data-arrow="carousel-left-arrow"
+          onClick={() => up()}
+          data-arrow="carousel-up-arrow"
           sx={{
             cursor: 'pointer',
             position: 'absolute',
             zIndex: 2,
-            left: '10px',
-            top: '50%',
-            transform: 'translateY(-50%)',
+            left: '50%',
+            top: '10px',
+            transform: 'translateX(-50%)',
             width: '22px',
             height: '22px',
             borderRadius: '50%',
@@ -244,21 +244,21 @@ const HorizonCarousel: FC<Props> = ({
             boxShadow: '0px 0px 2px 0px rgba(143,143,143,1)',
           }}
         >
-          <ChevronLeftIcon color="action" fontSize="small" />
+          <ExpandLessIcon color="action" fontSize="small" />
         </Box>
       )}
       <Content ref={contentElRef}>{children}</Content>
       {showArrows && (
         <Box
-          onClick={() => next()}
-          data-arrow="carousel-right-arrow"
+          onClick={() => down()}
+          data-arrow="carousel-down-arrow"
           sx={{
             cursor: 'pointer',
             position: 'absolute',
             zIndex: 2,
-            right: '10px',
-            top: '50%',
-            transform: 'translateY(-50%)',
+            left: '50%',
+            bottom: '10px',
+            transform: 'translateX(-50%)',
             width: '22px',
             height: '22px',
             borderRadius: '50%',
@@ -272,11 +272,11 @@ const HorizonCarousel: FC<Props> = ({
             boxShadow: '0px 0px 2px 0px rgba(143,143,143,1)',
           }}
         >
-          <ChevronRightIcon color="action" fontSize="small" />
+          <ExpandMoreIcon color="action" fontSize="small" />
         </Box>
       )}
     </Container>
   );
 };
 
-export default HorizonCarousel;
+export default VerticalCarousel;
