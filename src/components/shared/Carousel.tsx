@@ -7,7 +7,6 @@ import { wait } from '../../lib';
 
 const Container = styled(Box)(({ theme }) => ({
   width: '100%',
-  height: '100px',
   overflow: 'hidden',
   position: 'relative',
   '&:hover': {
@@ -37,9 +36,10 @@ interface Props extends PropsWithChildren {
   infinity?: boolean;
   timer?: number;
   showArrows?: boolean;
+  height?: string;
 }
 
-const Carousel: FC<Props> = ({ children, infinity = false, timer = 2000, showArrows = true }) => {
+const Carousel: FC<Props> = ({ children, infinity = false, timer = 2000, showArrows = true, height = '100px' }) => {
   const screenSizeRef = useRef(0);
   const containerElRef = useRef<HTMLElement | null>(null);
   const contentElRef = useRef<HTMLElement | null>(null);
@@ -209,6 +209,7 @@ const Carousel: FC<Props> = ({ children, infinity = false, timer = 2000, showArr
 
   return (
     <Container
+      sx={{ height }}
       ref={containerElRef}
       onMouseEnter={() => (infinityRef.current = false)}
       onMouseLeave={() => (infinityRef.current = infinity)}
