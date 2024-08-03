@@ -356,7 +356,7 @@ const Dashboard: FC = () => {
                   }}
                 >
                   <Typography
-                    fontSize={'16px'}
+                    fontSize={'14px'}
                     textAlign={'center'}
                     fontWeight={'500'}
                     color={'#d00000'}
@@ -422,150 +422,193 @@ const Dashboard: FC = () => {
           </Box>
 
           {isCurrentOwnerOrAdmin && (
-            <Box sx={{ width: '100%', height: '100%', minHeight: '178px' }}>
-              {isInitialUserQuantitiesApiProcessing ? (
-                <Skeleton width="100%" height="178px" />
-              ) : isInitialUserQuantitiesApiFailed ? (
-                <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                  <Box
-                    sx={{
-                      width: '100%',
-                      height: '100%',
-                      minHeight: 'inherit',
-                      padding: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Typography
-                      fontSize={'16px'}
-                      textAlign={'center'}
-                      fontWeight={'500'}
-                      color={'#d00000'}
-                      sx={{ wordBreak: 'break-word' }}
-                    >
-                      Failed to load the user quantities.
-                    </Typography>
-                  </Box>
-                </Card>
-              ) : (
-                isInitialUserQuantitiesApiSuccessed &&
-                selectors.specificDetails.userQuantities && (
-                  <Card>
-                    <CardContent>
-                      <Box display="flex" gap="20px" flexDirection="column">
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Total Users:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.userQuantities.quantities}
-                          </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Owners:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.userQuantities.ownerQuantities}
-                          </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Admins:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.userQuantities.adminQuantities}
-                          </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Users:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.userQuantities.userQuantities}
-                          </Typography>
-                        </Box>
+            <Box width="100%" height="100%" display="flex" alignItems="center" gap="12px">
+              <Box flexBasis="50%" flexGrow="1">
+                <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+                  {isInitialUserQuantitiesApiProcessing ? (
+                    <Skeleton width="100%" height="53px" />
+                  ) : isInitialUserQuantitiesApiFailed ? (
+                    <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                      <Box
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          minHeight: 'inherit',
+                          padding: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Typography
+                          fontSize={'14px'}
+                          textAlign={'center'}
+                          fontWeight={'500'}
+                          color={'#d00000'}
+                          sx={{ wordBreak: 'break-word' }}
+                        >
+                          Failed to load the user quantities.
+                        </Typography>
                       </Box>
-                    </CardContent>
-                  </Card>
-                )
-              )}
-            </Box>
-          )}
-
-          {isCurrentOwnerOrAdmin && (
-            <Box sx={{ width: '100%', height: '100%', minHeight: '178px' }}>
-              {isInitialDeletedUserQuantitiesApiProcessing ? (
-                <Skeleton width="100%" height="178px" />
-              ) : isInitialDeletedUserQuantitiesApiFailed ? (
-                <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                  <Box
-                    sx={{
-                      width: '100%',
-                      height: '100%',
-                      minHeight: 'inherit',
-                      padding: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Typography
-                      fontSize={'16px'}
-                      textAlign={'center'}
-                      fontWeight={'500'}
-                      color={'#d00000'}
-                      sx={{ wordBreak: 'break-word' }}
-                    >
-                      Failed to load the deleted user quantities.
-                    </Typography>
-                  </Box>
-                </Card>
-              ) : (
-                isInitialDeletedUserQuantitiesApiSuccessed &&
-                selectors.specificDetails.deletedUserQuantities && (
-                  <Card>
-                    <CardContent>
-                      <Box display="flex" gap="20px" flexDirection="column">
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Total Deleted Users:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.deletedUserQuantities.quantities}
-                          </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Deleted Owners:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
-                          </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Deleted Admins:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.deletedUserQuantities.adminQuantities}
-                          </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Deleted Users:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.deletedUserQuantities.userQuantities}
-                          </Typography>
-                        </Box>
+                    </Card>
+                  ) : (
+                    isInitialUserQuantitiesApiSuccessed &&
+                    selectors.specificDetails.userQuantities && (
+                      <HorizonCarousel infinity height="55px">
+                        <Card>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  Total Users:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.userQuantities.quantities}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  Owners:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.userQuantities.ownerQuantities}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  Admins:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.userQuantities.adminQuantities}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  Users:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.userQuantities.userQuantities}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </HorizonCarousel>
+                    )
+                  )}
+                </Box>
+              </Box>
+              <Box flexBasis="50%" flexGrow="1">
+                <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+                  {isInitialDeletedUserQuantitiesApiProcessing ? (
+                    <Skeleton width="100%" height="53px" />
+                  ) : isInitialDeletedUserQuantitiesApiFailed ? (
+                    <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                      <Box
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          minHeight: 'inherit',
+                          padding: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Typography
+                          fontSize={'14px'}
+                          textAlign={'center'}
+                          fontWeight={'500'}
+                          color={'#d00000'}
+                          sx={{ wordBreak: 'break-word' }}
+                        >
+                          Failed to load the deleted user quantities.
+                        </Typography>
                       </Box>
-                    </CardContent>
-                  </Card>
-                )
-              )}
+                    </Card>
+                  ) : (
+                    isInitialDeletedUserQuantitiesApiSuccessed &&
+                    selectors.specificDetails.deletedUserQuantities && (
+                      <HorizonCarousel infinity height="55px">
+                        <Card>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  Total Deleted Users:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.deletedUserQuantities.quantities}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  Deleted Owners:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  Deleted Admins:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.deletedUserQuantities.adminQuantities}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  Deleted Users:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.deletedUserQuantities.userQuantities}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </HorizonCarousel>
+                    )
+                  )}
+                </Box>
+              </Box>
             </Box>
           )}
 
@@ -587,7 +630,7 @@ const Dashboard: FC = () => {
                     }}
                   >
                     <Typography
-                      fontSize={'16px'}
+                      fontSize={'14px'}
                       textAlign={'center'}
                       fontWeight={'500'}
                       color={'#d00000'}
@@ -637,7 +680,7 @@ const Dashboard: FC = () => {
                     }}
                   >
                     <Typography
-                      fontSize={'16px'}
+                      fontSize={'14px'}
                       textAlign={'center'}
                       fontWeight={'500'}
                       color={'#d00000'}
@@ -690,7 +733,7 @@ const Dashboard: FC = () => {
                           }}
                         >
                           <Typography
-                            fontSize={'16px'}
+                            fontSize={'14px'}
                             textAlign={'center'}
                             fontWeight={'500'}
                             color={'#d00000'}
@@ -737,7 +780,7 @@ const Dashboard: FC = () => {
                           }}
                         >
                           <Typography
-                            fontSize={'16px'}
+                            fontSize={'14px'}
                             textAlign={'center'}
                             fontWeight={'500'}
                             color={'#d00000'}
@@ -790,7 +833,7 @@ const Dashboard: FC = () => {
                   }}
                 >
                   <Typography
-                    fontSize={'16px'}
+                    fontSize={'14px'}
                     textAlign={'center'}
                     fontWeight={'500'}
                     color={'#d00000'}
@@ -962,7 +1005,7 @@ const Dashboard: FC = () => {
                   }}
                 >
                   <Typography
-                    fontSize={'16px'}
+                    fontSize={'14px'}
                     textAlign={'center'}
                     fontWeight={'500'}
                     color={'#d00000'}
