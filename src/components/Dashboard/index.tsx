@@ -506,37 +506,63 @@ const Dashboard: FC = () => {
           )}
 
           {isCurrentOwnerOrAdmin && (
-            <HorizonCarousel infinity height="55px">
-              <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
-                {isInitialAllBillQuantitiesApiProcessing ? (
-                  <Skeleton width="100%" height="53px" />
-                ) : isInitialAllBillQuantitiesApiFailed ? (
-                  <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                        minHeight: 'inherit',
-                        padding: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
+            <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+              {isInitialAllBillQuantitiesApiProcessing || isInitialAllDeletedBillQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="53px" />
+              ) : isInitialAllBillQuantitiesApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
                     >
-                      <Typography
-                        fontSize={'14px'}
-                        textAlign={'center'}
-                        fontWeight={'500'}
-                        color={'#d00000'}
-                        sx={{ wordBreak: 'break-word' }}
-                      >
-                        Failed to load the bill quantities.
-                      </Typography>
-                    </Box>
-                  </Card>
-                ) : (
-                  isInitialAllBillQuantitiesApiSuccessed &&
-                  selectors.specificDetails.allBillQuantities && (
+                      Failed to load the bill quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : isInitialAllDeletedBillQuantitiesApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the all deleted bill quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialAllBillQuantitiesApiSuccessed &&
+                selectors.specificDetails.allBillQuantities &&
+                isInitialAllDeletedBillQuantitiesApiSuccessed &&
+                selectors.specificDetails.allDeletedBillQuantities && (
+                  <HorizonCarousel infinity height="55px">
                     <Card>
                       <CardContent>
                         <Box display="flex" gap="20px" flexDirection="column">
@@ -551,39 +577,6 @@ const Dashboard: FC = () => {
                         </Box>
                       </CardContent>
                     </Card>
-                  )
-                )}
-              </Box>
-              <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
-                {isInitialAllDeletedBillQuantitiesApiProcessing ? (
-                  <Skeleton width="100%" height="53px" />
-                ) : isInitialAllDeletedBillQuantitiesApiFailed ? (
-                  <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                        minHeight: 'inherit',
-                        padding: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Typography
-                        fontSize={'14px'}
-                        textAlign={'center'}
-                        fontWeight={'500'}
-                        color={'#d00000'}
-                        sx={{ wordBreak: 'break-word' }}
-                      >
-                        Failed to load the all deleted bill quantities.
-                      </Typography>
-                    </Box>
-                  </Card>
-                ) : (
-                  isInitialAllDeletedBillQuantitiesApiSuccessed &&
-                  selectors.specificDetails.allDeletedBillQuantities && (
                     <Card>
                       <CardContent>
                         <Box display="flex" gap="20px" flexDirection="column">
@@ -598,10 +591,10 @@ const Dashboard: FC = () => {
                         </Box>
                       </CardContent>
                     </Card>
-                  )
-                )}
-              </Box>
-            </HorizonCarousel>
+                  </HorizonCarousel>
+                )
+              )}
+            </Box>
           )}
 
           {isCurrentOwner && (
