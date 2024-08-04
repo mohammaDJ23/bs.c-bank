@@ -562,7 +562,7 @@ const Dashboard: FC = () => {
                 selectors.specificDetails.allBillQuantities &&
                 isInitialAllDeletedBillQuantitiesApiSuccessed &&
                 selectors.specificDetails.allDeletedBillQuantities && (
-                  <HorizonCarousel infinity height="55px">
+                  <VerticalCarousel infinity height="55px">
                     <Card>
                       <CardContent>
                         <Box display="flex" gap="20px" flexDirection="column">
@@ -591,7 +591,7 @@ const Dashboard: FC = () => {
                         </Box>
                       </CardContent>
                     </Card>
-                  </HorizonCarousel>
+                  </VerticalCarousel>
                 )
               )}
             </Box>
@@ -656,7 +656,7 @@ const Dashboard: FC = () => {
                     selectors.specificDetails.allNotificationQuantities &&
                     isInitialNotificationQuantitiesApiSuccessed &&
                     selectors.specificDetails.notificationQuantities && (
-                      <VerticalCarousel infinity height="55px">
+                      <HorizonCarousel infinity height="55px">
                         <Card>
                           <CardContent>
                             <Box display="flex" gap="20px" flexDirection="column">
@@ -685,7 +685,7 @@ const Dashboard: FC = () => {
                             </Box>
                           </CardContent>
                         </Card>
-                      </VerticalCarousel>
+                      </HorizonCarousel>
                     )
                   )}
                 </Box>
@@ -721,7 +721,7 @@ const Dashboard: FC = () => {
                   ) : (
                     isInitialMostActiveUsersApiSuccessed &&
                     selectors.specificDetails.mostActiveUsers.length > 0 && (
-                      <VerticalCarousel infinity height="55px">
+                      <HorizonCarousel infinity height="55px">
                         {selectors.specificDetails.mostActiveUsers.map((item) => (
                           <Card key={item.user.id}>
                             <CardContent>
@@ -738,7 +738,7 @@ const Dashboard: FC = () => {
                             </CardContent>
                           </Card>
                         ))}
-                      </VerticalCarousel>
+                      </HorizonCarousel>
                     )
                   )}
                 </Box>
