@@ -23,6 +23,7 @@ import {
   UpdateReceiver,
   UpdateLocation,
   UpdateConsumer,
+  MostActiveUserObj,
 } from '../lib';
 import { RootApiObj } from './resetApi';
 import { ReceiverListFiltersObj } from '../lib/forms/receiverListFilters';
@@ -647,6 +648,19 @@ export class UpdateLocationApi extends RootApi<UpdateLocation> {
         headers: {
           'Content-type': 'application/json',
         },
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class MostActiveUsersApi extends RootApi {
+  constructor(params: Partial<ListParams<MostActiveUserObj>> = {}) {
+    super(
+      {
+        url: '/api/v1/bank/owner/bill/most-active-users',
+        method: 'get',
+        params,
       },
       { baseURL: process.env.BANK_SERVICE }
     );

@@ -18,6 +18,7 @@ export * from './consumer';
 export * from './allBill';
 export * from './receivers';
 export * from './locations';
+export * from './mostActiveUsers';
 
 export const lists = {
   UserList,
