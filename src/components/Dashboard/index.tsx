@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import { FC, Fragment, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { Box, styled, Typography } from '@mui/material';
 import {
   AllBillQuantitiesApi,
@@ -262,69 +262,54 @@ const Dashboard: FC = () => {
             ) : (
               isInitialLastYearBillsApiSuccessed &&
               chartData.length > 0 && (
-                <Box sx={{ height: '100%', width: '100%', overflow: 'hidden' }}>
-                  <Card
-                    sx={{
-                      opacity: '0',
-                      transform: 'translateX(-100px) rotate(6deg) scale(1.2)',
-                      transition:
-                        'transform 0.6s cubic-bezier(0.47, 0.13, 0.15, 0.89), opacity 0.5s cubic-bezier(0.47, 0.13, 0.15, 0.89)',
-                    }}
-                    ref={(node) => {
-                      if (node) {
-                        node.style.transform = 'translateX(0) rotate(0) scale(1)';
-                        node.style.opacity = '1';
+                <Card>
+                  <CardContent>
+                    {(() => {
+                      const series = [
+                        {
+                          name: 'Bills',
+                          data: chartData.map((item) => item.billCounts),
+                        },
+                      ];
+
+                      if (isCurrentOwnerOrAdmin) {
+                        series.push({
+                          name: 'Users',
+                          data: chartData.map((item) => item.userCounts),
+                        });
                       }
-                    }}
-                  >
-                    <CardContent>
-                      {(() => {
-                        const series = [
-                          {
-                            name: 'Bills',
-                            data: chartData.map((item) => item.billCounts),
-                          },
-                        ];
 
-                        if (isCurrentOwnerOrAdmin) {
-                          series.push({
-                            name: 'Users',
-                            data: chartData.map((item) => item.userCounts),
-                          });
-                        }
-
-                        return (
-                          <Chart
-                            options={{
-                              chart: {
-                                height: 380,
-                                type: 'area',
+                      return (
+                        <Chart
+                          options={{
+                            chart: {
+                              height: 380,
+                              type: 'area',
+                            },
+                            dataLabels: {
+                              enabled: false,
+                            },
+                            stroke: {
+                              curve: 'straight',
+                            },
+                            xaxis: {
+                              type: 'datetime',
+                              categories: chartData.map((item) => item.date),
+                            },
+                            tooltip: {
+                              x: {
+                                format: 'dd/MM/yy',
                               },
-                              dataLabels: {
-                                enabled: false,
-                              },
-                              stroke: {
-                                curve: 'straight',
-                              },
-                              xaxis: {
-                                type: 'datetime',
-                                categories: chartData.map((item) => item.date),
-                              },
-                              tooltip: {
-                                x: {
-                                  format: 'dd/MM/yy',
-                                },
-                              },
-                            }}
-                            series={series}
-                            type="area"
-                            height={380}
-                          />
-                        );
-                      })()}
-                    </CardContent>
-                  </Card>
-                </Box>
+                            },
+                          }}
+                          series={series}
+                          type="area"
+                          height={380}
+                        />
+                      );
+                    })()}
+                  </CardContent>
+                </Card>
               )
             )}
           </Box>
