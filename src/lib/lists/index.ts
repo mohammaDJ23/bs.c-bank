@@ -19,6 +19,7 @@ export * from './allBill';
 export * from './receivers';
 export * from './locations';
 export * from './mostActiveUsers';
+export * from './mostActiveConsumers';
 
 export const lists = {
   UserList,

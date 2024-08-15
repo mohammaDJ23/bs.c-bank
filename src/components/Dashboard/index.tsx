@@ -13,6 +13,7 @@ import {
   BillQuantitiesApi,
   UserQuantitiesApi,
   MostActiveUsersApi,
+  MostActiveConsumersApi,
 } from '../../apis';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import MainContainer from '../../layout/MainContainer';
@@ -37,7 +38,7 @@ import Chart from 'react-apexcharts';
 import VerticalCarousel from '../shared/VerticalCarousel';
 import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
-import { MostActiveUserObj } from '../../lib';
+import { MostActiveConsumerObj, MostActiveUserObj } from '../../lib';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -95,6 +96,9 @@ const Dashboard: FC = () => {
   const isInitialMostActiveUsersApiProcessing = request.isInitialApiProcessing(MostActiveUsersApi);
   const isInitialMostActiveUsersApiFailed = request.isInitialProcessingApiFailed(MostActiveUsersApi);
   const isInitialMostActiveUsersApiSuccessed = request.isInitialProcessingApiSuccessed(MostActiveUsersApi);
+  const isInitialMostActiveConsumersApiProcessing = request.isInitialApiProcessing(MostActiveConsumersApi);
+  const isInitialMostActiveConsumersApiFailed = request.isInitialProcessingApiFailed(MostActiveConsumersApi);
+  const isInitialMostActiveConsumersApiSuccessed = request.isInitialProcessingApiSuccessed(MostActiveConsumersApi);
 
   useEffect(() => {
     if (isCurrentOwner) {
@@ -172,26 +176,33 @@ const Dashboard: FC = () => {
       [
         Promise<AxiosResponse<BillQuantities>>,
         Promise<AxiosResponse<LastYearBillsObj[]>>,
-        Promise<AxiosResponse<DeletedBillQuantities>>
+        Promise<AxiosResponse<DeletedBillQuantities>>,
+        Promise<AxiosResponse<MostActiveConsumerObj[]>>
       ]
     >([
       request.build(new BillQuantitiesApi().setInitialApi()),
       request.build(new LastYearBillsApi().setInitialApi()),
       request.build(new DeletedBillQuantitiesApi().setInitialApi()),
-    ]).then(([billQuantitiesResponse, lastYearBillsResponse, deletedBillQuantitiesResponse]) => {
-      if (billQuantitiesResponse.status === 'fulfilled') {
-        const { quantities, amount } = billQuantitiesResponse.value.data;
-        actions.setSpecificDetails('billquantities', new BillQuantities(amount, quantities));
-      }
+      request.build(new MostActiveConsumersApi().setInitialApi()),
+    ]).then(
+      ([billQuantitiesResponse, lastYearBillsResponse, deletedBillQuantitiesResponse, mostActiveConsumersResponse]) => {
+        if (billQuantitiesResponse.status === 'fulfilled') {
+          const { quantities, amount } = billQuantitiesResponse.value.data;
+          actions.setSpecificDetails('billquantities', new BillQuantities(amount, quantities));
+        }
 
-      if (lastYearBillsResponse.status === 'fulfilled')
-        actions.setSpecificDetails('lastYearBills', lastYearBillsResponse.value.data);
+        if (lastYearBillsResponse.status === 'fulfilled')
+          actions.setSpecificDetails('lastYearBills', lastYearBillsResponse.value.data);
 
-      if (deletedBillQuantitiesResponse.status === 'fulfilled') {
-        const { quantities, amount } = deletedBillQuantitiesResponse.value.data;
-        actions.setSpecificDetails('deletedBillQuantities', new DeletedBillQuantities(amount, quantities));
+        if (deletedBillQuantitiesResponse.status === 'fulfilled') {
+          const { quantities, amount } = deletedBillQuantitiesResponse.value.data;
+          actions.setSpecificDetails('deletedBillQuantities', new DeletedBillQuantities(amount, quantities));
+        }
+
+        if (mostActiveConsumersResponse.status === 'fulfilled')
+          actions.setSpecificDetails('mostActiveConsumers', mostActiveConsumersResponse.value.data);
       }
-    });
+    );
   }, []);
 
   function getChartData() {

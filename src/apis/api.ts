@@ -24,6 +24,7 @@ import {
   UpdateLocation,
   UpdateConsumer,
   MostActiveUserObj,
+  MostActiveConsumerObj,
 } from '../lib';
 import { RootApiObj } from './resetApi';
 import { ReceiverListFiltersObj } from '../lib/forms/receiverListFilters';
@@ -659,6 +660,19 @@ export class MostActiveUsersApi extends RootApi {
     super(
       {
         url: '/api/v1/bank/owner/bill/most-active-users',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class MostActiveConsumersApi extends RootApi {
+  constructor(params: Partial<ListParams<MostActiveConsumerObj>> = {}) {
+    super(
+      {
+        url: '/api/v1/bank/consumer/most-active-consumers',
         method: 'get',
         params,
       },
