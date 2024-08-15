@@ -5,6 +5,7 @@ import {
   LocationObj,
   MostActiveConsumerObj,
   MostActiveLocationObj,
+  MostActiveReceiverObj,
   MostActiveUserObj,
   NotificationObj,
   ReceiverObj,
@@ -118,6 +119,7 @@ export interface SpecificDetailsState {
   mostActiveUsers: MostActiveUserObj[];
   mostActiveConsumers: MostActiveConsumerObj[];
   mostActiveLocations: MostActiveLocationObj[];
+  mostActiveReceivers: MostActiveReceiverObj[];
 }
 
 const initialState: SpecificDetailsState = {
@@ -144,6 +146,7 @@ const initialState: SpecificDetailsState = {
   mostActiveUsers: [],
   mostActiveConsumers: [],
   mostActiveLocations: [],
+  mostActiveReceivers: [],
 };
 
 function setSpecificDetails(state: SpecificDetailsState, action: SetSpecificDetailsAction): SpecificDetailsState {
@@ -178,6 +181,7 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     mostActiveUsers: [],
     mostActiveConsumers: [],
     mostActiveLocations: [],
+    mostActiveReceivers: [],
   };
 }
 
