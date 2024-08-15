@@ -680,3 +680,16 @@ export class MostActiveConsumersApi extends RootApi {
     );
   }
 }
+
+export class MostActiveLocationsApi extends RootApi {
+  constructor(params: Partial<ListParams<MostActiveConsumerObj>> = {}) {
+    super(
+      {
+        url: '/api/v1/bank/location/most-active-locations',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}

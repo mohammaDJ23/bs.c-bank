@@ -14,6 +14,7 @@ import {
   UserQuantitiesApi,
   MostActiveUsersApi,
   MostActiveConsumersApi,
+  MostActiveLocationsApi,
 } from '../../apis';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import MainContainer from '../../layout/MainContainer';
@@ -38,7 +39,7 @@ import Chart from 'react-apexcharts';
 import VerticalCarousel from '../shared/VerticalCarousel';
 import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
-import { MostActiveConsumerObj, MostActiveUserObj } from '../../lib';
+import { MostActiveConsumerObj, MostActiveLocationObj, MostActiveUserObj } from '../../lib';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -99,6 +100,9 @@ const Dashboard: FC = () => {
   const isInitialMostActiveConsumersApiProcessing = request.isInitialApiProcessing(MostActiveConsumersApi);
   const isInitialMostActiveConsumersApiFailed = request.isInitialProcessingApiFailed(MostActiveConsumersApi);
   const isInitialMostActiveConsumersApiSuccessed = request.isInitialProcessingApiSuccessed(MostActiveConsumersApi);
+  const isInitialMostActiveLocationsApiProcessing = request.isInitialApiProcessing(MostActiveLocationsApi);
+  const isInitialMostActiveLocationsApiFailed = request.isInitialProcessingApiFailed(MostActiveLocationsApi);
+  const isInitialMostActiveLocationsApiSuccessed = request.isInitialProcessingApiSuccessed(MostActiveLocationsApi);
 
   useEffect(() => {
     if (isCurrentOwner) {
@@ -177,15 +181,23 @@ const Dashboard: FC = () => {
         Promise<AxiosResponse<BillQuantities>>,
         Promise<AxiosResponse<LastYearBillsObj[]>>,
         Promise<AxiosResponse<DeletedBillQuantities>>,
-        Promise<AxiosResponse<MostActiveConsumerObj[]>>
+        Promise<AxiosResponse<MostActiveConsumerObj[]>>,
+        Promise<AxiosResponse<MostActiveLocationObj[]>>
       ]
     >([
       request.build(new BillQuantitiesApi().setInitialApi()),
       request.build(new LastYearBillsApi().setInitialApi()),
       request.build(new DeletedBillQuantitiesApi().setInitialApi()),
       request.build(new MostActiveConsumersApi().setInitialApi()),
+      request.build(new MostActiveLocationsApi().setInitialApi()),
     ]).then(
-      ([billQuantitiesResponse, lastYearBillsResponse, deletedBillQuantitiesResponse, mostActiveConsumersResponse]) => {
+      ([
+        billQuantitiesResponse,
+        lastYearBillsResponse,
+        deletedBillQuantitiesResponse,
+        mostActiveConsumersResponse,
+        mostActiveLocationsResponse,
+      ]) => {
         if (billQuantitiesResponse.status === 'fulfilled') {
           const { quantities, amount } = billQuantitiesResponse.value.data;
           actions.setSpecificDetails('billquantities', new BillQuantities(amount, quantities));
@@ -201,6 +213,9 @@ const Dashboard: FC = () => {
 
         if (mostActiveConsumersResponse.status === 'fulfilled')
           actions.setSpecificDetails('mostActiveConsumers', mostActiveConsumersResponse.value.data);
+
+        if (mostActiveLocationsResponse.status === 'fulfilled')
+          actions.setSpecificDetails('mostActiveLocations', mostActiveLocationsResponse.value.data);
       }
     );
   }, []);
