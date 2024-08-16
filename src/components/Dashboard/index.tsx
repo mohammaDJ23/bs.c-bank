@@ -326,7 +326,7 @@ const Dashboard: FC = () => {
                               enabled: false,
                             },
                             stroke: {
-                              curve: 'straight',
+                              curve: 'smooth',
                             },
                             xaxis: {
                               type: 'datetime',
@@ -774,7 +774,56 @@ const Dashboard: FC = () => {
             <DeviceWrapper>
               <Box width="100%" height="100%">
                 <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
-                  {isInitialAllNotificationQuantitiesApiProcessing || isInitialNotificationQuantitiesApiProcessing ? (
+                  {isInitialNotificationQuantitiesApiProcessing ? (
+                    <Skeleton width="100%" height="53px" />
+                  ) : isInitialNotificationQuantitiesApiFailed ? (
+                    <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                      <Box
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          minHeight: 'inherit',
+                          padding: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Typography
+                          fontSize={'14px'}
+                          textAlign={'center'}
+                          fontWeight={'500'}
+                          color={'#d00000'}
+                          sx={{ wordBreak: 'break-word' }}
+                        >
+                          Failed to load the notification quantities.
+                        </Typography>
+                      </Box>
+                    </Card>
+                  ) : (
+                    isInitialNotificationQuantitiesApiSuccessed &&
+                    selectors.specificDetails.notificationQuantities && (
+                      <Card>
+                        <CardContent>
+                          <Box display="flex" gap="20px" flexDirection="column">
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Notification quantities:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.notificationQuantities.quantities}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    )
+                  )}
+                </Box>
+              </Box>
+              <Box width="100%" height="100%">
+                <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+                  {isInitialAllNotificationQuantitiesApiProcessing ? (
                     <Skeleton width="100%" height="53px" />
                   ) : isInitialAllNotificationQuantitiesApiFailed ? (
                     <Card style={{ height: '100%', minHeight: 'inherit' }}>
@@ -796,127 +845,100 @@ const Dashboard: FC = () => {
                           color={'#d00000'}
                           sx={{ wordBreak: 'break-word' }}
                         >
-                          Failed to load the all notification quantities.
-                        </Typography>
-                      </Box>
-                    </Card>
-                  ) : isInitialNotificationQuantitiesApiFailed ? (
-                    <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                      <Box
-                        sx={{
-                          width: '100%',
-                          height: '100%',
-                          minHeight: 'inherit',
-                          padding: '16px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <Typography
-                          fontSize={'14px'}
-                          textAlign={'center'}
-                          fontWeight={'500'}
-                          color={'#d00000'}
-                          sx={{ wordBreak: 'break-word' }}
-                        >
-                          Failed to load your notification quantities.
+                          Failed to load all notification quantities.
                         </Typography>
                       </Box>
                     </Card>
                   ) : (
                     isInitialAllNotificationQuantitiesApiSuccessed &&
-                    selectors.specificDetails.allNotificationQuantities &&
-                    isInitialNotificationQuantitiesApiSuccessed &&
-                    selectors.specificDetails.notificationQuantities && (
-                      <HorizonCarousel infinity height="55px">
-                        <Card>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  All notification quantities:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {selectors.specificDetails.allNotificationQuantities.quantities}
-                                </Typography>
-                              </Box>
+                    selectors.specificDetails.allNotificationQuantities && (
+                      <Card>
+                        <CardContent>
+                          <Box display="flex" gap="20px" flexDirection="column">
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                All notification quantities:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.allNotificationQuantities.quantities}
+                              </Typography>
                             </Box>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  Your notification quantities:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {selectors.specificDetails.notificationQuantities.quantities}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </CardContent>
-                        </Card>
-                      </HorizonCarousel>
-                    )
-                  )}
-                </Box>
-              </Box>
-              <Box width="100%" height="100%">
-                <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
-                  {isInitialMostActiveUsersApiProcessing ? (
-                    <Skeleton width="100%" height="53px" />
-                  ) : isInitialMostActiveUsersApiFailed ? (
-                    <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                      <Box
-                        sx={{
-                          width: '100%',
-                          height: '100%',
-                          minHeight: 'inherit',
-                          padding: '16px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <Typography
-                          fontSize={'14px'}
-                          textAlign={'center'}
-                          fontWeight={'500'}
-                          color={'#d00000'}
-                          sx={{ wordBreak: 'break-word' }}
-                        >
-                          Failed to load the most active users.
-                        </Typography>
-                      </Box>
-                    </Card>
-                  ) : (
-                    isInitialMostActiveUsersApiSuccessed &&
-                    selectors.specificDetails.mostActiveUsers.length > 0 && (
-                      <HorizonCarousel infinity height="55px">
-                        {selectors.specificDetails.mostActiveUsers.map((item) => (
-                          <Card key={item.user.id}>
-                            <CardContent>
-                              <Box display="flex" gap="20px" flexDirection="column">
-                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                    {`${item.user.firstName} ${item.user.lastName}`}:
-                                  </Typography>
-                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                    {item.quantities}
-                                  </Typography>
-                                </Box>
-                              </Box>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </HorizonCarousel>
+                          </Box>
+                        </CardContent>
+                      </Card>
                     )
                   )}
                 </Box>
               </Box>
             </DeviceWrapper>
+          )}
+
+          {isCurrentOwner && (
+            <Box width="100%" height="100%">
+              <Box sx={{ width: '100%', height: '100%', minHeight: '349px' }}>
+                {isInitialMostActiveUsersApiProcessing ? (
+                  <Skeleton width="100%" height="349px" />
+                ) : isInitialMostActiveUsersApiFailed ? (
+                  <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        minHeight: 'inherit',
+                        padding: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Typography
+                        fontSize={'14px'}
+                        textAlign={'center'}
+                        fontWeight={'500'}
+                        color={'#d00000'}
+                        sx={{ wordBreak: 'break-word' }}
+                      >
+                        Failed to load the most active users.
+                      </Typography>
+                    </Box>
+                  </Card>
+                ) : (
+                  isInitialMostActiveUsersApiSuccessed &&
+                  selectors.specificDetails.mostActiveUsers.length > 0 && (
+                    <Card>
+                      <CardContent>
+                        {(() => {
+                          const mostActiveUsers = selectors.specificDetails.mostActiveUsers.map((item) => ({
+                            x: `${item.user.firstName} ${item.user.lastName}`,
+                            y: item.quantities,
+                          }));
+                          const series = [{ data: mostActiveUsers }];
+
+                          return (
+                            <Chart
+                              height={300}
+                              type="treemap"
+                              series={series}
+                              options={{
+                                title: { text: 'Most active users' },
+                                chart: {
+                                  height: 300,
+                                  type: 'treemap',
+                                },
+                                series: series,
+                                plotOptions: {
+                                  treemap: { distributed: true, enableShades: false },
+                                },
+                              }}
+                            />
+                          );
+                        })()}
+                      </CardContent>
+                    </Card>
+                  )
+                )}
+              </Box>
+            </Box>
           )}
         </Box>
       </MainContainer>
