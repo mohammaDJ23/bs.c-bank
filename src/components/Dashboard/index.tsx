@@ -582,9 +582,9 @@ const Dashboard: FC = () => {
           {isCurrentOwnerOrAdmin && (
             <DeviceWrapper>
               <Box width="100%" height="100%">
-                <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+                <Box sx={{ width: '100%', height: '100%', minHeight: '178px' }}>
                   {isInitialUserQuantitiesApiProcessing ? (
-                    <Skeleton width="100%" height="53px" />
+                    <Skeleton width="100%" height="178px" />
                   ) : isInitialUserQuantitiesApiFailed ? (
                     <Card style={{ height: '100%', minHeight: 'inherit' }}>
                       <Box
@@ -612,72 +612,52 @@ const Dashboard: FC = () => {
                   ) : (
                     isInitialUserQuantitiesApiSuccessed &&
                     selectors.specificDetails.userQuantities && (
-                      <HorizonCarousel infinity height="55px">
-                        <Card>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  Total Users:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {selectors.specificDetails.userQuantities.quantities}
-                                </Typography>
-                              </Box>
+                      <Card>
+                        <CardContent>
+                          <Box display="flex" gap="20px" flexDirection="column">
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Total Users:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.userQuantities.quantities}
+                              </Typography>
                             </Box>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  Owners:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {selectors.specificDetails.userQuantities.ownerQuantities}
-                                </Typography>
-                              </Box>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Owners:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.userQuantities.ownerQuantities}
+                              </Typography>
                             </Box>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  Admins:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {selectors.specificDetails.userQuantities.adminQuantities}
-                                </Typography>
-                              </Box>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Admins:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.userQuantities.adminQuantities}
+                              </Typography>
                             </Box>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  Users:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {selectors.specificDetails.userQuantities.userQuantities}
-                                </Typography>
-                              </Box>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Users:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.userQuantities.userQuantities}
+                              </Typography>
                             </Box>
-                          </CardContent>
-                        </Card>
-                      </HorizonCarousel>
+                          </Box>
+                        </CardContent>
+                      </Card>
                     )
                   )}
                 </Box>
               </Box>
               <Box width="100%" height="100%">
-                <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+                <Box sx={{ width: '100%', height: '100%', minHeight: '178px' }}>
                   {isInitialDeletedUserQuantitiesApiProcessing ? (
-                    <Skeleton width="100%" height="53px" />
+                    <Skeleton width="100%" height="178px" />
                   ) : isInitialDeletedUserQuantitiesApiFailed ? (
                     <Card style={{ height: '100%', minHeight: 'inherit' }}>
                       <Box
@@ -705,64 +685,44 @@ const Dashboard: FC = () => {
                   ) : (
                     isInitialDeletedUserQuantitiesApiSuccessed &&
                     selectors.specificDetails.deletedUserQuantities && (
-                      <HorizonCarousel infinity height="55px">
-                        <Card>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  Total Deleted Users:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {selectors.specificDetails.deletedUserQuantities.quantities}
-                                </Typography>
-                              </Box>
+                      <Card>
+                        <CardContent>
+                          <Box display="flex" gap="20px" flexDirection="column">
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Total Deleted Users:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.deletedUserQuantities.quantities}
+                              </Typography>
                             </Box>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  Deleted Owners:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
-                                </Typography>
-                              </Box>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Deleted Owners:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
+                              </Typography>
                             </Box>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  Deleted Admins:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {selectors.specificDetails.deletedUserQuantities.adminQuantities}
-                                </Typography>
-                              </Box>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Deleted Admins:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.deletedUserQuantities.adminQuantities}
+                              </Typography>
                             </Box>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  Deleted Users:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {selectors.specificDetails.deletedUserQuantities.userQuantities}
-                                </Typography>
-                              </Box>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Deleted Users:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.deletedUserQuantities.userQuantities}
+                              </Typography>
                             </Box>
-                          </CardContent>
-                        </Card>
-                      </HorizonCarousel>
+                          </Box>
+                        </CardContent>
+                      </Card>
                     )
                   )}
                 </Box>
@@ -920,11 +880,8 @@ const Dashboard: FC = () => {
                               type="treemap"
                               series={series}
                               options={{
-                                title: { text: 'Most active users' },
-                                chart: {
-                                  height: 300,
-                                  type: 'treemap',
-                                },
+                                title: { text: 'Most active users', align: 'left' },
+                                chart: { toolbar: { show: false }, height: 300, type: 'treemap' },
                                 series: series,
                                 plotOptions: {
                                   treemap: { distributed: true, enableShades: false },
