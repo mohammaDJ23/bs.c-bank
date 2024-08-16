@@ -350,6 +350,120 @@ const Dashboard: FC = () => {
             )}
           </Box>
 
+          <DeviceWrapper>
+            <Box sx={{ width: '100%', height: '100%', minHeight: '96px' }}>
+              {isInitialBillQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="96px" />
+              ) : isInitialBillQuantitiesApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load your bill quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialBillQuantitiesApiSuccessed &&
+                selectors.specificDetails.billquantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Your bill quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.billquantities.quantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Your bill amounts:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.billquantities.amount}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+
+            <Box sx={{ width: '100%', height: '100%', minHeight: '96px' }}>
+              {isInitialDeletedBillQuantitiesApiProcessing ? (
+                <Skeleton width="100%" height="96px" />
+              ) : isInitialDeletedBillQuantitiesApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load your deleted bill quantities.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialDeletedBillQuantitiesApiSuccessed &&
+                selectors.specificDetails.deletedBillQuantities && (
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" gap="20px" flexDirection="column">
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Your deleted bill quantities:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.deletedBillQuantities.quantities}
+                          </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                            Your deleted bill amounts:{' '}
+                          </Typography>
+                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                            {selectors.specificDetails.deletedBillQuantities.amount}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          </DeviceWrapper>
+
           {isCurrentOwnerOrAdmin && (
             <DeviceWrapper>
               <Box width="100%" height="100%">
@@ -565,7 +679,7 @@ const Dashboard: FC = () => {
                       color={'#d00000'}
                       sx={{ wordBreak: 'break-word' }}
                     >
-                      Failed to load the bill quantities.
+                      Failed to load the all bill quantities.
                     </Typography>
                   </Box>
                 </Card>
@@ -781,118 +895,6 @@ const Dashboard: FC = () => {
               </Box>
             </DeviceWrapper>
           )}
-
-          <Box sx={{ width: '100%', height: '100%', minHeight: '96px' }}>
-            {isInitialBillQuantitiesApiProcessing ? (
-              <Skeleton width="100%" height="96px" />
-            ) : isInitialBillQuantitiesApiFailed ? (
-              <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                <Box
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    minHeight: 'inherit',
-                    padding: '16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography
-                    fontSize={'14px'}
-                    textAlign={'center'}
-                    fontWeight={'500'}
-                    color={'#d00000'}
-                    sx={{ wordBreak: 'break-word' }}
-                  >
-                    Failed to load your bill quantities.
-                  </Typography>
-                </Box>
-              </Card>
-            ) : (
-              isInitialBillQuantitiesApiSuccessed &&
-              selectors.specificDetails.billquantities && (
-                <Card>
-                  <CardContent>
-                    <Box display="flex" gap="20px" flexDirection="column">
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Your bill quantities:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.billquantities.quantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Your bill amounts:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.billquantities.amount}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              )
-            )}
-          </Box>
-
-          <Box sx={{ width: '100%', height: '100%', minHeight: '96px' }}>
-            {isInitialDeletedBillQuantitiesApiProcessing ? (
-              <Skeleton width="100%" height="96px" />
-            ) : isInitialDeletedBillQuantitiesApiFailed ? (
-              <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                <Box
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    minHeight: 'inherit',
-                    padding: '16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography
-                    fontSize={'14px'}
-                    textAlign={'center'}
-                    fontWeight={'500'}
-                    color={'#d00000'}
-                    sx={{ wordBreak: 'break-word' }}
-                  >
-                    Failed to load your deleted bill quantities.
-                  </Typography>
-                </Box>
-              </Card>
-            ) : (
-              isInitialDeletedBillQuantitiesApiSuccessed &&
-              selectors.specificDetails.deletedBillQuantities && (
-                <Card>
-                  <CardContent>
-                    <Box display="flex" gap="20px" flexDirection="column">
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Your deleted bill quantities:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.deletedBillQuantities.quantities}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                        <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                          Your deleted bill amounts:{' '}
-                        </Typography>
-                        <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                          {selectors.specificDetails.deletedBillQuantities.amount}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              )
-            )}
-          </Box>
         </Box>
       </MainContainer>
     </Navigation>
