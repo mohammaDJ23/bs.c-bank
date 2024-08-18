@@ -37,7 +37,6 @@ import Card from '../shared/Card';
 import moment from 'moment';
 import Navigation from '../../layout/Navigation';
 import Chart from 'react-apexcharts';
-import VerticalCarousel from '../shared/VerticalCarousel';
 import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
 import { MostActiveConsumerObj, MostActiveLocationObj, MostActiveReceiverObj, MostActiveUserObj } from '../../lib';
@@ -349,6 +348,62 @@ const Dashboard: FC = () => {
               )
             )}
           </Box>
+
+          {isCurrentOwner && (
+            <Box width="100%" height="100%">
+              <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+                {isInitialMostActiveUsersApiProcessing ? (
+                  <Skeleton width="100%" height="53px" />
+                ) : isInitialMostActiveUsersApiFailed ? (
+                  <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        minHeight: 'inherit',
+                        padding: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Typography
+                        fontSize={'14px'}
+                        textAlign={'center'}
+                        fontWeight={'500'}
+                        color={'#d00000'}
+                        sx={{ wordBreak: 'break-word' }}
+                      >
+                        Failed to load the most active users.
+                      </Typography>
+                    </Box>
+                  </Card>
+                ) : (
+                  isInitialMostActiveUsersApiSuccessed &&
+                  selectors.specificDetails.mostActiveUsers.length > 0 && (
+                    <HorizonCarousel infinity height="53px">
+                      {selectors.specificDetails.mostActiveUsers.map((item) => (
+                        <Card key={item.user.id}>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  {item.user.firstName} {item.user.lastName}:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {item.quantities}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </HorizonCarousel>
+                  )
+                )}
+              </Box>
+            </Box>
+          )}
 
           <DeviceWrapper>
             <Box sx={{ width: '100%', height: '100%', minHeight: '96px' }}>
@@ -831,71 +886,6 @@ const Dashboard: FC = () => {
                 </Box>
               </Box>
             </DeviceWrapper>
-          )}
-
-          {isCurrentOwner && (
-            <Box width="100%" height="100%">
-              <Box sx={{ width: '100%', height: '100%', minHeight: '349px' }}>
-                {isInitialMostActiveUsersApiProcessing ? (
-                  <Skeleton width="100%" height="349px" />
-                ) : isInitialMostActiveUsersApiFailed ? (
-                  <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                        minHeight: 'inherit',
-                        padding: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Typography
-                        fontSize={'14px'}
-                        textAlign={'center'}
-                        fontWeight={'500'}
-                        color={'#d00000'}
-                        sx={{ wordBreak: 'break-word' }}
-                      >
-                        Failed to load the most active users.
-                      </Typography>
-                    </Box>
-                  </Card>
-                ) : (
-                  isInitialMostActiveUsersApiSuccessed &&
-                  selectors.specificDetails.mostActiveUsers.length > 0 && (
-                    <Card>
-                      <CardContent>
-                        {(() => {
-                          const mostActiveUsers = selectors.specificDetails.mostActiveUsers.map((item) => ({
-                            x: `${item.user.firstName} ${item.user.lastName}`,
-                            y: item.quantities,
-                          }));
-                          const series = [{ data: mostActiveUsers }];
-
-                          return (
-                            <Chart
-                              height={300}
-                              type="treemap"
-                              series={series}
-                              options={{
-                                title: { text: 'Most active users', align: 'left' },
-                                chart: { toolbar: { show: false }, height: 300, type: 'treemap' },
-                                series: series,
-                                plotOptions: {
-                                  treemap: { distributed: true, enableShades: false },
-                                },
-                              }}
-                            />
-                          );
-                        })()}
-                      </CardContent>
-                    </Card>
-                  )
-                )}
-              </Box>
-            </Box>
           )}
         </Box>
       </MainContainer>

@@ -61,6 +61,10 @@ const VerticalCarousel: FC<Props> = ({
     return contentElRef.current!;
   }
 
+  function IsChildrenExist() {
+    return getContentEl().children.length > 2;
+  }
+
   function getFirstElementChild() {
     return getContentEl().firstElementChild!;
   }
@@ -137,7 +141,7 @@ const VerticalCarousel: FC<Props> = ({
    */
 
   function down() {
-    if (movingRef.current) {
+    if (movingRef.current && IsChildrenExist()) {
       movingRef.current = false;
       removeClone();
       getFirstElementChild().addEventListener('transitionend', replaceToEnd);
@@ -174,7 +178,7 @@ const VerticalCarousel: FC<Props> = ({
    */
 
   function up() {
-    if (movingRef.current) {
+    if (movingRef.current && IsChildrenExist()) {
       movingRef.current = false;
       const lastSlide = getLastChild();
       getContentEl().removeChild(lastSlide);
@@ -204,7 +208,7 @@ const VerticalCarousel: FC<Props> = ({
     if (!infinity) return;
 
     (async () => {
-      for (;;) {
+      for (; IsChildrenExist(); ) {
         await wait(timer);
         if (infinityRef.current) {
           down();
