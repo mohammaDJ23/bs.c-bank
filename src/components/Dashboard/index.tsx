@@ -387,6 +387,55 @@ const Dashboard: FC = () => {
     }
   }, [chartData]);
 
+  const consumerChartElIdRef = useRef(uuid());
+  useEffect(() => {
+    if (selectors.specificDetails.mostActiveConsumers.length > 0) {
+      const el = document.getElementById(consumerChartElIdRef.current) as HTMLDivElement | null;
+      if (el) {
+        const chart = echarts.init(el);
+        chart.setOption({
+          title: {
+            text: 'Most active consumers',
+            left: 'center',
+            textStyle: { fontSize: 14, fontWeight: 700 },
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b} : {c} ({d}%)',
+          },
+          series: [
+            {
+              type: 'pie',
+              radius: [20, 110],
+              center: ['50%', '55%'],
+              itemStyle: {
+                borderRadius: 5,
+              },
+              label: {
+                show: false,
+              },
+              emphasis: {
+                label: {
+                  show: false,
+                },
+              },
+              data: selectors.specificDetails.mostActiveConsumers.map((item) => ({
+                value: item.quantities,
+                name: item.consumer.name,
+              })),
+            },
+          ],
+        });
+
+        const onResize = () => {
+          chart.resize();
+        };
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+      }
+    }
+  }, [selectors.specificDetails.mostActiveConsumers]);
+
   return (
     <Navigation>
       <MainContainer>
@@ -437,6 +486,48 @@ const Dashboard: FC = () => {
               )
             )}
           </Box>
+
+          <DeviceWrapper>
+            <Box sx={{ width: '100%', height: '100%', minHeight: '350px' }}>
+              {isInitialMostActiveConsumersApiProcessing ? (
+                <Skeleton height="350px" width="100%" />
+              ) : isInitialMostActiveConsumersApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the most active consumers chart.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialMostActiveConsumersApiSuccessed &&
+                selectors.specificDetails.mostActiveConsumers.length > 0 && (
+                  <Card>
+                    <CardContent
+                      style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
+                      id={consumerChartElIdRef.current}
+                    ></CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+          </DeviceWrapper>
 
           {isCurrentOwner && (
             <Box width="100%" height="100%">
