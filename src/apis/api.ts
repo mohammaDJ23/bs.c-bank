@@ -23,8 +23,10 @@ import {
   UpdateReceiver,
   UpdateLocation,
   UpdateConsumer,
+  MostActiveUserObj,
+  MostActiveConsumerObj,
+  MostActiveReceiverObj,
 } from '../lib';
-import { PeriodAmountFilter } from '../store';
 import { RootApiObj } from './resetApi';
 import { ReceiverListFiltersObj } from '../lib/forms/receiverListFilters';
 
@@ -314,11 +316,11 @@ export class DeleteUserByOwnerApi extends RootApi {
   }
 }
 
-export class TotalAmountApi extends RootApi {
+export class BillQuantitiesApi extends RootApi {
   constructor() {
     super(
       {
-        url: '/api/v1/bank/bill/total-amount',
+        url: '/api/v1/bank/bill/quantities',
         method: 'get',
       },
       { baseURL: process.env.BANK_SERVICE }
@@ -326,27 +328,11 @@ export class TotalAmountApi extends RootApi {
   }
 }
 
-export class PeriodAmountApi extends RootApi<PeriodAmountFilter> {
-  constructor(data: PeriodAmountFilter) {
-    super(
-      {
-        url: '/api/v1/bank/bill/period-amount',
-        method: 'post',
-        data,
-        headers: {
-          'Content-type': 'application/json',
-        },
-      },
-      { baseURL: process.env.BANK_SERVICE }
-    );
-  }
-}
-
-export class LastWeekBillsApi extends RootApi {
+export class LastYearBillsApi extends RootApi {
   constructor() {
     super(
       {
-        url: '/api/v1/bank/bill/last-week',
+        url: '/api/v1/bank/bill/last-year',
         method: 'get',
       },
       { baseURL: process.env.BANK_SERVICE }
@@ -378,11 +364,11 @@ export class DeletedUserQuantitiesApi extends RootApi {
   }
 }
 
-export class LastWeekUsersApi extends RootApi {
+export class LastYearUsersApi extends RootApi {
   constructor() {
     super(
       {
-        url: '/api/v1/user/last-week',
+        url: '/api/v1/user/last-year',
         method: 'get',
       },
       { baseURL: process.env.USER_SERVICE }
@@ -664,6 +650,58 @@ export class UpdateLocationApi extends RootApi<UpdateLocation> {
         headers: {
           'Content-type': 'application/json',
         },
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class MostActiveUsersApi extends RootApi {
+  constructor(params: Partial<ListParams<MostActiveUserObj>> = {}) {
+    super(
+      {
+        url: '/api/v1/bank/owner/bill/most-active-users',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class MostActiveConsumersApi extends RootApi {
+  constructor(params: Partial<ListParams<MostActiveConsumerObj>> = {}) {
+    super(
+      {
+        url: '/api/v1/bank/consumer/most-active-consumers',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class MostActiveLocationsApi extends RootApi {
+  constructor(params: Partial<ListParams<MostActiveConsumerObj>> = {}) {
+    super(
+      {
+        url: '/api/v1/bank/location/most-active-locations',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export class MostActiveReceiversApi extends RootApi {
+  constructor(params: Partial<ListParams<MostActiveReceiverObj>> = {}) {
+    super(
+      {
+        url: '/api/v1/bank/receiver/most-active-receivers',
+        method: 'get',
+        params,
       },
       { baseURL: process.env.BANK_SERVICE }
     );

@@ -10,7 +10,7 @@ const Card: FC<PropsWithChildren<CardImportation>> = forwardRef((props, ref) => 
       ref={ref}
       style={{
         width: '100%',
-        boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.1)',
+        boxShadow: '0px 0px 1px 0px rgba(0,0,0,0.1)',
         border: '1px solid rgba(0,0,0,0.1)',
         borderRadius: '6px',
         ...props.style,
