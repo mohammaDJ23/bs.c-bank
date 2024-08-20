@@ -89,7 +89,6 @@ module.exports = {
       filename: 'remoteEntry.js',
       exposes: {
         './BankApp': './src/bootstrap.tsx',
-        './echarts': 'https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js',
       },
       remotes: {
         chat: 'chat@' + process.env.CHAT_APP + process.env.CHAT_PUBLIC_PATH + 'remoteEntry.js',
