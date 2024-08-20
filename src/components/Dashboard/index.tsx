@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { FC, useEffect, useRef } from 'react';
-import { Box, styled, Typography, Zoom } from '@mui/material';
+import { Box, styled, Typography } from '@mui/material';
 import {
   AllBillQuantitiesApi,
   AllDeletedBillQuantitiesApi,
@@ -40,7 +40,6 @@ import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
 import { MostActiveConsumerObj, MostActiveLocationObj, MostActiveReceiverObj, MostActiveUserObj } from '../../lib';
 import { v4 as uuid } from 'uuid';
-import { start } from 'repl';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -618,16 +617,37 @@ const Dashboard: FC = () => {
                     </Typography>
                   </Box>
                 </Card>
+              ) : isInitialMostActiveConsumersApiSuccessed &&
+                selectors.specificDetails.mostActiveConsumers.length > 0 ? (
+                <Card>
+                  <CardContent
+                    style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
+                    id={consumersChartElIdRef.current}
+                  ></CardContent>
+                </Card>
               ) : (
-                isInitialMostActiveConsumersApiSuccessed &&
-                selectors.specificDetails.mostActiveConsumers.length > 0 && (
-                  <Card>
-                    <CardContent
-                      style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
-                      id={consumersChartElIdRef.current}
-                    ></CardContent>
-                  </Card>
-                )
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      No consumers exist.
+                    </Typography>
+                  </Box>
+                </Card>
               )}
             </Box>
             <Box sx={{ width: '100%', height: '100%', minHeight: '350px' }}>
@@ -657,16 +677,37 @@ const Dashboard: FC = () => {
                     </Typography>
                   </Box>
                 </Card>
+              ) : isInitialMostActiveReceiversApiSuccessed &&
+                selectors.specificDetails.mostActiveReceivers.length > 0 ? (
+                <Card>
+                  <CardContent
+                    style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
+                    id={receiversChartElIdRef.current}
+                  ></CardContent>
+                </Card>
               ) : (
-                isInitialMostActiveReceiversApiSuccessed &&
-                selectors.specificDetails.mostActiveReceivers.length > 0 && (
-                  <Card>
-                    <CardContent
-                      style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
-                      id={receiversChartElIdRef.current}
-                    ></CardContent>
-                  </Card>
-                )
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      No receivers exist.
+                    </Typography>
+                  </Box>
+                </Card>
               )}
             </Box>
             <Box sx={{ width: '100%', height: '100%', minHeight: '350px' }}>
@@ -696,16 +737,37 @@ const Dashboard: FC = () => {
                     </Typography>
                   </Box>
                 </Card>
+              ) : isInitialMostActiveLocationsApiSuccessed &&
+                selectors.specificDetails.mostActiveLocations.length > 0 ? (
+                <Card>
+                  <CardContent
+                    style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
+                    id={locationsChartElIdRef.current}
+                  ></CardContent>
+                </Card>
               ) : (
-                isInitialMostActiveLocationsApiSuccessed &&
-                selectors.specificDetails.mostActiveLocations.length > 0 && (
-                  <Card>
-                    <CardContent
-                      style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
-                      id={locationsChartElIdRef.current}
-                    ></CardContent>
-                  </Card>
-                )
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      No locations exist.
+                    </Typography>
+                  </Box>
+                </Card>
               )}
             </Box>
           </DeviceWrapper>
