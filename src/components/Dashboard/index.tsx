@@ -485,6 +485,55 @@ const Dashboard: FC = () => {
     }
   }, [selectors.specificDetails.mostActiveReceivers]);
 
+  const locationsChartElIdRef = useRef(uuid());
+  useEffect(() => {
+    if (selectors.specificDetails.mostActiveLocations.length > 0) {
+      const el = document.getElementById(locationsChartElIdRef.current) as HTMLDivElement | null;
+      if (el) {
+        const chart = echarts.init(el);
+        chart.setOption({
+          title: {
+            text: 'Most active Locations',
+            left: 'center',
+            textStyle: { fontSize: 14, fontWeight: 700 },
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b} : {c} ({d}%)',
+          },
+          series: [
+            {
+              type: 'pie',
+              radius: [20, 110],
+              center: ['50%', '55%'],
+              itemStyle: {
+                borderRadius: 5,
+              },
+              label: {
+                show: false,
+              },
+              emphasis: {
+                label: {
+                  show: false,
+                },
+              },
+              data: selectors.specificDetails.mostActiveLocations.map((item) => ({
+                value: item.quantities,
+                name: item.location.name,
+              })),
+            },
+          ],
+        });
+
+        const onResize = () => {
+          chart.resize();
+        };
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+      }
+    }
+  }, [selectors.specificDetails.mostActiveLocations]);
+
   return (
     <Navigation>
       <MainContainer>
@@ -610,6 +659,45 @@ const Dashboard: FC = () => {
                     <CardContent
                       style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
                       id={receiversChartElIdRef.current}
+                    ></CardContent>
+                  </Card>
+                )
+              )}
+            </Box>
+            <Box sx={{ width: '100%', height: '100%', minHeight: '350px' }}>
+              {isInitialMostActiveLocationsApiProcessing ? (
+                <Skeleton height="350px" width="100%" />
+              ) : isInitialMostActiveLocationsApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the most active locations chart.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : (
+                isInitialMostActiveLocationsApiSuccessed &&
+                selectors.specificDetails.mostActiveLocations.length > 0 && (
+                  <Card>
+                    <CardContent
+                      style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
+                      id={locationsChartElIdRef.current}
                     ></CardContent>
                   </Card>
                 )
