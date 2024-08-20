@@ -263,6 +263,28 @@ const Dashboard: FC = () => {
       const el = document.getElementById(lastYearChartElIdRef.current) as HTMLDivElement | null;
       if (el) {
         const chart = echarts.init(el);
+        const series = [
+          {
+            name: 'Bills',
+            data: chartData.map((item) => item.billCounts),
+            type: 'line',
+            showSymbol: false,
+            smooth: true,
+            areaStyle: {},
+          },
+        ];
+
+        if (isCurrentOwnerOrAdmin) {
+          series.push({
+            name: 'Users',
+            data: chartData.map((item) => item.userCounts),
+            type: 'line',
+            showSymbol: false,
+            smooth: true,
+            areaStyle: {},
+          });
+        }
+
         chart.setOption({
           legend: {
             data: ['Bills', 'Users'],
@@ -338,24 +360,7 @@ const Dashboard: FC = () => {
             },
             axisLabel: { show: true },
           },
-          series: [
-            {
-              name: 'Bills',
-              data: chartData.map((item) => item.billCounts),
-              type: 'line',
-              showSymbol: false,
-              smooth: true,
-              areaStyle: {},
-            },
-            {
-              name: 'Users',
-              data: chartData.map((item) => item.userCounts),
-              type: 'line',
-              showSymbol: false,
-              smooth: true,
-              areaStyle: {},
-            },
-          ],
+          series,
           dataZoom: [
             {
               show: true,
