@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
-import { FC, useEffect } from 'react';
-import { Box, styled, Typography } from '@mui/material';
+import { FC, useEffect, useRef } from 'react';
+import { Box, styled, Typography, Zoom } from '@mui/material';
 import {
   AllBillQuantitiesApi,
   AllDeletedBillQuantitiesApi,
@@ -36,10 +36,11 @@ import Skeleton from '../shared/Skeleton';
 import Card from '../shared/Card';
 import moment from 'moment';
 import Navigation from '../../layout/Navigation';
-import Chart from 'react-apexcharts';
 import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
 import { MostActiveConsumerObj, MostActiveLocationObj, MostActiveReceiverObj, MostActiveUserObj } from '../../lib';
+import { v4 as uuid } from 'uuid';
+import { start } from 'repl';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -256,6 +257,131 @@ const Dashboard: FC = () => {
 
   const chartData = getChartData();
 
+  const lastYearChartElIdRef = useRef(uuid());
+  useEffect(() => {
+    if (chartData.length > 0) {
+      const el = document.getElementById(lastYearChartElIdRef.current) as HTMLDivElement | null;
+      if (el) {
+        const chart = echarts.init(el);
+        chart.setOption({
+          grid: {
+            top: '30px',
+            left: '60px',
+            right: '40px',
+            bottom: '90px',
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+            },
+            formatter: (
+              params: echarts.EChartOption.Tooltip.Format | echarts.EChartOption.Tooltip.Format[],
+              ticket: string,
+              callback: (ticket: string, html: string) => void
+            ) => {
+              const [first, second] = params as echarts.EChartOption.Tooltip.Format[];
+              return `
+                <div>
+                  <p style="margin-bottom: 8px; font-weight: bold;">${moment(
+                    new Date(+(first.axisValue as string))
+                  ).format('L')}</p>
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px;">
+                    <span style="border-radius: 50%; background-color: ${
+                      first.color
+                    }; width: 15px; height: 15px;"></span>
+                    <span>${first.data}</span>
+                  </div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                    <span style="border-radius: 50%; background-color: ${
+                      second.color
+                    }; width: 15px; height: 15px;"></span>
+                    <span>${second.data}</span>
+                  </div>
+                </div>
+              `;
+            },
+          },
+          color: ['#20a0ff', '#ffd320'],
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: chartData.map((item) => item.date),
+            axisLabel: {
+              show: true,
+              formatter: (label: string) => {
+                return moment(new Date(+label)).format('L');
+              },
+            },
+            axisPointer: {
+              show: true,
+              label: {
+                formatter: (label: any) => {
+                  return moment(new Date(+label.value)).format('L');
+                },
+              },
+            },
+          },
+          yAxis: {
+            type: 'value',
+            boundaryGap: false,
+            axisPointer: {
+              show: true,
+              label: {
+                formatter: (label: any) => {
+                  return parseInt(label.value);
+                },
+              },
+            },
+            axisLabel: { show: true },
+          },
+          series: [
+            {
+              data: chartData.map((item) => item.billCounts),
+              type: 'line',
+              showSymbol: false,
+              smooth: true,
+              areaStyle: {},
+            },
+            {
+              data: chartData.map((item) => item.userCounts),
+              type: 'line',
+              showSymbol: false,
+              smooth: true,
+              areaStyle: {},
+            },
+          ],
+          dataZoom: [
+            {
+              show: true,
+              filterMode: 'filter',
+              type: 'slider',
+              start: 0,
+              end: 100,
+              bottom: '20px',
+              // @ts-ignore
+              showDataShadow: false,
+              labelFormatter: (label: number, value: string) => {
+                return moment(new Date(+value)).format('L');
+              },
+            },
+            {
+              type: 'inside',
+              start: 0,
+              end: 100,
+            },
+          ],
+        });
+
+        const onResize = () => {
+          chart.resize();
+        };
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+      }
+    }
+  }, [chartData]);
+
   return (
     <Navigation>
       <MainContainer>
@@ -298,52 +424,10 @@ const Dashboard: FC = () => {
               isInitialLastYearBillsApiSuccessed &&
               chartData.length > 0 && (
                 <Card>
-                  <CardContent>
-                    {(() => {
-                      const series = [
-                        {
-                          name: 'Bills',
-                          data: chartData.map((item) => item.billCounts),
-                        },
-                      ];
-
-                      if (isCurrentOwnerOrAdmin) {
-                        series.push({
-                          name: 'Users',
-                          data: chartData.map((item) => item.userCounts),
-                        });
-                      }
-
-                      return (
-                        <Chart
-                          options={{
-                            chart: {
-                              height: 380,
-                              type: 'area',
-                            },
-                            dataLabels: {
-                              enabled: false,
-                            },
-                            stroke: {
-                              curve: 'smooth',
-                            },
-                            xaxis: {
-                              type: 'datetime',
-                              categories: chartData.map((item) => item.date),
-                            },
-                            tooltip: {
-                              x: {
-                                format: 'dd/MM/yy',
-                              },
-                            },
-                          }}
-                          series={series}
-                          type="area"
-                          height={380}
-                        />
-                      );
-                    })()}
-                  </CardContent>
+                  <CardContent
+                    style={{ position: 'relative', height: '429px', overflow: 'hidden' }}
+                    id={lastYearChartElIdRef.current}
+                  ></CardContent>
                 </Card>
               )
             )}

@@ -1,8 +1,14 @@
 import { FC, PropsWithChildren } from 'react';
-import { CardContent as CC } from '@mui/material';
+import { CardContent as CC, CardContentProps } from '@mui/material';
 
-const CardContent: FC<PropsWithChildren> = ({ children }) => {
-  return <CC sx={{ padding: '16px', paddingBottom: '16px !important' }}>{children}</CC>;
+interface Props extends CardContentProps, PropsWithChildren {}
+
+const CardContent: FC<Props> = ({ children, ...props }) => {
+  return (
+    <CC sx={{ padding: '16px', paddingBottom: '16px !important' }} {...props}>
+      {children}
+    </CC>
+  );
 };
 
 export default CardContent;
