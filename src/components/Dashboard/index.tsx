@@ -264,6 +264,9 @@ const Dashboard: FC = () => {
       if (el) {
         const chart = echarts.init(el);
         chart.setOption({
+          legend: {
+            data: ['Bills', 'Users'],
+          },
           grid: {
             top: '30px',
             left: '60px',
@@ -337,6 +340,7 @@ const Dashboard: FC = () => {
           },
           series: [
             {
+              name: 'Bills',
               data: chartData.map((item) => item.billCounts),
               type: 'line',
               showSymbol: false,
@@ -344,6 +348,7 @@ const Dashboard: FC = () => {
               areaStyle: {},
             },
             {
+              name: 'Users',
               data: chartData.map((item) => item.userCounts),
               type: 'line',
               showSymbol: false,
