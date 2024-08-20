@@ -3,6 +3,10 @@ import {
   ConsumerObj,
   DeletedUserObj,
   LocationObj,
+  MostActiveConsumerObj,
+  MostActiveLocationObj,
+  MostActiveReceiverObj,
+  MostActiveUserObj,
   NotificationObj,
   ReceiverObj,
   UserObj,
@@ -16,13 +20,13 @@ export enum SpecificDetails {
   SET_SPECIFIC_DETAILS = 'SET_SPECIFIC_DETAILS',
 }
 
-export class LastWeekReport {
+export class LastYearReport {
   public date: number;
   public billCounts: number;
   public billAmount: string;
   public userCounts: number;
 
-  constructor({ date = 0, billCounts = 0, billAmount = '0', userCounts = 0 }: Partial<LastWeekReport> = {}) {
+  constructor({ date = 0, billCounts = 0, billAmount = '0', userCounts = 0 }: Partial<LastYearReport> = {}) {
     this.date = date;
     this.billCounts = billCounts;
     this.billAmount = billAmount;
@@ -30,32 +34,23 @@ export class LastWeekReport {
   }
 }
 
-export class TotalAmount {
-  constructor(
-    public totalAmount: string,
-    public quantities: string,
-    public dateLessTotalAmount: string,
-    public dateLessQuantities: string
-  ) {}
+export class BillQuantities {
+  constructor(public amount: string, public quantities: string) {}
 }
 
-export interface LastWeekBillsObj {
+export class DeletedBillQuantities extends BillQuantities {}
+
+export interface LastYearBillsObj {
   count: number;
   amount: string;
   date: number;
 }
 
 export class AllBillQuantities {
-  constructor(public quantities: string, public amount: string) {}
+  constructor(public amount: string, public quantities: string) {}
 }
 
-export class AllDeletedBillQuantities {
-  constructor(public quantities: string, public amount: string) {}
-}
-
-export class DeletedBillQuantities {
-  constructor(public quantities: string, public amount: string) {}
-}
+export class AllDeletedBillQuantities extends AllBillQuantities {}
 
 export class NotificationQuantities {
   constructor(public quantities: string) {}
@@ -65,17 +60,9 @@ export class AllNotificationQuantities {
   constructor(public quantities: string) {}
 }
 
-export interface LastWeekUsersObj {
+export interface LastYearUsersObj {
   count: number;
   date: number;
-}
-
-export class PeriodAmountFilter {
-  constructor(public start: number, public end: number) {}
-}
-
-export class BillDates {
-  constructor(public start: number, public end: number) {}
 }
 
 export class UserQuantities {
@@ -115,15 +102,13 @@ export interface SpecificDetailsState {
   receiver: ReceiverObj | null;
   location: LocationObj | null;
   consumer: ConsumerObj | null;
-  totalAmount: TotalAmount | null;
-  periodAmountFilter: PeriodAmountFilter | null;
-  lastWeekBills: LastWeekBillsObj[];
-  lastWeekUsers: LastWeekUsersObj[];
-  billDates: BillDates | null;
+  billquantities: BillQuantities | null;
+  deletedBillQuantities: AllDeletedBillQuantities | null;
+  lastYearBills: LastYearBillsObj[];
+  lastYearUsers: LastYearUsersObj[];
   userQuantities: UserQuantities | null;
   deletedUserQuantities: DeletedUserQuantities | null;
   allBillQuantities: AllBillQuantities | null;
-  deletedBillQuantities: DeletedBillQuantities | null;
   allDeletedBillQuantities: AllDeletedBillQuantities | null;
   deletedUser: DeletedUserObj | null;
   deletedBill: BillObj | null;
@@ -131,6 +116,10 @@ export interface SpecificDetailsState {
   notificationQuantities: NotificationQuantities | null;
   allNotificationQuantities: AllNotificationQuantities | null;
   usersStatus: UsersStatusType;
+  mostActiveUsers: MostActiveUserObj[];
+  mostActiveConsumers: MostActiveConsumerObj[];
+  mostActiveLocations: MostActiveLocationObj[];
+  mostActiveReceivers: MostActiveReceiverObj[];
 }
 
 const initialState: SpecificDetailsState = {
@@ -140,22 +129,24 @@ const initialState: SpecificDetailsState = {
   receiver: null,
   location: null,
   consumer: null,
-  totalAmount: null,
-  periodAmountFilter: null,
-  lastWeekBills: [],
-  lastWeekUsers: [],
-  billDates: null,
+  billquantities: null,
+  deletedBillQuantities: null,
+  lastYearBills: [],
+  lastYearUsers: [],
   userQuantities: null,
   deletedUserQuantities: null,
   allBillQuantities: null,
   allDeletedBillQuantities: null,
-  deletedBillQuantities: null,
   deletedUser: null,
   deletedBill: null,
   notification: null,
   notificationQuantities: null,
   allNotificationQuantities: null,
   usersStatus: {},
+  mostActiveUsers: [],
+  mostActiveConsumers: [],
+  mostActiveLocations: [],
+  mostActiveReceivers: [],
 };
 
 function setSpecificDetails(state: SpecificDetailsState, action: SetSpecificDetailsAction): SpecificDetailsState {
@@ -174,21 +165,23 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     receiver: null,
     location: null,
     consumer: null,
-    totalAmount: null,
-    periodAmountFilter: null,
-    lastWeekBills: [],
-    lastWeekUsers: [],
-    billDates: null,
+    billquantities: null,
+    deletedBillQuantities: null,
+    lastYearBills: [],
+    lastYearUsers: [],
     userQuantities: null,
     deletedUserQuantities: null,
     allBillQuantities: null,
     allDeletedBillQuantities: null,
-    deletedBillQuantities: null,
     deletedUser: null,
     deletedBill: null,
     notification: null,
     notificationQuantities: null,
     allNotificationQuantities: null,
+    mostActiveUsers: [],
+    mostActiveConsumers: [],
+    mostActiveLocations: [],
+    mostActiveReceivers: [],
   };
 }
 
