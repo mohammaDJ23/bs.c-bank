@@ -17,7 +17,7 @@ import {
   MostActiveLocationsApi,
   MostActiveReceiversApi,
 } from '../../apis';
-import { useAction, useAuth, useRequest, useSelector, useDispatch } from '../../hooks';
+import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import MainContainer from '../../layout/MainContainer';
 import {
   AllBillQuantities,
@@ -40,7 +40,6 @@ import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
 import { MostActiveConsumerObj, MostActiveLocationObj, MostActiveReceiverObj, MostActiveUserObj } from '../../lib';
 import { v4 as uuid } from 'uuid';
-import { getMostActiveReceivers } from '../../store/actions';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -57,7 +56,6 @@ const DeviceWrapper = styled(Box)(({ theme }) => ({
 }));
 
 const Dashboard: FC = () => {
-  const dispatch = useDispatch();
   const request = useRequest();
   const auth = useAuth();
   const actions = useAction();
@@ -181,16 +179,14 @@ const Dashboard: FC = () => {
       );
     }
 
-    actions.getMostActiveReceivers();
-
     Promise.allSettled<
       [
         Promise<AxiosResponse<BillQuantities>>,
         Promise<AxiosResponse<LastYearBillsObj[]>>,
         Promise<AxiosResponse<DeletedBillQuantities>>,
         Promise<AxiosResponse<MostActiveConsumerObj[]>>,
-        Promise<AxiosResponse<MostActiveLocationObj[]>>
-        // Promise<AxiosResponse<MostActiveReceiverObj[]>>
+        Promise<AxiosResponse<MostActiveLocationObj[]>>,
+        Promise<AxiosResponse<MostActiveReceiverObj[]>>
       ]
     >([
       request.build(new BillQuantitiesApi().setInitialApi()),
@@ -198,7 +194,7 @@ const Dashboard: FC = () => {
       request.build(new DeletedBillQuantitiesApi().setInitialApi()),
       request.build(new MostActiveConsumersApi().setInitialApi()),
       request.build(new MostActiveLocationsApi().setInitialApi()),
-      // request.build(new MostActiveReceiversApi().setInitialApi()),
+      request.build(new MostActiveReceiversApi().setInitialApi()),
     ]).then(
       ([
         billQuantitiesResponse,
@@ -206,7 +202,7 @@ const Dashboard: FC = () => {
         deletedBillQuantitiesResponse,
         mostActiveConsumersResponse,
         mostActiveLocationsResponse,
-        // mostActiveReceiversResponse,
+        mostActiveReceiversResponse,
       ]) => {
         if (billQuantitiesResponse.status === 'fulfilled') {
           const { quantities, amount } = billQuantitiesResponse.value.data;
@@ -227,8 +223,8 @@ const Dashboard: FC = () => {
         if (mostActiveLocationsResponse.status === 'fulfilled')
           actions.setSpecificDetails('mostActiveLocations', mostActiveLocationsResponse.value.data);
 
-        // if (mostActiveReceiversResponse.status === 'fulfilled')
-        //   actions.setSpecificDetails('mostActiveReceivers', mostActiveReceiversResponse.value.data);
+        if (mostActiveReceiversResponse.status === 'fulfilled')
+          actions.setSpecificDetails('mostActiveReceivers', mostActiveReceiversResponse.value.data);
       }
     );
   }, []);
