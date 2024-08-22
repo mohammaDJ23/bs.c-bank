@@ -10,6 +10,7 @@ import {
   paginationListReducer,
   FormReducer,
   userServiceSocketReducer,
+  listsReducer,
 } from './reducers';
 
 const reducers = combineReducers({
@@ -21,6 +22,7 @@ const reducers = combineReducers({
   paginationList: paginationListReducer,
   forms: FormReducer,
   userServiceSocket: userServiceSocketReducer,
+  lists: listsReducer,
 });
 
 export const store = createStore(reducers, {}, applyMiddleware(thunk));
