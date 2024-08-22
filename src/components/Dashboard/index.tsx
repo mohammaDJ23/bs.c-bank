@@ -181,7 +181,7 @@ const Dashboard: FC = () => {
       );
     }
 
-    dispatch(getMostActiveReceivers());
+    actions.getMostActiveReceivers();
 
     Promise.allSettled<
       [
