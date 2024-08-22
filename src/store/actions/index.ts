@@ -1,8 +1,7 @@
-import { Dispatch } from 'redux';
 import { MostActiveReceiversApi, Request } from '../../apis';
 import { MostActiveReceiverObj } from '../../lib';
+import { RootDispatch } from '../store';
 import { initialProcessingApiError, initialProcessingApiLoading, initialProcessingApiSuccess } from './requestProcess';
-import { RootActions } from './root-actions';
 import { setSpecificDetails } from './speceficDetails';
 
 export * from './modal';
@@ -17,7 +16,7 @@ export * from './clearState';
 export * from './userSocket';
 
 export function getMostActiveReceivers() {
-  return async function (dispatch: Dispatch<RootActions>) {
+  return async function (dispatch: RootDispatch) {
     try {
       dispatch(initialProcessingApiLoading(MostActiveReceiversApi.name));
       const response = await new Request<MostActiveReceiverObj[]>(new MostActiveReceiversApi()).build();

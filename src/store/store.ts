@@ -1,5 +1,6 @@
 import { combineReducers, createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import thunk, { ThunkDispatch } from 'redux-thunk';
+import { RootActions } from './actions';
 import {
   historyReducer,
   listContainerReducer,
@@ -25,3 +26,4 @@ const reducers = combineReducers({
 export const store = createStore(reducers, {}, applyMiddleware(thunk));
 
 export type RootState = ReturnType<typeof reducers>;
+export type RootDispatch = ThunkDispatch<RootState, any, RootActions>;

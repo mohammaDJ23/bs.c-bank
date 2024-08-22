@@ -6,3 +6,4 @@ export * from './useRequest';
 export * from './usePaginationList';
 export * from './useFocus';
 export * from './useInitialMicro';
+export * from './useDispatch';

@@ -16,9 +16,8 @@ import {
   MostActiveConsumersApi,
   MostActiveLocationsApi,
   MostActiveReceiversApi,
-  Request,
 } from '../../apis';
-import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
+import { useAction, useAuth, useRequest, useSelector, useDispatch } from '../../hooks';
 import MainContainer from '../../layout/MainContainer';
 import {
   AllBillQuantities,
@@ -32,7 +31,6 @@ import {
   NotificationQuantities,
   AllNotificationQuantities,
   BillQuantities,
-  RootState,
 } from '../../store';
 import Skeleton from '../shared/Skeleton';
 import Card from '../shared/Card';
@@ -42,14 +40,7 @@ import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
 import { MostActiveConsumerObj, MostActiveLocationObj, MostActiveReceiverObj, MostActiveUserObj } from '../../lib';
 import { v4 as uuid } from 'uuid';
-import {
-  initialProcessingApiLoading,
-  setSpecificDetails,
-  initialProcessingApiError,
-  initialProcessingApiSuccess,
-  getMostActiveReceivers,
-} from '../../store/actions';
-import { useDispatch } from '../../hooks/useDispatch';
+import { getMostActiveReceivers } from '../../store/actions';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',

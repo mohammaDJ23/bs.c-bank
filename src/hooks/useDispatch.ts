@@ -1,7 +1,6 @@
-import { useDispatch } from 'react-redux';
-import { Dispatch } from 'redux';
-import { RootActions } from '../store/actions';
+import * as redux from 'react-redux';
+import { RootDispatch } from '../store';
 
-export function useDisp() {
-  return useDispatch() as Dispatch<RootActions>;
+export function useDispatch() {
+  return redux.useDispatch<RootDispatch>();
 }
