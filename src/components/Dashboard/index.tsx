@@ -32,7 +32,6 @@ import {
   NotificationQuantities,
   AllNotificationQuantities,
   BillQuantities,
-  actions,
   RootState,
 } from '../../store';
 import Skeleton from '../shared/Skeleton';
@@ -43,7 +42,14 @@ import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
 import { MostActiveConsumerObj, MostActiveLocationObj, MostActiveReceiverObj, MostActiveUserObj } from '../../lib';
 import { v4 as uuid } from 'uuid';
-import { connect } from 'react-redux';
+import {
+  initialProcessingApiLoading,
+  setSpecificDetails,
+  initialProcessingApiError,
+  initialProcessingApiSuccess,
+  getMostActiveReceivers,
+} from '../../store/actions';
+import { useDispatch } from '../../hooks/useDispatch';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -59,11 +65,8 @@ const DeviceWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-interface Props {
-  getMostActiveReceivers: () => void;
-}
-
-const Dashboard: FC<Props> = ({ getMostActiveReceivers }) => {
+const Dashboard: FC = () => {
+  const dispatch = useDispatch();
   const request = useRequest();
   const auth = useAuth();
   const actions = useAction();
@@ -187,7 +190,7 @@ const Dashboard: FC<Props> = ({ getMostActiveReceivers }) => {
       );
     }
 
-    getMostActiveReceivers();
+    dispatch(getMostActiveReceivers());
 
     Promise.allSettled<
       [
@@ -1326,21 +1329,4 @@ const Dashboard: FC<Props> = ({ getMostActiveReceivers }) => {
   );
 };
 
-function getMostActiveReceivers() {
-  return async function (act: typeof actions, sel: RootState) {
-    try {
-      act.initialProcessingApiLoading(MostActiveReceiversApi.name);
-      const response = await new Request<MostActiveReceiverObj[]>(new MostActiveReceiversApi()).build();
-      act.setSpecificDetails('mostActiveReceivers', response.data);
-      act.initialProcessingApiSuccess(MostActiveReceiversApi.name);
-    } catch (error) {
-      act.initialProcessingApiError(MostActiveReceiversApi.name);
-    }
-  };
-}
-
-const mapDispatchToProps = {
-  getMostActiveReceivers,
-};
-
-export default connect(null, mapDispatchToProps)(Dashboard);
+export default Dashboard;
