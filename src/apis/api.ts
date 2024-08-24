@@ -146,7 +146,7 @@ export class UsersApi extends RootApi {
 export type UsersApiConstructorType = ConstructorParameters<typeof UsersApi>[0];
 
 export class DeletedUsersApi extends RootApi {
-  constructor(params: ListParams<UserObj> & FilterParams<Partial<DeletedUserListFiltersObj>>) {
+  constructor(params: Partial<ListParams<Partial<DeletedUserListFiltersObj>>>) {
     super(
       {
         url: '/api/v1/user/all/deleted',

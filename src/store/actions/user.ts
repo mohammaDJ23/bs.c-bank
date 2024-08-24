@@ -1,5 +1,11 @@
-import { Request, UsersApi, UsersApiConstructorType } from '../../apis';
-import { User, Users } from '../../lib';
+import {
+  DeletedUsersApi,
+  DeletedUsersApiConstructorType,
+  Request,
+  UsersApi,
+  UsersApiConstructorType,
+} from '../../apis';
+import { DeletedUsers, User, Users } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -35,6 +41,34 @@ export function getUsers(params: UsersApiConstructorType = {}) {
       dispatch(processingApiSuccess(UsersApi.name));
     } catch (error) {
       dispatch(processingApiError(UsersApi.name));
+    }
+  };
+}
+
+export function getInitialDeletedUsers(params: DeletedUsersApiConstructorType = {}) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(DeletedUsersApi.name));
+      const response = await new Request<[User[], number]>(new DeletedUsersApi(params)).build();
+      const [list, total] = response.data;
+      dispatch(createNewList(new DeletedUsers({ list, total, page: params.page, take: params.take })));
+      dispatch(initialProcessingApiSuccess(DeletedUsersApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(DeletedUsersApi.name));
+    }
+  };
+}
+
+export function getDeletedUsers(params: DeletedUsersApiConstructorType = {}) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(DeletedUsersApi.name));
+      const response = await new Request<[User[], number]>(new DeletedUsersApi(params)).build();
+      const [list, total] = response.data;
+      dispatch(createNewList(new DeletedUsers({ list, total, page: params.page, take: params.take })));
+      dispatch(processingApiSuccess(DeletedUsersApi.name));
+    } catch (error) {
+      dispatch(processingApiError(DeletedUsersApi.name));
     }
   };
 }
