@@ -12,3 +12,4 @@ export * from './receiver';
 export * from './list';
 export * from './user';
 export * from './bill';
+export * from './consumer';

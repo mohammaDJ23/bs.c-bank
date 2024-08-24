@@ -489,7 +489,7 @@ export class AllNotificationQuantitiesApi extends RootApi {
 }
 
 export class ConsumersApi extends RootApi {
-  constructor(params: Partial<ListParams<ConsumerObj> & FilterParams<Partial<ConsumerListFiltersObj>>> = {}) {
+  constructor(params: Partial<ListParams<Partial<ConsumerListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/consumer/all',
@@ -500,6 +500,8 @@ export class ConsumersApi extends RootApi {
     );
   }
 }
+
+export type ConsumersApiConstructorType = ConstructorParameters<typeof ConsumersApi>[0];
 
 export class ConsumerApi extends RootApi {
   constructor(id: number) {

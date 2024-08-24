@@ -1,98 +1,70 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { ConsumerList, ConsumerListFilters, ConsumerObj } from '../../lib';
-import { useForm, usePaginationList, useRequest } from '../../hooks';
+import { ConsumerListFilters } from '../../lib';
+import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { ConsumersApi } from '../../apis';
 import ConsumersSkeleton from '../shared/ConsumersSkeleton';
 import EmptyList from './EmptyList';
 import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import ConsumerCard from '../shared/ConsumerCard';
+import { selectConsumersList } from '../../store/selectors';
 
 const List: FC = () => {
+  const actions = useAction();
+  const selectors = useSelector();
   const request = useRequest();
-  const consumerListInstance = usePaginationList(ConsumerList);
   const consumerListFiltersFormInstance = useForm(ConsumerListFilters);
   const consumerListFiltersForm = consumerListFiltersFormInstance.getForm();
   const isInitialConsumersApiProcessing = request.isInitialApiProcessing(ConsumersApi);
   const isConsumersApiProcessing = request.isApiProcessing(ConsumersApi);
-
-  const getConsumersList = useCallback(
-    async (api: ConsumersApi) =>
-      request.build<[ConsumerObj[], number], ConsumerObj>(api).then((response) => response.data),
-    [request]
-  );
+  const consumersList = selectConsumersList(selectors);
 
   useEffect(() => {
-    const api = new ConsumersApi();
-    api.setInitialApi();
-    getConsumersList(api).then(([list, total]) => {
-      consumerListInstance.updateAndConcatList(list, 1);
-      consumerListInstance.updateTotal(total);
-    });
+    actions.getInitialConsumers({ page: 1, take: consumersList.take });
   }, []);
 
   const changePage = useCallback(
-    (newPage: number) => {
-      consumerListInstance.updatePage(newPage);
-
-      if (consumerListInstance.isNewPageEqualToCurrentPage(newPage) || isConsumersApiProcessing) return;
-
-      if (!consumerListInstance.isNewPageExist(newPage)) {
-        getConsumersList(
-          new ConsumersApi({
-            page: newPage,
-            filters: {
-              q: consumerListFiltersForm.q,
-            },
-          })
-        ).then(([list, total]) => {
-          consumerListInstance.updateAndConcatList(list, newPage);
-          consumerListInstance.updatePage(newPage);
-          consumerListInstance.updateTotal(total);
-        });
-      }
+    (page: number) => {
+      if (consumersList.page === page || isConsumersApiProcessing) return;
+      actions.getConsumers({
+        page,
+        take: consumersList.take,
+        filters: { q: consumerListFiltersForm.q },
+      });
     },
-    [isConsumersApiProcessing, consumerListInstance, consumerListFiltersForm, getConsumersList]
+    [isConsumersApiProcessing, consumersList, consumerListFiltersForm]
   );
 
   const consumerListFilterFormSubmition = useCallback(() => {
     consumerListFiltersFormInstance.onSubmit(() => {
-      const newPage = 1;
-      consumerListInstance.updatePage(newPage);
-      getConsumersList(
-        new ConsumersApi({
-          page: newPage,
-          filters: {
-            q: consumerListFiltersForm.q,
-          },
-        })
-      ).then(([list, total]) => {
-        consumerListInstance.updateAndConcatList(list, newPage);
-        consumerListInstance.updateTotal(total);
+      actions.getConsumers({
+        page: 1,
+        take: consumersList.take,
+        filters: { q: consumerListFiltersForm.q },
       });
     });
-  }, [consumerListFiltersFormInstance, consumerListInstance, consumerListFiltersForm, getConsumersList]);
+  }, [consumerListFiltersFormInstance, consumersList, consumerListFiltersForm]);
 
   return (
     <>
       {isInitialConsumersApiProcessing || isConsumersApiProcessing ? (
-        <ConsumersSkeleton take={consumerListInstance.getTake()} />
-      ) : consumerListInstance.isListEmpty() ? (
+        <ConsumersSkeleton take={consumersList.take} />
+      ) : consumersList.total <= 0 ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {consumerListInstance.getList().map((consumer, index) => (
-              <ConsumerCard key={index} index={index} consumer={consumer} listInstance={consumerListInstance} />
+            {consumersList.list.map((consumer, index) => (
+              <ConsumerCard key={index} index={index} consumer={consumer} list={consumersList} />
             ))}
           </MuiList>
 
-          {consumerListInstance.getTotal() > consumerListInstance.getTake() && (
+          {consumersList.take < consumersList.total && (
             <Pagination
-              page={consumerListInstance.getPage()}
-              count={consumerListInstance.getCount()}
+              page={consumersList.page}
+              count={Math.ceil(consumersList.total / consumersList.take)}
               onPageChange={changePage}
             />
           )}
