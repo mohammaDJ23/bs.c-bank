@@ -14,3 +14,4 @@ export * from './user';
 export * from './bill';
 export * from './consumer';
 export * from './location';
+export * from './notification';

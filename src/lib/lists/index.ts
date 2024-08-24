@@ -2,7 +2,7 @@ import { UserList } from './user';
 import { BillList } from './bill';
 import { DeletedUsers } from './deletedUsers';
 import { DeletedBills } from './deletedBills';
-import { NotificationList } from './notification';
+import { Notifications } from './notifications';
 import { ConsumerList } from './consumer';
 import { AllBillList } from './allBill';
 import { ReceiverList } from './receivers';
@@ -17,7 +17,7 @@ export * from './list';
 export * from './user';
 export * from './deletedUsers';
 export * from './deletedBills';
-export * from './notification';
+export * from './notifications';
 export * from './consumer';
 export * from './allBill';
 export * from './receivers';
@@ -36,7 +36,7 @@ export const lists = {
   BillList,
   DeletedUsers,
   DeletedBills,
-  NotificationList,
+  Notifications,
   ConsumerList,
   AllBillList,
   ReceiverList,
@@ -51,4 +51,5 @@ export const newLists = {
   DeletedBills,
   DeletedUsers,
   Locations,
+  Notifications,
 };

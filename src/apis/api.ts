@@ -9,7 +9,6 @@ import {
   DeletedBillListFiltersObj,
   NotificationListFiltersObj,
   AllBillListFiltersObj,
-  NotificationObj,
   UserListFiltersObj,
   DeletedUserListFiltersObj,
   ConsumerListFiltersObj,
@@ -434,7 +433,7 @@ export class DeletedBillQuantitiesApi extends RootApi {
 }
 
 export class NotificationsApi extends RootApi {
-  constructor(params: ListParams<NotificationObj> & FilterParams<Partial<NotificationListFiltersObj>>) {
+  constructor(params: Partial<ListParams<Partial<NotificationListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/notification/all',
