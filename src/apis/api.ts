@@ -176,7 +176,7 @@ export class BillsApi extends RootApi {
 export type BillsApiConstructorType = ConstructorParameters<typeof BillsApi>[0];
 
 export class AllBillsApi extends RootApi {
-  constructor(params: ListParams<BillObj> & FilterParams<Partial<AllBillListFiltersObj>>) {
+  constructor(params: Partial<ListParams<Partial<AllBillListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/owner/bill/all',

@@ -1,5 +1,5 @@
-import { BillsApi, BillsApiConstructorType, Request } from '../../apis';
-import { Bill, Bills } from '../../lib';
+import { AllBillsApi, AllBillsApiConstructorType, BillsApi, BillsApiConstructorType, Request } from '../../apis';
+import { AllBills, Bill, Bills } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -35,6 +35,34 @@ export function getBills(params: BillsApiConstructorType = {}) {
       dispatch(processingApiSuccess(BillsApi.name));
     } catch (error) {
       dispatch(processingApiError(BillsApi.name));
+    }
+  };
+}
+
+export function getInitialAllBills(params: AllBillsApiConstructorType = {}) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(AllBillsApi.name));
+      const response = await new Request<[Bill[], number]>(new AllBillsApi(params)).build();
+      const [list, total] = response.data;
+      dispatch(createNewList(new AllBills({ list, total, page: params.page, take: params.take })));
+      dispatch(initialProcessingApiSuccess(AllBillsApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(AllBillsApi.name));
+    }
+  };
+}
+
+export function getAllBills(params: AllBillsApiConstructorType = {}) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(AllBillsApi.name));
+      const response = await new Request<[Bill[], number]>(new AllBillsApi(params)).build();
+      const [list, total] = response.data;
+      dispatch(createNewList(new AllBills({ list, total, page: params.page, take: params.take })));
+      dispatch(processingApiSuccess(AllBillsApi.name));
+    } catch (error) {
+      dispatch(processingApiError(AllBillsApi.name));
     }
   };
 }

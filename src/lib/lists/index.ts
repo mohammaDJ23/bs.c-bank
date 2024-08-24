@@ -9,6 +9,7 @@ import { ReceiverList } from './receivers';
 import { LocationList } from './locations';
 import { Users } from './users';
 import { Bills } from './bills';
+import { AllBills } from './allBills';
 
 export * from './bill';
 export * from './list';
@@ -26,6 +27,7 @@ export * from './mostActiveLocations';
 export * from './mostActiveReceivers';
 export * from './users';
 export * from './bills';
+export * from './allBills';
 
 export const lists = {
   UserList,
@@ -42,4 +44,5 @@ export const lists = {
 export const newLists = {
   Users,
   Bills,
+  AllBills,
 };

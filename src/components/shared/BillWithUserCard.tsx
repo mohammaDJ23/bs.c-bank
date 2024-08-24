@@ -7,14 +7,15 @@ import { AllBillList, BillObj, deletedAtColor, getDynamicPath, Pathes } from '..
 import Card from './Card';
 import CountBadge from './CountBadge';
 import { useAuth, usePaginationList } from '../../hooks';
+import { List } from '../../lib/lists/newList';
 
 interface BillCardImportation extends PropsWithChildren {
   bill: BillObj;
   index: number;
-  listInstance: ReturnType<typeof usePaginationList<AllBillList>>;
+  list: List;
 }
 
-const BillWithUserCard: FC<BillCardImportation> = ({ bill, index, listInstance }) => {
+const BillWithUserCard: FC<BillCardImportation> = ({ bill, index, list }) => {
   const navigate = useNavigate();
   const auth = useAuth();
   const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(bill.user);
@@ -146,7 +147,7 @@ const BillWithUserCard: FC<BillCardImportation> = ({ bill, index, listInstance }
             </Box>
           </Box>
 
-          <CountBadge index={index} page={listInstance.getPage()} take={listInstance.getTake()} />
+          <CountBadge index={index} page={list.page} take={list.take} />
         </ListItem>
       </ListItemButton>
     </Card>
