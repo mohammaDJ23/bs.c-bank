@@ -1,98 +1,70 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { LocationList, LocationListFilters, LocationObj } from '../../lib';
-import { useForm, usePaginationList, useRequest } from '../../hooks';
+import { LocationListFilters } from '../../lib';
+import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { LocationsApi } from '../../apis';
 import LocationsSkeleton from '../shared/LocationsSkeleton';
 import EmptyList from './EmptyList';
 import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import LocationCard from '../shared/LocationCard';
+import { selectLocationsList } from '../../store/selectors';
 
 const List: FC = () => {
   const request = useRequest();
-  const locationListInstance = usePaginationList(LocationList);
+  const selectors = useSelector();
+  const actions = useAction();
   const locationListFiltersFormInstance = useForm(LocationListFilters);
   const locationListFiltersForm = locationListFiltersFormInstance.getForm();
   const isInitialLocationsApiProcessing = request.isInitialApiProcessing(LocationsApi);
   const isLocationsApiProcessing = request.isApiProcessing(LocationsApi);
-
-  const getLocationsList = useCallback(
-    async (api: LocationsApi) =>
-      request.build<[LocationObj[], number], LocationObj>(api).then((response) => response.data),
-    [request]
-  );
+  const locationsList = selectLocationsList(selectors);
 
   useEffect(() => {
-    const api = new LocationsApi();
-    api.setInitialApi();
-    getLocationsList(api).then(([list, total]) => {
-      locationListInstance.updateAndConcatList(list, 1);
-      locationListInstance.updateTotal(total);
-    });
+    actions.getInitialLocations({ page: 1, take: locationsList.take });
   }, []);
 
   const changePage = useCallback(
-    (newPage: number) => {
-      locationListInstance.updatePage(newPage);
-
-      if (locationListInstance.isNewPageEqualToCurrentPage(newPage) || isLocationsApiProcessing) return;
-
-      if (!locationListInstance.isNewPageExist(newPage)) {
-        getLocationsList(
-          new LocationsApi({
-            page: newPage,
-            filters: {
-              q: locationListFiltersForm.q,
-            },
-          })
-        ).then(([list, total]) => {
-          locationListInstance.updateAndConcatList(list, newPage);
-          locationListInstance.updatePage(newPage);
-          locationListInstance.updateTotal(total);
-        });
-      }
+    (page: number) => {
+      if (locationsList.page || isLocationsApiProcessing) return;
+      actions.getLocations({
+        page,
+        take: locationsList.take,
+        filters: { q: locationListFiltersForm.q },
+      });
     },
-    [isLocationsApiProcessing, locationListInstance, locationListFiltersForm, getLocationsList]
+    [isLocationsApiProcessing, locationsList, locationListFiltersForm]
   );
 
   const locationListFilterFormSubmition = useCallback(() => {
     locationListFiltersFormInstance.onSubmit(() => {
-      const newPage = 1;
-      locationListInstance.updatePage(newPage);
-      getLocationsList(
-        new LocationsApi({
-          page: newPage,
-          filters: {
-            q: locationListFiltersForm.q,
-          },
-        })
-      ).then(([list, total]) => {
-        locationListInstance.updateAndConcatList(list, newPage);
-        locationListInstance.updateTotal(total);
+      actions.getLocations({
+        page: 1,
+        take: locationsList.take,
+        filters: { q: locationListFiltersForm.q },
       });
     });
-  }, [locationListFiltersFormInstance, locationListInstance, locationListFiltersForm, getLocationsList]);
+  }, [locationListFiltersFormInstance, locationListFiltersForm, locationsList]);
 
   return (
     <>
       {isInitialLocationsApiProcessing || isLocationsApiProcessing ? (
-        <LocationsSkeleton take={locationListInstance.getTake()} />
-      ) : locationListInstance.isListEmpty() ? (
+        <LocationsSkeleton take={locationsList.take} />
+      ) : locationsList.total <= 0 ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {locationListInstance.getList().map((location, index) => (
-              <LocationCard key={index} index={index} location={location} listInstance={locationListInstance} />
+            {locationsList.list.map((location, index) => (
+              <LocationCard key={index} index={index} location={location} list={locationsList} />
             ))}
           </MuiList>
 
-          {locationListInstance.getTotal() > locationListInstance.getTake() && (
+          {locationsList.take < locationsList.total && (
             <Pagination
-              page={locationListInstance.getPage()}
-              count={locationListInstance.getCount()}
+              page={locationsList.page}
+              count={Math.ceil(locationsList.total / locationsList.take)}
               onPageChange={changePage}
             />
           )}

@@ -2,19 +2,19 @@ import { PropsWithChildren, FC } from 'react';
 import { ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
-import { LocationList, LocationObj, Pathes, getDynamicPath } from '../../lib';
+import { Location, Pathes, getDynamicPath } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
-import { usePaginationList } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
+import { List } from '../../lib/lists/newList';
 
 interface LocationCardImportation extends PropsWithChildren {
-  location: LocationObj;
+  location: Location;
   index: number;
-  listInstance: ReturnType<typeof usePaginationList<LocationList>>;
+  list: List;
 }
 
-const LocationCard: FC<LocationCardImportation> = ({ location, index, listInstance }) => {
+const LocationCard: FC<LocationCardImportation> = ({ location, index, list }) => {
   const navigate = useNavigate();
 
   return (
@@ -47,7 +47,7 @@ const LocationCard: FC<LocationCardImportation> = ({ location, index, listInstan
             </Box>
           </Box>
 
-          <CountBadge index={index} page={listInstance.getPage()} take={listInstance.getTake()} />
+          <CountBadge index={index} page={list.page} take={list.take} />
         </ListItem>
       </ListItemButton>
     </Card>

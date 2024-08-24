@@ -1,6 +1,6 @@
-import { BaseList } from './list';
+import { List } from './newList';
 
-export interface LocationObj {
+export interface Location {
   id: number;
   name: string;
   createdAt: Date;
@@ -8,8 +8,4 @@ export interface LocationObj {
   deletedAt: Date | null;
 }
 
-export class LocationList<T = LocationObj> extends BaseList<T> {
-  constructor(arg: Partial<BaseList<T>> = {}) {
-    super(arg);
-  }
-}
+export class Locations extends List<Location> {}

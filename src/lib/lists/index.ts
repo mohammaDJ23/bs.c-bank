@@ -6,7 +6,7 @@ import { NotificationList } from './notification';
 import { ConsumerList } from './consumer';
 import { AllBillList } from './allBill';
 import { ReceiverList } from './receivers';
-import { LocationList } from './locations';
+import { Locations } from './locations';
 import { Users } from './users';
 import { Bills } from './bills';
 import { AllBills } from './allBills';
@@ -40,7 +40,7 @@ export const lists = {
   ConsumerList,
   AllBillList,
   ReceiverList,
-  LocationList,
+  Locations,
 };
 
 export const newLists = {
@@ -50,4 +50,5 @@ export const newLists = {
   Consumers,
   DeletedBills,
   DeletedUsers,
+  Locations,
 };

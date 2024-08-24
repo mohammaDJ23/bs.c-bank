@@ -9,16 +9,12 @@ import {
   DeletedBillListFiltersObj,
   NotificationListFiltersObj,
   AllBillListFiltersObj,
-  UserObj,
-  BillObj,
-  ConsumerObj,
   NotificationObj,
   UserListFiltersObj,
   DeletedUserListFiltersObj,
   ConsumerListFiltersObj,
   ReceiverObj,
   LocationListFiltersObj,
-  LocationObj,
   UpdateReceiver,
   UpdateLocation,
   UpdateConsumer,
@@ -603,7 +599,7 @@ export class DeleteReceiverApi extends RootApi {
 }
 
 export class LocationsApi extends RootApi {
-  constructor(params: Partial<ListParams<LocationObj> & FilterParams<Partial<LocationListFiltersObj>>> = {}) {
+  constructor(params: Partial<ListParams<Partial<LocationListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/location/all',
@@ -614,6 +610,8 @@ export class LocationsApi extends RootApi {
     );
   }
 }
+
+export type LocationsApiConstructorType = ConstructorParameters<typeof LocationsApi>[0];
 
 export class LocaitonApi extends RootApi {
   constructor(id: number) {

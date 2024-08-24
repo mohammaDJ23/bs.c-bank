@@ -1,4 +1,4 @@
-import { AllBills, Bills, Consumers, DeletedBills, DeletedUsers, Users } from '../../lib';
+import { AllBills, Bills, Consumers, DeletedBills, DeletedUsers, Locations, Users } from '../../lib';
 import { RootState } from '../store';
 
 export function selectUsersList(state: RootState): Users {
@@ -23,4 +23,8 @@ export function selectDeletedBillsList(state: RootState): DeletedBills {
 
 export function selectDeletedUsersList(state: RootState): DeletedUsers {
   return state.lists[DeletedUsers.name];
+}
+
+export function selectLocationsList(state: RootState): Locations {
+  return state.lists[Locations.name];
 }
