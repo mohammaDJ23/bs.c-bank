@@ -190,8 +190,8 @@ export class AllBillsApi extends RootApi {
 
 export type AllBillsApiConstructorType = ConstructorParameters<typeof AllBillsApi>[0];
 
-export class DeletedBillListApi extends RootApi {
-  constructor(params: ListParams<BillObj> & FilterParams<Partial<DeletedBillListFiltersObj>>) {
+export class DeletedBillsApi extends RootApi {
+  constructor(params: Partial<ListParams<Partial<DeletedBillListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/bill/all/deleted',
@@ -203,7 +203,7 @@ export class DeletedBillListApi extends RootApi {
   }
 }
 
-export type DeletedBillListApiConstructorType = ConstructorParameters<typeof DeletedBillListApi>[0];
+export type DeletedBillsApiConstructorType = ConstructorParameters<typeof DeletedBillsApi>[0];
 
 export class UserApi extends RootApi {
   constructor(id: number) {

@@ -1,7 +1,7 @@
 import { UserList } from './user';
 import { BillList } from './bill';
 import { DeletedUserList } from './deletedUsers';
-import { DeletedBillList } from './deletedBills';
+import { DeletedBills } from './deletedBills';
 import { NotificationList } from './notification';
 import { ConsumerList } from './consumer';
 import { AllBillList } from './allBill';
@@ -35,7 +35,7 @@ export const lists = {
   UserList,
   BillList,
   DeletedUserList,
-  DeletedBillList,
+  DeletedBills,
   NotificationList,
   ConsumerList,
   AllBillList,
@@ -48,4 +48,5 @@ export const newLists = {
   Bills,
   AllBills,
   Consumers,
+  DeletedBills,
 };

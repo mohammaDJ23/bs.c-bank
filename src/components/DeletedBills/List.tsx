@@ -1,99 +1,80 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { BillObj, DeletedBillList, DeletedBillListFilters, getTime, isoDate } from '../../lib';
-import { useForm, usePaginationList, useRequest } from '../../hooks';
-import { DeletedBillListApi, DeletedBillListApiConstructorType } from '../../apis';
+import { DeletedBillListFilters, getTime, isoDate } from '../../lib';
+import { useAction, useForm, useRequest, useSelector } from '../../hooks';
+import { DeletedBillsApi } from '../../apis';
 import BillsSkeleton from '../shared/BillsSkeleton';
 import EmptyList from './EmptyList';
 import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
+import { selectDeletedBillsList } from '../../store/selectors';
 
 const List: FC = () => {
   const request = useRequest();
-  const deletedBillListInstance = usePaginationList(DeletedBillList);
+  const actions = useAction();
+  const selectors = useSelector();
   const deletedBillListFiltersFormInstance = useForm(DeletedBillListFilters);
   const deletedBillListFiltersForm = deletedBillListFiltersFormInstance.getForm();
-  const isInitialDeletedBillListApiProcessing = request.isInitialApiProcessing(DeletedBillListApi);
-  const isDeletedBillListApiProcessing = request.isApiProcessing(DeletedBillListApi);
+  const isInitialDeletedBillListApiProcessing = request.isInitialApiProcessing(DeletedBillsApi);
+  const isDeletedBillListApiProcessing = request.isApiProcessing(DeletedBillsApi);
+  const deletedBillsList = selectDeletedBillsList(selectors);
 
-  const getDeletedBillListApi = useCallback(
-    (options: Partial<DeletedBillListApiConstructorType> = {}) => {
-      return new DeletedBillListApi({
-        take: deletedBillListInstance.getTake(),
-        page: deletedBillListInstance.getPage(),
+  useEffect(() => {
+    actions.getInitialDeletedBills({ page: 1, take: deletedBillsList.take });
+  }, []);
+
+  const changePage = useCallback(
+    (page: number) => {
+      if (deletedBillsList.page === page || isDeletedBillListApiProcessing) return;
+      actions.getDeletedBills({
+        page,
+        take: deletedBillsList.take,
         filters: {
           q: deletedBillListFiltersForm.q,
           fromDate: deletedBillListFiltersForm.fromDate,
           toDate: deletedBillListFiltersForm.toDate,
           deletedDate: deletedBillListFiltersForm.deletedDate,
         },
-        ...options,
       });
     },
-    [deletedBillListFiltersForm]
-  );
-
-  const getDeletedBillList = useCallback(
-    (api: DeletedBillListApi) => {
-      request.build<[BillObj[], number]>(api).then((response) => {
-        const [list, total] = response.data;
-        deletedBillListInstance.updateAndConcatList(list, api.api.params.page);
-        deletedBillListInstance.updatePage(api.api.params.page);
-        deletedBillListInstance.updateTotal(total);
-      });
-    },
-    [deletedBillListInstance, deletedBillListFiltersForm, request]
-  );
-
-  useEffect(() => {
-    const api = getDeletedBillListApi();
-    api.setInitialApi();
-    getDeletedBillList(api);
-  }, []);
-
-  const changePage = useCallback(
-    (newPage: number) => {
-      deletedBillListInstance.updatePage(newPage);
-
-      if (deletedBillListInstance.isNewPageEqualToCurrentPage(newPage) || isDeletedBillListApiProcessing) return;
-
-      if (!deletedBillListInstance.isNewPageExist(newPage)) {
-        const api = getDeletedBillListApi({ page: newPage });
-        getDeletedBillList(api);
-      }
-    },
-    [isDeletedBillListApiProcessing, deletedBillListInstance, getDeletedBillList]
+    [isDeletedBillListApiProcessing, deletedBillsList, deletedBillListFiltersForm]
   );
 
   const deletedBillListFilterFormSubmition = useCallback(() => {
     deletedBillListFiltersFormInstance.onSubmit(() => {
-      const newPage = 1;
-      deletedBillListInstance.updatePage(newPage);
-      const api = getDeletedBillListApi({ page: newPage });
-      getDeletedBillList(api);
+      actions.getDeletedBills({
+        page: 1,
+        take: deletedBillsList.take,
+        filters: {
+          q: deletedBillListFiltersForm.q,
+          fromDate: deletedBillListFiltersForm.fromDate,
+          toDate: deletedBillListFiltersForm.toDate,
+          deletedDate: deletedBillListFiltersForm.deletedDate,
+        },
+      });
     });
-  }, [deletedBillListFiltersFormInstance, deletedBillListInstance, getDeletedBillList]);
+  }, [deletedBillListFiltersFormInstance, deletedBillsList, deletedBillListFiltersForm]);
 
   return (
     <>
       {isInitialDeletedBillListApiProcessing || isDeletedBillListApiProcessing ? (
-        <BillsSkeleton take={deletedBillListInstance.getTake()} />
-      ) : deletedBillListInstance.isListEmpty() ? (
+        <BillsSkeleton take={deletedBillsList.take} />
+      ) : deletedBillsList.total <= 0 ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {deletedBillListInstance.getList().map((bill, index) => (
-              <BillCard key={index} index={index} bill={bill} listInstance={deletedBillListInstance} />
+            {deletedBillsList.list.map((bill, index) => (
+              <BillCard key={index} index={index} bill={bill} list={deletedBillsList} />
             ))}
           </MuiList>
 
-          {deletedBillListInstance.getTotal() > deletedBillListInstance.getTake() && (
+          {deletedBillsList.take < deletedBillsList.total && (
             <Pagination
-              page={deletedBillListInstance.getPage()}
-              count={deletedBillListInstance.getCount()}
+              page={deletedBillsList.page}
+              count={Math.ceil(deletedBillsList.total / deletedBillsList.take)}
               onPageChange={changePage}
             />
           )}

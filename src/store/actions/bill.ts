@@ -1,5 +1,13 @@
-import { AllBillsApi, AllBillsApiConstructorType, BillsApi, BillsApiConstructorType, Request } from '../../apis';
-import { AllBills, Bill, Bills } from '../../lib';
+import {
+  AllBillsApi,
+  AllBillsApiConstructorType,
+  BillsApi,
+  BillsApiConstructorType,
+  DeletedBillsApi,
+  DeletedBillsApiConstructorType,
+  Request,
+} from '../../apis';
+import { AllBills, Bill, Bills, DeletedBills } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -63,6 +71,34 @@ export function getAllBills(params: AllBillsApiConstructorType = {}) {
       dispatch(processingApiSuccess(AllBillsApi.name));
     } catch (error) {
       dispatch(processingApiError(AllBillsApi.name));
+    }
+  };
+}
+
+export function getInitialDeletedBills(params: DeletedBillsApiConstructorType = {}) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(DeletedBillsApi.name));
+      const response = await new Request<[Bill[], number]>(new DeletedBillsApi(params)).build();
+      const [list, total] = response.data;
+      dispatch(createNewList(new DeletedBills({ list, total, page: params.page, take: params.take })));
+      dispatch(initialProcessingApiSuccess(DeletedBillsApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(DeletedBillsApi.name));
+    }
+  };
+}
+
+export function getDeletedBills(params: DeletedBillsApiConstructorType = {}) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(DeletedBillsApi.name));
+      const response = await new Request<[Bill[], number]>(new DeletedBillsApi(params)).build();
+      const [list, total] = response.data;
+      dispatch(createNewList(new DeletedBills({ list, total, page: params.page, take: params.take })));
+      dispatch(processingApiSuccess(DeletedBillsApi.name));
+    } catch (error) {
+      dispatch(processingApiError(DeletedBillsApi.name));
     }
   };
 }
