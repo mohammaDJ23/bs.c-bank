@@ -161,7 +161,7 @@ export class DeletedUsersApi extends RootApi {
 export type DeletedUsersApiConstructorType = ConstructorParameters<typeof DeletedUsersApi>[0];
 
 export class BillsApi extends RootApi {
-  constructor(params: ListParams<BillObj> & FilterParams<Partial<BillListFiltersObj>>) {
+  constructor(params: Partial<ListParams<Partial<BillListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/bill/all',

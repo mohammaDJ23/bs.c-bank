@@ -46,7 +46,7 @@ const List: FC = () => {
   }, [selectors.userServiceSocket.connection, selectors.specificDetails.usersStatus, isCurrentOwner, usersList]);
 
   useEffect(() => {
-    actions.getInitialUsers();
+    actions.getInitialUsers({ page: 1, take: usersList.take });
   }, []);
 
   useEffect(() => {
@@ -62,6 +62,7 @@ const List: FC = () => {
       if (usersList.page === page || isUsersApiProcessing) return;
       actions.getUsers({
         page,
+        take: usersList.take,
         filters: {
           q: userListFiltersForm.q,
           roles: userListFiltersForm.roles,
@@ -77,6 +78,7 @@ const List: FC = () => {
     userListFiltersFormInstance.onSubmit(() => {
       actions.getUsers({
         page: 1,
+        take: usersList.take,
         filters: {
           q: userListFiltersForm.q,
           roles: userListFiltersForm.roles,
@@ -85,7 +87,7 @@ const List: FC = () => {
         },
       });
     });
-  }, [userListFiltersFormInstance, userListFiltersForm]);
+  }, [userListFiltersFormInstance, userListFiltersForm, usersList]);
 
   return (
     <>

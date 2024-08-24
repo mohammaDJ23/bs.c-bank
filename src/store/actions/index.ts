@@ -11,3 +11,4 @@ export * from './userSocket';
 export * from './receiver';
 export * from './list';
 export * from './user';
+export * from './bill';
