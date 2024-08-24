@@ -2,18 +2,19 @@ import { Box, ListItem, ListItemButton, ListItemText, Typography } from '@mui/ma
 import moment from 'moment';
 import { FC, PropsWithChildren } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, usePaginationList } from '../../hooks';
-import { DeletedUserList, getDynamicPath, Pathes, UserList, UserObj } from '../../lib';
+import { useAuth } from '../../hooks';
+import { getDynamicPath, Pathes, UserObj } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
+import { List } from '../../lib/lists/newList';
 
 interface UserCardImportion extends PropsWithChildren {
   user: UserObj;
   index: number;
-  listInstance: ReturnType<typeof usePaginationList<UserList | DeletedUserList>>;
+  list: List;
 }
 
-const UserCard: FC<UserCardImportion> = ({ user, index, listInstance }) => {
+const UserCard: FC<UserCardImportion> = ({ user, index, list }) => {
   const navigate = useNavigate();
   const auth = useAuth();
   const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(user);
@@ -117,7 +118,7 @@ const UserCard: FC<UserCardImportion> = ({ user, index, listInstance }) => {
               />
             </Box>
           </Box>
-          <CountBadge take={listInstance.getTake()} page={listInstance.getPage()} index={index} />
+          <CountBadge take={list.take} page={list.page} index={index} />
         </ListItem>
       </ListItemButton>
     </Card>

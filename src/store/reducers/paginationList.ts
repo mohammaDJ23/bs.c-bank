@@ -120,20 +120,20 @@ function clearState(): PaginationListState {
 
 export function paginationListReducer(state: PaginationListState = initialState, actions: RootActions) {
   switch (actions.type) {
-    case PaginationList.UPDATE_LIST:
-      return updateListPaginationList(state, actions);
+    // case PaginationList.UPDATE_LIST:
+    //   return updateListPaginationList(state, actions);
 
-    case PaginationList.UPDATE_LIST_AS_OBJECT:
-      return updateListAsObjectPaginationList(state, actions);
+    // case PaginationList.UPDATE_LIST_AS_OBJECT:
+    //   return updateListAsObjectPaginationList(state, actions);
 
-    case PaginationList.UPDATE_PAGE:
-      return updatePagePaginationList(state, actions);
+    // case PaginationList.UPDATE_PAGE:
+    //   return updatePagePaginationList(state, actions);
 
-    case PaginationList.UPDATE_TAKE:
-      return updateTakePaginationList(state, actions);
+    // case PaginationList.UPDATE_TAKE:
+    //   return updateTakePaginationList(state, actions);
 
-    case PaginationList.UPDATE_TOTAL:
-      return updateTotalPaginationList(state, actions);
+    // case PaginationList.UPDATE_TOTAL:
+    //   return updateTotalPaginationList(state, actions);
 
     case ClearState.CLEAR_STATE:
       return clearState();

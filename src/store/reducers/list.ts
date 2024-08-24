@@ -1,9 +1,17 @@
 import { newLists, copyConstructor } from '../../lib';
 import { List } from '../../lib/lists/newList';
-import { RootActions, UpdateListAction, UpdatePageAction, UpdateTakeAction, UpdateTotalAction } from '../actions';
+import {
+  CreateNewListAction,
+  RootActions,
+  UpdateListAction,
+  UpdatePageAction,
+  UpdateTakeAction,
+  UpdateTotalAction,
+} from '../actions';
 import { ClearState } from './clearState';
 
 export enum Lists {
+  CREATE_NEW_LIST = 'CREATE_NEW_LIST',
   UPDATE_LIST = 'UPDATE_LIST',
   UPDATE_TAKE = 'UPDATE_TAKE',
   UPDATE_PAGE = 'UPDATE_PAGE',
@@ -20,7 +28,15 @@ function makeLists() {
   return state;
 }
 
-export const initialState: ListsState = makeLists();
+const initialState: ListsState = makeLists();
+
+function createNewList(state: ListsState, action: CreateNewListAction): ListsState {
+  const newState = Object.assign({}, state);
+  const constructor = action.payload.list.constructor as Constructor;
+  delete newState[constructor.name];
+  newState[constructor.name] = action.payload.list;
+  return newState;
+}
 
 function updateList(state: ListsState, action: UpdateListAction): ListsState {
   const newState = Object.assign({}, state);
@@ -60,6 +76,9 @@ function clearState(): ListsState {
 
 export function listsReducer(state: ListsState = initialState, actions: RootActions) {
   switch (actions.type) {
+    case Lists.CREATE_NEW_LIST:
+      return createNewList(state, actions);
+
     case Lists.UPDATE_LIST:
       return updateList(state, actions);
 

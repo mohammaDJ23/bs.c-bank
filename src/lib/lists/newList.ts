@@ -11,3 +11,9 @@ export class List<T extends any = any> {
     this.total = arg.total || 0;
   }
 }
+
+export interface ListParams<Filters extends Record<string, any> = Record<string, any>> {
+  page?: number;
+  take?: number;
+  filters?: Filters;
+}

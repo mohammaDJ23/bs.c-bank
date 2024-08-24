@@ -5,6 +5,11 @@ export interface ListConstructor {
   new (...args: any[]): List;
 }
 
+export interface CreateNewListAction {
+  type: Lists.CREATE_NEW_LIST;
+  payload: { list: List };
+}
+
 export interface UpdateListAction {
   type: Lists.UPDATE_LIST;
   payload: { instance: ListConstructor; list: any[] };
@@ -25,7 +30,19 @@ export interface UpdateTotalAction {
   payload: { instance: ListConstructor; total: number };
 }
 
-export type ListActions = UpdateListAction | UpdatePageAction | UpdateTakeAction | UpdateTotalAction;
+export type ListActions =
+  | CreateNewListAction
+  | UpdateListAction
+  | UpdatePageAction
+  | UpdateTakeAction
+  | UpdateTotalAction;
+
+export function createNewList(list: List): CreateNewListAction {
+  return {
+    type: Lists.CREATE_NEW_LIST,
+    payload: { list },
+  };
+}
 
 export function updateList(instance: ListConstructor, list: any[]): UpdateListAction {
   return {

@@ -7,4 +7,4 @@ export * from './paginationList';
 export * from './form';
 export * from './clearState';
 export * from './userSocket';
-export * from './newList';
+export * from './list';

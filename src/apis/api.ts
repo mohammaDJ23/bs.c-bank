@@ -5,7 +5,6 @@ import {
   UpdateBill,
   UpdateUserByOwner,
   UpdateUser,
-  ListParams,
   BillListFiltersObj,
   DeletedBillListFiltersObj,
   NotificationListFiltersObj,
@@ -29,6 +28,7 @@ import {
 } from '../lib';
 import { RootApiObj } from './resetApi';
 import { ReceiverListFiltersObj } from '../lib/forms/receiverListFilters';
+import { ListParams } from '../lib/lists/newList';
 
 export type FilterParams<T = any> = Record<'filters', T>;
 
@@ -131,7 +131,7 @@ export class UpdateBillApi extends RootApi<UpdateBill> {
 }
 
 export class UsersApi extends RootApi {
-  constructor(params: ListParams<UserObj> & FilterParams<Partial<UserListFiltersObj>>) {
+  constructor(params: Partial<ListParams<Partial<UserListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/user/all',
