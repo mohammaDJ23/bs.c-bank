@@ -127,18 +127,11 @@ const Dashboard: FC = () => {
       actions.getInitialUserQuantities();
       actions.getInitialDeletedUserQuantities();
       actions.getInitialLastYearUsers();
+      actions.getInitialAllBillQuantities();
 
-      Promise.allSettled<[Promise<AxiosResponse<AllBillQuantities>>, Promise<AxiosResponse<AllDeletedBillQuantities>>]>(
-        [
-          request.build(new AllBillQuantitiesApi().setInitialApi()),
-          request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
-        ]
-      ).then(([allBillQuantitiesResponse, allDeletedBillQuantitiesResponse]) => {
-        if (allBillQuantitiesResponse.status === 'fulfilled') {
-          const { quantities, amount } = allBillQuantitiesResponse.value.data;
-          actions.setSpecificDetails('allBillQuantities', new AllBillQuantities(amount, quantities));
-        }
-
+      Promise.allSettled<[Promise<AxiosResponse<AllDeletedBillQuantities>>]>([
+        request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
+      ]).then(([allDeletedBillQuantitiesResponse]) => {
         if (allDeletedBillQuantitiesResponse.status === 'fulfilled') {
           const { quantities, amount } = allDeletedBillQuantitiesResponse.value.data;
           actions.setSpecificDetails('allDeletedBillQuantities', new AllDeletedBillQuantities(amount, quantities));
@@ -888,9 +881,9 @@ const Dashboard: FC = () => {
 
           {isCurrentOwnerOrAdmin && (
             <DeviceWrapper>
-              <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+              <Box sx={{ width: '100%', height: '100%', minHeight: '94px' }}>
                 {isInitialAllBillQuantitiesApiProcessing ? (
-                  <Skeleton width="100%" height="53px" />
+                  <Skeleton width="100%" height="94px" />
                 ) : isInitialAllBillQuantitiesApiFailed ? (
                   <Card style={{ height: '100%', minHeight: 'inherit' }}>
                     <Box
@@ -943,9 +936,9 @@ const Dashboard: FC = () => {
                   )
                 )}
               </Box>
-              <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+              <Box sx={{ width: '100%', height: '100%', minHeight: '94px' }}>
                 {isInitialAllDeletedBillQuantitiesApiProcessing ? (
-                  <Skeleton width="100%" height="53px" />
+                  <Skeleton width="100%" height="94px" />
                 ) : isInitialAllDeletedBillQuantitiesApiFailed ? (
                   <Card style={{ height: '100%', minHeight: 'inherit' }}>
                     <Box

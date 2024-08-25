@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import {
+  AllBillQuantitiesApi,
   AllBillsApi,
   AllBillsApiConstructorType,
   BillApi,
@@ -12,7 +13,7 @@ import {
   Request,
 } from '../../apis';
 import { AllBills, Bill, Bills, CreateBill, DeletedBills } from '../../lib';
-import { Exception } from '../reducers';
+import { AllBillQuantities, Exception } from '../reducers';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -142,6 +143,21 @@ export function createBill(data: CreateBill) {
       dispatch(processingApiSuccess(CreateBillApi.name));
     } catch (error) {
       dispatch(processingApiError(CreateBillApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialAllBillQuantities() {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(AllBillQuantitiesApi.name));
+      const response = await new Request<AllBillQuantities>(new AllBillQuantitiesApi()).build();
+      dispatch(
+        setSpecificDetails('allBillQuantities', new AllBillQuantities(response.data.amount, response.data.quantities))
+      );
+      dispatch(initialProcessingApiSuccess(AllBillQuantitiesApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(AllBillQuantitiesApi.name, error as AxiosError<Exception>));
     }
   };
 }
