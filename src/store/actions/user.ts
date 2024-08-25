@@ -4,6 +4,7 @@ import {
   DeletedUserQuantitiesApi,
   DeletedUsersApi,
   DeletedUsersApiConstructorType,
+  LastYearUsersApi,
   MostActiveUsersApi,
   MostActiveUsersApiConstructorType,
   Request,
@@ -22,7 +23,7 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
-import { DeletedUserQuantities, Exception, UserQuantities } from '../reducers';
+import { DeletedUserQuantities, Exception, LastYearUser, UserQuantities } from '../reducers';
 import { setSpecificDetails } from './speceficDetails';
 
 export function getInitialUsers(params: UsersApiConstructorType = {}) {
@@ -137,6 +138,19 @@ export function getInitialDeletedUserQuantities() {
       dispatch(initialProcessingApiSuccess(DeletedUserQuantitiesApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(DeletedUserQuantitiesApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialLastYearUsers() {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(LastYearUsersApi.name));
+      const response = await new Request<LastYearUser[]>(new LastYearUsersApi()).build();
+      dispatch(setSpecificDetails('lastYearUsers', response.data));
+      dispatch(initialProcessingApiSuccess(LastYearUsersApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(LastYearUsersApi.name, error as AxiosError<Exception>));
     }
   };
 }

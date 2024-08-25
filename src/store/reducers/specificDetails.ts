@@ -26,7 +26,7 @@ export class BillQuantities {
 
 export class DeletedBillQuantities extends BillQuantities {}
 
-export interface LastYearBillsObj {
+export interface LastYearBill {
   count: number;
   amount: string;
   date: number;
@@ -46,7 +46,7 @@ export class AllNotificationQuantities {
   constructor(public quantities: string) {}
 }
 
-export interface LastYearUsersObj {
+export interface LastYearUser {
   count: number;
   date: number;
 }
@@ -90,8 +90,8 @@ export interface SpecificDetailsState {
   consumer: Consumer | null;
   billquantities: BillQuantities | null;
   deletedBillQuantities: AllDeletedBillQuantities | null;
-  lastYearBills: LastYearBillsObj[];
-  lastYearUsers: LastYearUsersObj[];
+  lastYearBills: LastYearBill[];
+  lastYearUsers: LastYearUser[];
   userQuantities: UserQuantities | null;
   deletedUserQuantities: DeletedUserQuantities | null;
   allBillQuantities: AllBillQuantities | null;

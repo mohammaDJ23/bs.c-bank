@@ -22,9 +22,9 @@ import MainContainer from '../../layout/MainContainer';
 import {
   AllBillQuantities,
   DeletedUserQuantities,
-  LastYearBillsObj,
+  LastYearBill,
   LastYearReport,
-  LastYearUsersObj,
+  LastYearUser,
   UserQuantities,
   DeletedBillQuantities,
   AllDeletedBillQuantities,
@@ -126,21 +126,14 @@ const Dashboard: FC = () => {
     if (isCurrentOwnerOrAdmin) {
       actions.getInitialUserQuantities();
       actions.getInitialDeletedUserQuantities();
+      actions.getInitialLastYearUsers();
 
-      Promise.allSettled<
+      Promise.allSettled<[Promise<AxiosResponse<AllBillQuantities>>, Promise<AxiosResponse<AllDeletedBillQuantities>>]>(
         [
-          Promise<AxiosResponse<LastYearUsersObj[]>>,
-          Promise<AxiosResponse<AllBillQuantities>>,
-          Promise<AxiosResponse<AllDeletedBillQuantities>>
+          request.build(new AllBillQuantitiesApi().setInitialApi()),
+          request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
         ]
-      >([
-        request.build(new LastYearUsersApi().setInitialApi()),
-        request.build(new AllBillQuantitiesApi().setInitialApi()),
-        request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
-      ]).then(([lastYearUsersResponse, allBillQuantitiesResponse, allDeletedBillQuantitiesResponse]) => {
-        if (lastYearUsersResponse.status === 'fulfilled')
-          actions.setSpecificDetails('lastYearUsers', lastYearUsersResponse.value.data);
-
+      ).then(([allBillQuantitiesResponse, allDeletedBillQuantitiesResponse]) => {
         if (allBillQuantitiesResponse.status === 'fulfilled') {
           const { quantities, amount } = allBillQuantitiesResponse.value.data;
           actions.setSpecificDetails('allBillQuantities', new AllBillQuantities(amount, quantities));
@@ -160,7 +153,7 @@ const Dashboard: FC = () => {
     Promise.allSettled<
       [
         Promise<AxiosResponse<BillQuantities>>,
-        Promise<AxiosResponse<LastYearBillsObj[]>>,
+        Promise<AxiosResponse<LastYearBill[]>>,
         Promise<AxiosResponse<DeletedBillQuantities>>
       ]
     >([
