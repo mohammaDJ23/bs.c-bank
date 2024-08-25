@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import {
   ConsumersApi,
   ConsumersApiConstructorType,
@@ -16,6 +17,7 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
+import { Exception } from '../reducers';
 
 export function getInitialConsumers(params: ConsumersApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -26,7 +28,7 @@ export function getInitialConsumers(params: ConsumersApiConstructorType = {}) {
       dispatch(createNewList(new Consumers({ list, total, page: params.page, take: params.take })));
       dispatch(initialProcessingApiSuccess(ConsumersApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(ConsumersApi.name));
+      dispatch(initialProcessingApiError(ConsumersApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -40,7 +42,7 @@ export function getConsumers(params: ConsumersApiConstructorType = {}) {
       dispatch(createNewList(new Consumers({ list, total, page: params.page, take: params.take })));
       dispatch(processingApiSuccess(ConsumersApi.name));
     } catch (error) {
-      dispatch(processingApiError(ConsumersApi.name));
+      dispatch(processingApiError(ConsumersApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -62,7 +64,7 @@ export function getInitialMostActiveConsumers(params: MostActiveConsumersApiCons
       );
       dispatch(initialProcessingApiSuccess(MostActiveConsumersApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(MostActiveConsumersApi.name));
+      dispatch(initialProcessingApiError(MostActiveConsumersApi.name, error as AxiosError<Exception>));
     }
   };
 }

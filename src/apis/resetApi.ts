@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, CreateAxiosDefaults, AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import { history } from '../App';
 import { getToken, isUserAuthenticated, LocalStorage, Pathes } from '../lib';
+import { Exception } from '../store';
 
 export abstract class RootApi<D = any> implements RootApiObj<D> {
   protected _isInitialApi: boolean = false;
@@ -18,13 +19,6 @@ export abstract class RootApi<D = any> implements RootApiObj<D> {
     this._isInitialApi = value;
     return this;
   }
-}
-
-export interface ErrorObj {
-  statusCode: number;
-  message: string;
-  timestamp: number;
-  path: string;
 }
 
 export interface RootApiObj<D = any> {
@@ -73,7 +67,7 @@ export class Request<R = any, D = any> implements RootApiObj<D> {
   responseInterceptors() {
     this.axiosInstance.interceptors.response.use(
       (response) => response,
-      (error: AxiosError<ErrorObj>) => {
+      (error: AxiosError<Exception>) => {
         if (error.response?.data?.statusCode === 401) {
           LocalStorage.clear();
           history.push(Pathes.LOGIN);
@@ -88,7 +82,7 @@ export class Request<R = any, D = any> implements RootApiObj<D> {
     try {
       return this.axiosInstance.request<R, AxiosResponse<R>, D>(this.api);
     } catch (error) {
-      const err = error as AxiosError<ErrorObj, D>;
+      const err = error as AxiosError<Exception, D>;
       throw err;
     }
   }

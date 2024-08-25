@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import {
   MostActiveReceiversApi,
   MostActiveReceiversApiConstructorType,
@@ -6,6 +7,7 @@ import {
   Request,
 } from '../../apis';
 import { MostActiveReceivers, Receiver, Receivers } from '../../lib';
+import { Exception } from '../reducers';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -26,7 +28,7 @@ export function getInitialReceivers(params: ReceiversApiConstructorType = {}) {
       dispatch(createNewList(new Receivers({ list, total, page: params.page, take: params.take })));
       dispatch(initialProcessingApiSuccess(ReceiversApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(ReceiversApi.name));
+      dispatch(initialProcessingApiError(ReceiversApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -40,7 +42,7 @@ export function getReceivers(params: ReceiversApiConstructorType = {}) {
       dispatch(createNewList(new Receivers({ list, total, page: params.page, take: params.take })));
       dispatch(processingApiSuccess(ReceiversApi.name));
     } catch (error) {
-      dispatch(processingApiError(ReceiversApi.name));
+      dispatch(processingApiError(ReceiversApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -62,7 +64,7 @@ export function getInitialMostActiveReceivers(params: MostActiveReceiversApiCons
       );
       dispatch(initialProcessingApiSuccess(MostActiveReceiversApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(MostActiveReceiversApi.name));
+      dispatch(initialProcessingApiError(MostActiveReceiversApi.name, error as AxiosError<Exception>));
     }
   };
 }

@@ -1,13 +1,16 @@
+import { AxiosError } from 'axios';
 import {
   AllBillsApi,
   AllBillsApiConstructorType,
   BillsApi,
   BillsApiConstructorType,
+  DeleteBillApi,
   DeletedBillsApi,
   DeletedBillsApiConstructorType,
   Request,
 } from '../../apis';
 import { AllBills, Bill, Bills, DeletedBills } from '../../lib';
+import { Exception } from '../reducers';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -28,7 +31,7 @@ export function getInitialBills(params: BillsApiConstructorType = {}) {
       dispatch(createNewList(new Bills({ list, total, page: params.page, take: params.take })));
       dispatch(initialProcessingApiSuccess(BillsApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(BillsApi.name));
+      dispatch(initialProcessingApiError(BillsApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -42,7 +45,7 @@ export function getBills(params: BillsApiConstructorType = {}) {
       dispatch(createNewList(new Bills({ list, total, page: params.page, take: params.take })));
       dispatch(processingApiSuccess(BillsApi.name));
     } catch (error) {
-      dispatch(processingApiError(BillsApi.name));
+      dispatch(processingApiError(BillsApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -56,7 +59,7 @@ export function getInitialAllBills(params: AllBillsApiConstructorType = {}) {
       dispatch(createNewList(new AllBills({ list, total, page: params.page, take: params.take })));
       dispatch(initialProcessingApiSuccess(AllBillsApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(AllBillsApi.name));
+      dispatch(initialProcessingApiError(AllBillsApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -70,7 +73,7 @@ export function getAllBills(params: AllBillsApiConstructorType = {}) {
       dispatch(createNewList(new AllBills({ list, total, page: params.page, take: params.take })));
       dispatch(processingApiSuccess(AllBillsApi.name));
     } catch (error) {
-      dispatch(processingApiError(AllBillsApi.name));
+      dispatch(processingApiError(AllBillsApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -84,7 +87,7 @@ export function getInitialDeletedBills(params: DeletedBillsApiConstructorType = 
       dispatch(createNewList(new DeletedBills({ list, total, page: params.page, take: params.take })));
       dispatch(initialProcessingApiSuccess(DeletedBillsApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(DeletedBillsApi.name));
+      dispatch(initialProcessingApiError(DeletedBillsApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -98,7 +101,19 @@ export function getDeletedBills(params: DeletedBillsApiConstructorType = {}) {
       dispatch(createNewList(new DeletedBills({ list, total, page: params.page, take: params.take })));
       dispatch(processingApiSuccess(DeletedBillsApi.name));
     } catch (error) {
-      dispatch(processingApiError(DeletedBillsApi.name));
+      dispatch(processingApiError(DeletedBillsApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function deleteBill(id: string) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(DeleteBillApi.name));
+      await new Request<Bill, string>(new DeleteBillApi(id)).build();
+      dispatch(processingApiSuccess(DeleteBillApi.name));
+    } catch (error) {
+      dispatch(processingApiError(DeleteBillApi.name, error as AxiosError<Exception>));
     }
   };
 }

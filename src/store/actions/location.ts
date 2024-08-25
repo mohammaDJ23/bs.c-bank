@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import {
   LocationsApi,
   LocationsApiConstructorType,
@@ -16,6 +17,7 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
+import { Exception } from '../reducers';
 
 export function getInitialLocations(params: LocationsApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -26,7 +28,7 @@ export function getInitialLocations(params: LocationsApiConstructorType = {}) {
       dispatch(createNewList(new Locations({ list, total, page: params.page, take: params.take })));
       dispatch(initialProcessingApiSuccess(LocationsApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(LocationsApi.name));
+      dispatch(initialProcessingApiError(LocationsApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -40,7 +42,7 @@ export function getLocations(params: LocationsApiConstructorType = {}) {
       dispatch(createNewList(new Locations({ list, total, page: params.page, take: params.take })));
       dispatch(processingApiSuccess(LocationsApi.name));
     } catch (error) {
-      dispatch(processingApiError(LocationsApi.name));
+      dispatch(processingApiError(LocationsApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -62,7 +64,7 @@ export function getInitialMostActiveLocations(params: MostActiveLocationsApiCons
       );
       dispatch(initialProcessingApiSuccess(MostActiveLocationsApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(MostActiveLocationsApi.name));
+      dispatch(initialProcessingApiError(MostActiveLocationsApi.name, error as AxiosError<Exception>));
     }
   };
 }

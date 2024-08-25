@@ -1,10 +1,11 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import { useCallback } from 'react';
-import { ErrorObj, Request, RootApi, RootApiObj } from '../apis';
+import { Request, RootApi, RootApiObj } from '../apis';
 import { Constructor } from '../lib';
 import { useAction } from './useActions';
 import { useSelector } from './useSelector';
 import { useSnackbar } from 'notistack';
+import { Exception } from '../store';
 
 export function useRequest() {
   const { requestProcess } = useSelector();
@@ -40,18 +41,16 @@ export function useRequest() {
 
         return response;
       } catch (e) {
-        const err = e as AxiosError<ErrorObj> | Error;
+        const err = e as AxiosError<Exception>;
         let message =
-          err instanceof AxiosError<ErrorObj>
+          err instanceof AxiosError<Exception>
             ? err.response?.data?.message || err.response?.statusText || err.message
-            : err instanceof Error
-            ? err.message
             : 'Something went wrong';
         message = Array.isArray(message) ? message.join(' - ') : message;
         enqueueSnackbar({ message, variant: 'error' });
 
-        if (isInitialApi) initialProcessingApiError(requestConstructorName);
-        else processingApiError(requestConstructorName);
+        if (isInitialApi) initialProcessingApiError(requestConstructorName, err);
+        else processingApiError(requestConstructorName, err);
 
         throw err;
       }
@@ -65,6 +64,25 @@ export function useRequest() {
       initialProcessingApiError,
       getRequestConstructorName,
     ]
+  );
+
+  const getException = useCallback(
+    <T extends RootApi>(requestInstance: Constructor<T>) => {
+      return requestProcess.processingApis.errors[getRequestConstructorName(requestInstance)];
+    },
+    [requestProcess.processingApis.errors, getRequestConstructorName]
+  );
+
+  const getExceptionMessage = useCallback(
+    <T extends RootApi>(requestInstance: Constructor<T>) => {
+      const exception = getException(requestInstance);
+      let message = 'Something went wrong';
+      if (exception && exception.response) {
+        message = exception.response.data.message;
+      }
+      return message;
+    },
+    [getException]
   );
 
   const isProcessingApiLoaded = useCallback(
@@ -83,7 +101,7 @@ export function useRequest() {
 
   const isProcessingApiFailed = useCallback(
     <T extends RootApi>(requestInstance: Constructor<T>) => {
-      return requestProcess.processingApis.errors[getRequestConstructorName(requestInstance)];
+      return !!requestProcess.processingApis.errors[getRequestConstructorName(requestInstance)];
     },
     [requestProcess.processingApis.errors, getRequestConstructorName]
   );
@@ -143,5 +161,7 @@ export function useRequest() {
     isInitialProcessingApiLoaded,
     isInitialProcessingApiSuccessed,
     isInitialProcessingApiFailed,
+    getException,
+    getExceptionMessage,
   };
 }

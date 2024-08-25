@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { NotificationsApi, NotificationsApiConstructorType, Request } from '../../apis';
 import { Notifications } from '../../lib';
 import { RootDispatch } from '../store';
@@ -10,6 +11,7 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
+import { Exception } from '../reducers';
 
 export function getInitialNotifications(params: NotificationsApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -20,7 +22,7 @@ export function getInitialNotifications(params: NotificationsApiConstructorType 
       dispatch(createNewList(new Notifications({ list, total, page: params.page, take: params.take })));
       dispatch(initialProcessingApiSuccess(NotificationsApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(NotificationsApi.name));
+      dispatch(initialProcessingApiError(NotificationsApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -34,7 +36,7 @@ export function getNotifications(params: NotificationsApiConstructorType = {}) {
       dispatch(createNewList(new Notifications({ list, total, page: params.page, take: params.take })));
       dispatch(processingApiSuccess(NotificationsApi.name));
     } catch (error) {
-      dispatch(processingApiError(NotificationsApi.name));
+      dispatch(processingApiError(NotificationsApi.name, error as AxiosError<Exception>));
     }
   };
 }

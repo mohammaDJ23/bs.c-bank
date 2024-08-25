@@ -3,11 +3,12 @@ import { MoreVert } from '@mui/icons-material';
 import moment from 'moment';
 import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
 import { Bill, deletedAtColor, getDynamicPath, Pathes } from '../../lib';
 import { ModalNames } from '../../store';
 import { DeleteBillApi } from '../../apis';
+import { useSnackbar } from 'notistack';
 
 interface DetailsImporation {
   bill: Bill;
@@ -20,7 +21,11 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
   const actions = useAction();
   const selectors = useSelector();
   const request = useRequest();
+  const { enqueueSnackbar } = useSnackbar();
   const isDeleteBillApiProcessing = request.isApiProcessing(DeleteBillApi);
+  const isDeleteBillApiSuccessed = request.isProcessingApiSuccessed(DeleteBillApi);
+  const isDeleteBillApiFailed = request.isProcessingApiFailed(DeleteBillApi);
+  const deleteBillExceptionMessage = request.getExceptionMessage(DeleteBillApi);
   const options = [{ label: 'Update', path: getDynamicPath(Pathes.UPDATE_BILL, { id: bill.id }) }];
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -45,14 +50,17 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
     actions.showModal(ModalNames.CONFIRMATION);
   }, []);
 
+  useEffect(() => {
+    if (isDeleteBillApiSuccessed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      navigate(Pathes.BILLS);
+    } else if (isDeleteBillApiFailed) {
+      enqueueSnackbar({ message: deleteBillExceptionMessage, variant: 'error' });
+    }
+  }, [isDeleteBillApiSuccessed, isDeleteBillApiFailed]);
+
   const deleteBill = useCallback(() => {
-    request
-      .build<Bill, string>(new DeleteBillApi(bill.id))
-      .then(() => {
-        actions.hideModal(ModalNames.CONFIRMATION);
-        navigate(Pathes.BILLS);
-      })
-      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+    actions.deleteBill(bill.id);
   }, [bill, request]);
 
   return (

@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { RootActions } from '../actions';
 import {
   InitialProcessingApiErrorAction,
@@ -18,13 +19,20 @@ export enum RequestProcess {
   INITIAL_PROCESSING_API_ERROR = 'INITIAL_PROCESSING_API_ERROR',
 }
 
+export interface Exception {
+  message: string;
+  path: string;
+  timestamp: number;
+  statusCode: number;
+}
+
 interface Process<T = boolean> {
   [key: string]: T;
 }
 
 interface ProcessingApi {
   loadings: Process;
-  errors: Process;
+  errors: Process<AxiosError<Exception>>;
   successes: Process;
 }
 
@@ -76,6 +84,7 @@ function processingApiSuccess(state: RequestProcessState, action: ProcessingApiS
 
 function processingApiError(state: RequestProcessState, action: ProcessingApiErrorAction): RequestProcessState {
   const requestName = action.payload.name;
+  const error = action.payload.error;
   const newState = Object.assign<object, RequestProcessState>({}, state);
   delete newState.processingApis.loadings[requestName];
   delete newState.processingApis.successes[requestName];
@@ -85,7 +94,7 @@ function processingApiError(state: RequestProcessState, action: ProcessingApiErr
       ...newState.processingApis,
       errors: {
         ...newState.processingApis.errors,
-        [requestName]: true,
+        [requestName]: error,
       },
     },
   };
@@ -136,6 +145,7 @@ function initialProcessingApiError(
   action: InitialProcessingApiErrorAction
 ): RequestProcessState {
   const requestName = action.payload.name;
+  const error = action.payload.error;
   const newState = Object.assign<object, RequestProcessState>({}, state);
   delete newState.initialProcessingApis.loadings[requestName];
   delete newState.initialProcessingApis.successes[requestName];
@@ -145,7 +155,7 @@ function initialProcessingApiError(
       ...newState.initialProcessingApis,
       errors: {
         ...newState.initialProcessingApis.errors,
-        [requestName]: true,
+        [requestName]: error,
       },
     },
   };

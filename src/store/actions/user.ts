@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import {
   DeletedUsersApi,
   DeletedUsersApiConstructorType,
@@ -18,6 +19,7 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
+import { Exception } from '../reducers';
 
 export function getInitialUsers(params: UsersApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -28,7 +30,7 @@ export function getInitialUsers(params: UsersApiConstructorType = {}) {
       dispatch(createNewList(new Users({ list, total, page: params.page, take: params.take })));
       dispatch(initialProcessingApiSuccess(UsersApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(UsersApi.name));
+      dispatch(initialProcessingApiError(UsersApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -42,7 +44,7 @@ export function getUsers(params: UsersApiConstructorType = {}) {
       dispatch(createNewList(new Users({ list, total, page: params.page, take: params.take })));
       dispatch(processingApiSuccess(UsersApi.name));
     } catch (error) {
-      dispatch(processingApiError(UsersApi.name));
+      dispatch(processingApiError(UsersApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -56,7 +58,7 @@ export function getInitialDeletedUsers(params: DeletedUsersApiConstructorType = 
       dispatch(createNewList(new DeletedUsers({ list, total, page: params.page, take: params.take })));
       dispatch(initialProcessingApiSuccess(DeletedUsersApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(DeletedUsersApi.name));
+      dispatch(initialProcessingApiError(DeletedUsersApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -70,7 +72,7 @@ export function getDeletedUsers(params: DeletedUsersApiConstructorType = {}) {
       dispatch(createNewList(new DeletedUsers({ list, total, page: params.page, take: params.take })));
       dispatch(processingApiSuccess(DeletedUsersApi.name));
     } catch (error) {
-      dispatch(processingApiError(DeletedUsersApi.name));
+      dispatch(processingApiError(DeletedUsersApi.name, error as AxiosError<Exception>));
     }
   };
 }
@@ -92,7 +94,7 @@ export function getInitialMostActiveUsers(params: MostActiveUsersApiConstructorT
       );
       dispatch(initialProcessingApiSuccess(MostActiveUsersApi.name));
     } catch (error) {
-      dispatch(initialProcessingApiError(MostActiveUsersApi.name));
+      dispatch(initialProcessingApiError(MostActiveUsersApi.name, error as AxiosError<Exception>));
     }
   };
 }
