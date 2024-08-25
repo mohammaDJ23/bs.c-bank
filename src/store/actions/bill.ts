@@ -5,12 +5,13 @@ import {
   BillApi,
   BillsApi,
   BillsApiConstructorType,
+  CreateBillApi,
   DeleteBillApi,
   DeletedBillsApi,
   DeletedBillsApiConstructorType,
   Request,
 } from '../../apis';
-import { AllBills, Bill, Bills, DeletedBills } from '../../lib';
+import { AllBills, Bill, Bills, CreateBill, DeletedBills } from '../../lib';
 import { Exception } from '../reducers';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
@@ -129,6 +130,18 @@ export function deleteBill(id: string) {
       dispatch(processingApiSuccess(DeleteBillApi.name));
     } catch (error) {
       dispatch(processingApiError(DeleteBillApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function createBill(data: CreateBill) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(CreateBillApi.name));
+      await new Request<Bill, CreateBill>(new CreateBillApi(data)).build();
+      dispatch(processingApiSuccess(CreateBillApi.name));
+    } catch (error) {
+      dispatch(processingApiError(CreateBillApi.name, error as AxiosError<Exception>));
     }
   };
 }

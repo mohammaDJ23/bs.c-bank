@@ -34,6 +34,9 @@ const CreateBillContent: FC = () => {
   const request = useRequest();
   const focus = useFocus();
   const isCreateBillApiProcessing = request.isApiProcessing(CreateBillApi);
+  const isCreateBillApiSuccess = request.isProcessingApiSuccessed(CreateBillApi);
+  const isCreateBillApiFailed = request.isProcessingApiFailed(CreateBillApi);
+  const createBillExceptionMessage = request.getExceptionMessage(CreateBillApi);
   const isConsumersApiProcessing = request.isApiProcessing(ConsumersApi);
   const isReceiversApiProcessing = request.isApiProcessing(ReceiversApi);
   const isLocationsApiProcessing = request.isApiProcessing(LocationsApi);
@@ -49,14 +52,18 @@ const CreateBillContent: FC = () => {
   const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
-    createBillFromInstance.onSubmit(() => {
-      request.build<CreateBill, CreateBill>(new CreateBillApi(createBillFrom)).then((response) => {
-        createBillFromInstance.resetForm();
-        snackbar.enqueueSnackbar({ message: 'Your bill was created successfully.', variant: 'success' });
-        focus('amount');
-      });
-    });
+    actions.createBill(createBillFrom);
   }, [createBillFromInstance, createBillFrom, request]);
+
+  useEffect(() => {
+    if (isCreateBillApiFailed) {
+      snackbar.enqueueSnackbar({ message: createBillExceptionMessage, variant: 'error' });
+    } else if (isCreateBillApiSuccess) {
+      createBillFromInstance.resetForm();
+      snackbar.enqueueSnackbar({ message: 'Your bill was created successfully.', variant: 'success' });
+      focus('amount');
+    }
+  }, [isCreateBillApiSuccess, isCreateBillApiFailed]);
 
   useEffect(() => {
     focus('amount');
