@@ -119,16 +119,11 @@ const Dashboard: FC = () => {
   useEffect(() => {
     if (isCurrentOwner) {
       actions.getInitialMostActiveUsers({ page: 1, take: mostActiveUsersList.take });
+      actions.getInitialNotificationQuantities();
 
-      Promise.allSettled<
-        [Promise<AxiosResponse<NotificationQuantities>>, Promise<AxiosResponse<AllNotificationQuantities>>]
-      >([
-        request.build(new NotificationQuantitiesApi().setInitialApi()),
+      Promise.allSettled<[Promise<AxiosResponse<AllNotificationQuantities>>]>([
         request.build(new AllNotificationQuantitiesApi().setInitialApi()),
-      ]).then(([notificationQuantitiesResponse, allNotificationQuantitiesResponse]) => {
-        if (notificationQuantitiesResponse.status === 'fulfilled')
-          actions.setSpecificDetails('notificationQuantities', notificationQuantitiesResponse.value.data);
-
+      ]).then(([allNotificationQuantitiesResponse]) => {
         if (allNotificationQuantitiesResponse.status === 'fulfilled')
           actions.setSpecificDetails('allNotificationQuantities', allNotificationQuantitiesResponse.value.data);
       });

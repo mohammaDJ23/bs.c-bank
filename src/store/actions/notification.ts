@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { NotificationsApi, NotificationsApiConstructorType, Request } from '../../apis';
+import { NotificationQuantitiesApi, NotificationsApi, NotificationsApiConstructorType, Request } from '../../apis';
 import { Notifications } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
@@ -11,7 +11,8 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
-import { Exception } from '../reducers';
+import { Exception, NotificationQuantities } from '../reducers';
+import { setSpecificDetails } from './speceficDetails';
 
 export function getInitialNotifications(params: NotificationsApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -37,6 +38,19 @@ export function getNotifications(params: NotificationsApiConstructorType = {}) {
       dispatch(processingApiSuccess(NotificationsApi.name));
     } catch (error) {
       dispatch(processingApiError(NotificationsApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialNotificationQuantities() {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(NotificationQuantitiesApi.name));
+      const response = await new Request<NotificationQuantities>(new NotificationQuantitiesApi()).build();
+      dispatch(setSpecificDetails('notificationQuantities', response.data));
+      dispatch(initialProcessingApiSuccess(NotificationQuantitiesApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(NotificationQuantitiesApi.name, error as AxiosError<Exception>));
     }
   };
 }
