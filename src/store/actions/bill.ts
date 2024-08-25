@@ -2,6 +2,7 @@ import { AxiosError } from 'axios';
 import {
   AllBillsApi,
   AllBillsApiConstructorType,
+  BillApi,
   BillsApi,
   BillsApiConstructorType,
   DeleteBillApi,
@@ -21,6 +22,20 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
+import { setSpecificDetails } from './speceficDetails';
+
+export function getInitialBill(id: string) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(BillApi.name));
+      const response = await new Request<Bill, string>(new BillApi(id)).build();
+      dispatch(setSpecificDetails('bill', response.data));
+      dispatch(initialProcessingApiSuccess(BillApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(BillApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
 
 export function getInitialBills(params: BillsApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {

@@ -25,7 +25,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
   const isDeleteBillApiProcessing = request.isApiProcessing(DeleteBillApi);
   const isDeleteBillApiSuccessed = request.isProcessingApiSuccessed(DeleteBillApi);
   const isDeleteBillApiFailed = request.isProcessingApiFailed(DeleteBillApi);
-  const deleteBillExceptionMessage = request.getExceptionMessage(DeleteBillApi);
+  const deleteBillApiExceptionMessage = request.getExceptionMessage(DeleteBillApi);
   const options = [{ label: 'Update', path: getDynamicPath(Pathes.UPDATE_BILL, { id: bill.id }) }];
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -55,7 +55,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
       actions.hideModal(ModalNames.CONFIRMATION);
       navigate(Pathes.BILLS);
     } else if (isDeleteBillApiFailed) {
-      enqueueSnackbar({ message: deleteBillExceptionMessage, variant: 'error' });
+      enqueueSnackbar({ message: deleteBillApiExceptionMessage, variant: 'error' });
     }
   }, [isDeleteBillApiSuccessed, isDeleteBillApiFailed]);
 
