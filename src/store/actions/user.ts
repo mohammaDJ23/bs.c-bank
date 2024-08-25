@@ -1,11 +1,13 @@
 import {
   DeletedUsersApi,
   DeletedUsersApiConstructorType,
+  MostActiveUsersApi,
+  MostActiveUsersApiConstructorType,
   Request,
   UsersApi,
   UsersApiConstructorType,
 } from '../../apis';
-import { DeletedUsers, User, Users } from '../../lib';
+import { DeletedUsers, MostActiveUser, MostActiveUsers, User, Users } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -69,6 +71,28 @@ export function getDeletedUsers(params: DeletedUsersApiConstructorType = {}) {
       dispatch(processingApiSuccess(DeletedUsersApi.name));
     } catch (error) {
       dispatch(processingApiError(DeletedUsersApi.name));
+    }
+  };
+}
+
+export function getInitialMostActiveUsers(params: MostActiveUsersApiConstructorType = {}) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(MostActiveUsersApi.name));
+      const response = await new Request<MostActiveUser[]>(new MostActiveUsersApi(params)).build();
+      dispatch(
+        createNewList(
+          new MostActiveUsers({
+            list: response.data,
+            total: response.data.length,
+            page: params.page,
+            take: params.take,
+          })
+        )
+      );
+      dispatch(initialProcessingApiSuccess(MostActiveUsersApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(MostActiveUsersApi.name));
     }
   };
 }

@@ -38,12 +38,12 @@ import moment from 'moment';
 import Navigation from '../../layout/Navigation';
 import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
-import { MostActiveUsers } from '../../lib';
 import { v4 as uuid } from 'uuid';
 import {
   selectMostActiveConsumersList,
   selectMostActiveLocationsList,
   selectMostActiveReceiversList,
+  selectMostActiveUsersList,
 } from '../../store/selectors';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
@@ -68,6 +68,7 @@ const Dashboard: FC = () => {
   const mostActiveConsumersList = selectMostActiveConsumersList(selectors);
   const mostActiveLocationsList = selectMostActiveLocationsList(selectors);
   const mostActiveReceiversList = selectMostActiveReceiversList(selectors);
+  const mostActiveUsersList = selectMostActiveUsersList(selectors);
   const isCurrentAdmin = auth.isCurrentAdmin();
   const isCurrentOwner = auth.isCurrentOwner();
   const isCurrentOwnerOrAdmin = isCurrentOwner || isCurrentAdmin;
@@ -117,25 +118,19 @@ const Dashboard: FC = () => {
 
   useEffect(() => {
     if (isCurrentOwner) {
+      actions.getInitialMostActiveUsers({ page: 1, take: mostActiveUsersList.take });
+
       Promise.allSettled<
-        [
-          Promise<AxiosResponse<NotificationQuantities>>,
-          Promise<AxiosResponse<AllNotificationQuantities>>,
-          Promise<AxiosResponse<MostActiveUsers[]>>
-        ]
+        [Promise<AxiosResponse<NotificationQuantities>>, Promise<AxiosResponse<AllNotificationQuantities>>]
       >([
         request.build(new NotificationQuantitiesApi().setInitialApi()),
         request.build(new AllNotificationQuantitiesApi().setInitialApi()),
-        request.build(new MostActiveUsersApi().setInitialApi()),
-      ]).then(([notificationQuantitiesResponse, allNotificationQuantitiesResponse, mostActiveUsersResponse]) => {
+      ]).then(([notificationQuantitiesResponse, allNotificationQuantitiesResponse]) => {
         if (notificationQuantitiesResponse.status === 'fulfilled')
           actions.setSpecificDetails('notificationQuantities', notificationQuantitiesResponse.value.data);
 
         if (allNotificationQuantitiesResponse.status === 'fulfilled')
           actions.setSpecificDetails('allNotificationQuantities', allNotificationQuantitiesResponse.value.data);
-
-        if (mostActiveUsersResponse.status === 'fulfilled')
-          actions.setSpecificDetails('mostActiveUsers', mostActiveUsersResponse.value.data);
       });
     }
 
@@ -788,9 +783,9 @@ const Dashboard: FC = () => {
                   </Card>
                 ) : (
                   isInitialMostActiveUsersApiSuccessed &&
-                  selectors.specificDetails.mostActiveUsers.length > 0 && (
+                  mostActiveUsersList.list.length > 0 && (
                     <HorizonCarousel infinity height="53px">
-                      {selectors.specificDetails.mostActiveUsers.map((item) => (
+                      {mostActiveUsersList.list.map((item) => (
                         <Card key={item.user.id}>
                           <CardContent>
                             <Box display="flex" gap="20px" flexDirection="column">

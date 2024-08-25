@@ -657,7 +657,7 @@ export class UpdateLocationApi extends RootApi<UpdateLocation> {
 }
 
 export class MostActiveUsersApi extends RootApi {
-  constructor(params: Partial<ListParams<MostActiveUsers>> = {}) {
+  constructor(params: Partial<ListParams> = {}) {
     super(
       {
         url: '/api/v1/bank/owner/bill/most-active-users',
@@ -668,6 +668,8 @@ export class MostActiveUsersApi extends RootApi {
     );
   }
 }
+
+export type MostActiveUsersApiConstructorType = ConstructorParameters<typeof MostActiveUsersApi>[0];
 
 export class MostActiveConsumersApi extends RootApi {
   constructor(params: Partial<ListParams> = {}) {

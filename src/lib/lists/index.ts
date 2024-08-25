@@ -10,16 +10,13 @@ import { Consumers } from './consumers';
 import { MostActiveConsumers } from './mostActiveConsumers';
 import { MostActiveLocations } from './mostActiveLocations';
 import { MostActiveReceivers } from './mostActiveReceivers';
+import { MostActiveUsers } from './mostActiveUsers';
 
 export * from './deletedUsers';
 export * from './deletedBills';
 export * from './notifications';
 export * from './receivers';
 export * from './locations';
-export * from './mostActiveUsers';
-export * from './mostActiveConsumers';
-export * from './mostActiveLocations';
-export * from './mostActiveReceivers';
 export * from './users';
 export * from './bills';
 export * from './allBills';
@@ -27,6 +24,7 @@ export * from './consumers';
 export * from './mostActiveConsumers';
 export * from './mostActiveLocations';
 export * from './mostActiveReceivers';
+export * from './mostActiveUsers';
 
 export const lists = {
   Users,
@@ -41,4 +39,5 @@ export const lists = {
   MostActiveConsumers,
   MostActiveLocations,
   MostActiveReceivers,
+  MostActiveUsers,
 };

@@ -8,6 +8,7 @@ import {
   MostActiveConsumers,
   MostActiveLocations,
   MostActiveReceivers,
+  MostActiveUsers,
   Notifications,
   Receivers,
   Users,
@@ -60,4 +61,8 @@ export function selectMostActiveLocationsList(state: RootState): MostActiveLocat
 
 export function selectMostActiveReceiversList(state: RootState): MostActiveReceivers {
   return state.lists[MostActiveReceivers.name];
+}
+
+export function selectMostActiveUsersList(state: RootState): MostActiveUsers {
+  return state.lists[MostActiveUsers.name];
 }
