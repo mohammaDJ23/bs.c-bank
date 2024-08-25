@@ -120,13 +120,7 @@ const Dashboard: FC = () => {
     if (isCurrentOwner) {
       actions.getInitialMostActiveUsers({ page: 1, take: mostActiveUsersList.take });
       actions.getInitialNotificationQuantities();
-
-      Promise.allSettled<[Promise<AxiosResponse<AllNotificationQuantities>>]>([
-        request.build(new AllNotificationQuantitiesApi().setInitialApi()),
-      ]).then(([allNotificationQuantitiesResponse]) => {
-        if (allNotificationQuantitiesResponse.status === 'fulfilled')
-          actions.setSpecificDetails('allNotificationQuantities', allNotificationQuantitiesResponse.value.data);
-      });
+      actions.getInitialAllNotificationQuantities();
     }
 
     if (isCurrentOwnerOrAdmin) {
