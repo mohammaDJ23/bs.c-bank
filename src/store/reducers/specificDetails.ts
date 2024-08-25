@@ -115,7 +115,6 @@ export interface SpecificDetailsState {
   allNotificationQuantities: AllNotificationQuantities | null;
   usersStatus: UsersStatusType;
   mostActiveUsers: MostActiveUsers[];
-  mostActiveLocations: MostActiveLocations[];
   mostActiveReceivers: MostActiveReceivers[];
 }
 
@@ -141,7 +140,6 @@ const initialState: SpecificDetailsState = {
   allNotificationQuantities: null,
   usersStatus: {},
   mostActiveUsers: [],
-  mostActiveLocations: [],
   mostActiveReceivers: [],
 };
 
@@ -175,7 +173,6 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     notificationQuantities: null,
     allNotificationQuantities: null,
     mostActiveUsers: [],
-    mostActiveLocations: [],
     mostActiveReceivers: [],
   };
 }

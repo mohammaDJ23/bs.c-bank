@@ -1,5 +1,11 @@
-import { LocationsApi, LocationsApiConstructorType, Request } from '../../apis';
-import { Locations } from '../../lib';
+import {
+  LocationsApi,
+  LocationsApiConstructorType,
+  MostActiveLocationsApi,
+  MostActiveLocationsApiConstructorType,
+  Request,
+} from '../../apis';
+import { Locations, MostActiveLocation, MostActiveLocations } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -35,6 +41,28 @@ export function getLocations(params: LocationsApiConstructorType = {}) {
       dispatch(processingApiSuccess(LocationsApi.name));
     } catch (error) {
       dispatch(processingApiError(LocationsApi.name));
+    }
+  };
+}
+
+export function getInitialMostActiveLocations(params: MostActiveLocationsApiConstructorType = {}) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(MostActiveLocationsApi.name));
+      const response = await new Request<MostActiveLocation[]>(new MostActiveLocationsApi()).build();
+      dispatch(
+        createNewList(
+          new MostActiveLocations({
+            list: response.data,
+            total: response.data.length,
+            page: params.page,
+            take: params.take,
+          })
+        )
+      );
+      dispatch(initialProcessingApiSuccess(MostActiveLocationsApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(MostActiveLocationsApi.name));
     }
   };
 }

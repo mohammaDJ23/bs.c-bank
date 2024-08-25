@@ -38,9 +38,9 @@ import moment from 'moment';
 import Navigation from '../../layout/Navigation';
 import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
-import { MostActiveConsumers, MostActiveLocations, MostActiveReceivers, MostActiveUsers } from '../../lib';
+import { MostActiveReceivers, MostActiveUsers } from '../../lib';
 import { v4 as uuid } from 'uuid';
-import { selectMostActiveConsumersList } from '../../store/selectors';
+import { selectMostActiveConsumersList, selectMostActiveLocationsList } from '../../store/selectors';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -62,6 +62,7 @@ const Dashboard: FC = () => {
   const actions = useAction();
   const selectors = useSelector();
   const mostActiveConsumersList = selectMostActiveConsumersList(selectors);
+  const mostActiveLocationsList = selectMostActiveLocationsList(selectors);
   const isCurrentAdmin = auth.isCurrentAdmin();
   const isCurrentOwner = auth.isCurrentOwner();
   const isCurrentOwnerOrAdmin = isCurrentOwner || isCurrentAdmin;
@@ -182,29 +183,22 @@ const Dashboard: FC = () => {
     }
 
     actions.getInitialMostActiveConsumers({ page: 1, take: mostActiveConsumersList.take });
+    actions.getInitialMostActiveLocations({ page: 1, take: mostActiveLocationsList.take });
 
     Promise.allSettled<
       [
         Promise<AxiosResponse<BillQuantities>>,
         Promise<AxiosResponse<LastYearBillsObj[]>>,
         Promise<AxiosResponse<DeletedBillQuantities>>,
-        Promise<AxiosResponse<MostActiveLocations[]>>,
         Promise<AxiosResponse<MostActiveReceivers[]>>
       ]
     >([
       request.build(new BillQuantitiesApi().setInitialApi()),
       request.build(new LastYearBillsApi().setInitialApi()),
       request.build(new DeletedBillQuantitiesApi().setInitialApi()),
-      request.build(new MostActiveLocationsApi().setInitialApi()),
       request.build(new MostActiveReceiversApi().setInitialApi()),
     ]).then(
-      ([
-        billQuantitiesResponse,
-        lastYearBillsResponse,
-        deletedBillQuantitiesResponse,
-        mostActiveLocationsResponse,
-        mostActiveReceiversResponse,
-      ]) => {
+      ([billQuantitiesResponse, lastYearBillsResponse, deletedBillQuantitiesResponse, mostActiveReceiversResponse]) => {
         if (billQuantitiesResponse.status === 'fulfilled') {
           const { quantities, amount } = billQuantitiesResponse.value.data;
           actions.setSpecificDetails('billquantities', new BillQuantities(amount, quantities));
@@ -217,9 +211,6 @@ const Dashboard: FC = () => {
           const { quantities, amount } = deletedBillQuantitiesResponse.value.data;
           actions.setSpecificDetails('deletedBillQuantities', new DeletedBillQuantities(amount, quantities));
         }
-
-        if (mostActiveLocationsResponse.status === 'fulfilled')
-          actions.setSpecificDetails('mostActiveLocations', mostActiveLocationsResponse.value.data);
 
         if (mostActiveReceiversResponse.status === 'fulfilled')
           actions.setSpecificDetails('mostActiveReceivers', mostActiveReceiversResponse.value.data);
@@ -489,7 +480,7 @@ const Dashboard: FC = () => {
 
   const locationsChartElIdRef = useRef(uuid());
   useEffect(() => {
-    if (selectors.specificDetails.mostActiveLocations.length > 0) {
+    if (mostActiveLocationsList.list.length > 0) {
       const el = document.getElementById(locationsChartElIdRef.current) as HTMLDivElement | null;
       if (el) {
         const chart = echarts.init(el);
@@ -519,7 +510,7 @@ const Dashboard: FC = () => {
                   show: false,
                 },
               },
-              data: selectors.specificDetails.mostActiveLocations.map((item) => ({
+              data: mostActiveLocationsList.list.map((item) => ({
                 value: item.quantities,
                 name: item.location.name,
               })),
@@ -534,7 +525,7 @@ const Dashboard: FC = () => {
         return () => window.removeEventListener('resize', onResize);
       }
     }
-  }, [selectors.specificDetails.mostActiveLocations]);
+  }, [mostActiveLocationsList.list]);
 
   return (
     <Navigation>
@@ -734,8 +725,7 @@ const Dashboard: FC = () => {
                     </Typography>
                   </Box>
                 </Card>
-              ) : isInitialMostActiveLocationsApiSuccessed &&
-                selectors.specificDetails.mostActiveLocations.length > 0 ? (
+              ) : isInitialMostActiveLocationsApiSuccessed && mostActiveLocationsList.list.length > 0 ? (
                 <Card>
                   <CardContent
                     style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
