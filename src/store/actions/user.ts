@@ -6,6 +6,7 @@ import {
   MostActiveUsersApi,
   MostActiveUsersApiConstructorType,
   Request,
+  UserQuantitiesApi,
   UsersApi,
   UsersApiConstructorType,
 } from '../../apis';
@@ -20,7 +21,8 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
-import { Exception } from '../reducers';
+import { Exception, UserQuantities } from '../reducers';
+import { setSpecificDetails } from './speceficDetails';
 
 export function getInitialUsers(params: UsersApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -108,6 +110,19 @@ export function createUser(data: CreateUser) {
       dispatch(processingApiSuccess(CreateUserApi.name));
     } catch (error) {
       dispatch(processingApiError(CreateUserApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialUserQuantities() {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(UserQuantitiesApi.name));
+      const response = await new Request<UserQuantities>(new UserQuantitiesApi()).build();
+      dispatch(setSpecificDetails('userQuantities', new UserQuantities(response.data)));
+      dispatch(initialProcessingApiSuccess(UserQuantitiesApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(UserQuantitiesApi.name, error as AxiosError<Exception>));
     }
   };
 }

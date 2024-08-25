@@ -124,31 +124,27 @@ const Dashboard: FC = () => {
     }
 
     if (isCurrentOwnerOrAdmin) {
+      actions.getInitialUserQuantities();
+
       Promise.allSettled<
         [
-          Promise<AxiosResponse<UserQuantities>>,
           Promise<AxiosResponse<DeletedUserQuantities>>,
           Promise<AxiosResponse<LastYearUsersObj[]>>,
           Promise<AxiosResponse<AllBillQuantities>>,
           Promise<AxiosResponse<AllDeletedBillQuantities>>
         ]
       >([
-        request.build(new UserQuantitiesApi().setInitialApi()),
         request.build(new DeletedUserQuantitiesApi().setInitialApi()),
         request.build(new LastYearUsersApi().setInitialApi()),
         request.build(new AllBillQuantitiesApi().setInitialApi()),
         request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
       ]).then(
         ([
-          userQuantitiesResponse,
           deletedUserQuantitiesResponse,
           lastYearUsersResponse,
           allBillQuantitiesResponse,
           allDeletedBillQuantitiesResponse,
         ]) => {
-          if (userQuantitiesResponse.status === 'fulfilled')
-            actions.setSpecificDetails('userQuantities', new UserQuantities(userQuantitiesResponse.value.data));
-
           if (deletedUserQuantitiesResponse.status === 'fulfilled')
             actions.setSpecificDetails(
               'deletedUserQuantities',
