@@ -21,7 +21,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
   const actions = useAction();
   const selectors = useSelector();
   const request = useRequest();
-  const { enqueueSnackbar } = useSnackbar();
+  const snackbar = useSnackbar();
   const isDeleteBillApiProcessing = request.isApiProcessing(DeleteBillApi);
   const isDeleteBillApiSuccessed = request.isProcessingApiSuccessed(DeleteBillApi);
   const isDeleteBillApiFailed = request.isProcessingApiFailed(DeleteBillApi);
@@ -55,7 +55,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
       actions.hideModal(ModalNames.CONFIRMATION);
       navigate(Pathes.BILLS);
     } else if (isDeleteBillApiFailed) {
-      enqueueSnackbar({ message: deleteBillApiExceptionMessage, variant: 'error' });
+      snackbar.enqueueSnackbar({ message: deleteBillApiExceptionMessage, variant: 'error' });
     }
   }, [isDeleteBillApiSuccessed, isDeleteBillApiFailed]);
 

@@ -16,13 +16,15 @@ const List: FC = () => {
   const actions = useAction();
   const selectors = useSelector();
   const request = useRequest();
-  const { enqueueSnackbar } = useSnackbar();
+  const snackbar = useSnackbar();
   const billListFiltersFormInstance = useForm(BillListFilters);
   const billListFiltersForm = billListFiltersFormInstance.getForm();
   const isInitialBillsApiProcessing = request.isInitialApiProcessing(BillsApi);
+  const isInitialBillsApiFailed = request.isInitialProcessingApiFailed(BillsApi);
   const isBillsApiProcessing = request.isApiProcessing(BillsApi);
   const isBillsApiFailed = request.isProcessingApiFailed(BillsApi);
   const billsApiExceptionMessage = request.getExceptionMessage(BillsApi);
+  const initialBillsApiExceptionMessage = request.getInitialExceptionMessage(BillsApi);
   const billsList = selectBillsList(selectors);
 
   useEffect(() => {
@@ -31,9 +33,11 @@ const List: FC = () => {
 
   useEffect(() => {
     if (isBillsApiFailed) {
-      enqueueSnackbar({ message: billsApiExceptionMessage, variant: 'error' });
+      snackbar.enqueueSnackbar({ message: billsApiExceptionMessage, variant: 'error' });
+    } else if (isInitialBillsApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialBillsApiExceptionMessage, variant: 'error' });
     }
-  }, [isBillsApiFailed]);
+  }, [isBillsApiFailed, isInitialBillsApiFailed]);
 
   const changePage = useCallback(
     (page: number) => {

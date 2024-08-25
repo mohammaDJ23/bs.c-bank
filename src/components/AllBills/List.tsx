@@ -16,12 +16,14 @@ const List: FC = () => {
   const actions = useAction();
   const request = useRequest();
   const selectors = useSelector();
-  const { enqueueSnackbar } = useSnackbar();
+  const snackbar = useSnackbar();
   const allBillListFiltersFormInstance = useForm(AllBillListFilters);
   const allBillListFiltersForm = allBillListFiltersFormInstance.getForm();
   const isInitialAllBillsApiProcessing = request.isInitialApiProcessing(AllBillsApi);
+  const isInitialAllBillsApiFailed = request.isInitialProcessingApiFailed(AllBillsApi);
   const isAllBillsApiProcessing = request.isApiProcessing(AllBillsApi);
   const isAllBillsApiFailed = request.isProcessingApiFailed(AllBillsApi);
+  const initialAllBillsApiExceptionMessage = request.getInitialExceptionMessage(AllBillsApi);
   const allBillsApiExceptionMessage = request.getExceptionMessage(AllBillsApi);
   const allBillsList = selectAllBillsList(selectors);
 
@@ -30,10 +32,12 @@ const List: FC = () => {
   }, []);
 
   useEffect(() => {
-    if (isAllBillsApiFailed) {
-      enqueueSnackbar({ message: allBillsApiExceptionMessage, variant: 'error' });
+    if (isInitialAllBillsApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialAllBillsApiExceptionMessage, variant: 'error' });
+    } else if (isAllBillsApiFailed) {
+      snackbar.enqueueSnackbar({ message: allBillsApiExceptionMessage, variant: 'error' });
     }
-  }, [isAllBillsApiFailed]);
+  }, [isAllBillsApiFailed, isInitialAllBillsApiFailed]);
 
   const changePage = useCallback(
     (page: number) => {

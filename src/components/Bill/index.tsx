@@ -14,9 +14,9 @@ const BillContent: FC = () => {
   const request = useRequest();
   const actions = useAction();
   const selectors = useSelector();
-  const { enqueueSnackbar } = useSnackbar();
-  const isBillApiFailed = request.isProcessingApiFailed(BillApi);
-  const billApiExceptionMessage = request.getExceptionMessage(BillApi);
+  const snackbar = useSnackbar();
+  const isInitialBillApiFailed = request.isInitialProcessingApiFailed(BillApi);
+  const initialBillApiExceptionMessage = request.getInitialExceptionMessage(BillApi);
   const isInitialBillApiProcessing = request.isInitialApiProcessing(BillApi);
   const bill = selectors.specificDetails.bill;
 
@@ -28,10 +28,10 @@ const BillContent: FC = () => {
   }, []);
 
   useEffect(() => {
-    if (isBillApiFailed) {
-      enqueueSnackbar({ message: billApiExceptionMessage, variant: 'error' });
+    if (isInitialBillApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialBillApiExceptionMessage, variant: 'error' });
     }
-  }, [isBillApiFailed]);
+  }, [isInitialBillApiFailed]);
 
   return (
     <Navigation>

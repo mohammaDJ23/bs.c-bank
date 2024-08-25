@@ -1,12 +1,14 @@
 import { AxiosError } from 'axios';
 import {
+  ConsumerApi,
   ConsumersApi,
   ConsumersApiConstructorType,
+  DeleteConsumerApi,
   MostActiveConsumersApi,
   MostActiveConsumersApiConstructorType,
   Request,
 } from '../../apis';
-import { Consumers, MostActiveConsumer, MostActiveConsumers } from '../../lib';
+import { Consumer, Consumers, MostActiveConsumer, MostActiveConsumers } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -18,6 +20,32 @@ import {
   processingApiSuccess,
 } from './requestProcess';
 import { Exception } from '../reducers';
+import { setSpecificDetails } from './speceficDetails';
+
+export function getInitialConsumer(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(ConsumerApi.name));
+      const response = await new Request<Consumer>(new ConsumerApi(id)).build();
+      dispatch(setSpecificDetails('consumer', response.data));
+      dispatch(initialProcessingApiSuccess(ConsumerApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(ConsumerApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function deleteConsumer(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(DeleteConsumerApi.name));
+      await new Request<Consumer>(new DeleteConsumerApi(id)).build();
+      dispatch(processingApiSuccess(DeleteConsumerApi.name));
+    } catch (error) {
+      dispatch(processingApiError(DeleteConsumerApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
 
 export function getInitialConsumers(params: ConsumersApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {

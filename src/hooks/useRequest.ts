@@ -66,11 +66,30 @@ export function useRequest() {
     ]
   );
 
+  const getInitialException = useCallback(
+    <T extends RootApi>(requestInstance: Constructor<T>) => {
+      return requestProcess.initialProcessingApis.errors[getRequestConstructorName(requestInstance)];
+    },
+    [requestProcess.initialProcessingApis.errors, getRequestConstructorName]
+  );
+
   const getException = useCallback(
     <T extends RootApi>(requestInstance: Constructor<T>) => {
       return requestProcess.processingApis.errors[getRequestConstructorName(requestInstance)];
     },
     [requestProcess.processingApis.errors, getRequestConstructorName]
+  );
+
+  const getInitialExceptionMessage = useCallback(
+    <T extends RootApi>(requestInstance: Constructor<T>) => {
+      const exception = getInitialException(requestInstance);
+      let message = 'Something went wrong';
+      if (exception && exception.response) {
+        message = exception.response.data.message;
+      }
+      return message;
+    },
+    [getInitialException]
   );
 
   const getExceptionMessage = useCallback(
@@ -163,5 +182,6 @@ export function useRequest() {
     isInitialProcessingApiFailed,
     getException,
     getExceptionMessage,
+    getInitialExceptionMessage,
   };
 }
