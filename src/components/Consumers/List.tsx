@@ -10,20 +10,34 @@ import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import ConsumerCard from '../shared/ConsumerCard';
 import { selectConsumersList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const actions = useAction();
   const selectors = useSelector();
   const request = useRequest();
+  const snackbar = useSnackbar();
   const consumerListFiltersFormInstance = useForm(ConsumerListFilters);
   const consumerListFiltersForm = consumerListFiltersFormInstance.getForm();
   const isInitialConsumersApiProcessing = request.isInitialApiProcessing(ConsumersApi);
+  const isInitailConsumersApiFailed = request.isInitialProcessingApiFailed(ConsumersApi);
+  const initialConsumersApiExceptionMessage = request.getInitialExceptionMessage(ConsumersApi);
   const isConsumersApiProcessing = request.isApiProcessing(ConsumersApi);
+  const isConsumersApiFailed = request.isProcessingApiFailed(ConsumersApi);
+  const consumersApiExceptionMessage = request.getExceptionMessage(ConsumersApi);
   const consumersList = selectConsumersList(selectors);
 
   useEffect(() => {
     actions.getInitialConsumers({ page: 1, take: consumersList.take });
   }, []);
+
+  useEffect(() => {
+    if (isInitailConsumersApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialConsumersApiExceptionMessage, variant: 'error' });
+    } else if (isConsumersApiFailed) {
+      snackbar.enqueueSnackbar({ message: consumersApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitailConsumersApiFailed, isConsumersApiFailed]);
 
   const changePage = useCallback(
     (page: number) => {
