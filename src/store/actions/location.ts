@@ -49,7 +49,7 @@ export function getInitialMostActiveLocations(params: MostActiveLocationsApiCons
   return async function (dispatch: RootDispatch) {
     try {
       dispatch(initialProcessingApiLoading(MostActiveLocationsApi.name));
-      const response = await new Request<MostActiveLocation[]>(new MostActiveLocationsApi()).build();
+      const response = await new Request<MostActiveLocation[]>(new MostActiveLocationsApi(params)).build();
       dispatch(
         createNewList(
           new MostActiveLocations({

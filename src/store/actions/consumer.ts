@@ -49,7 +49,7 @@ export function getInitialMostActiveConsumers(params: MostActiveConsumersApiCons
   return async function (dispatch: RootDispatch) {
     try {
       dispatch(initialProcessingApiLoading(MostActiveConsumersApi.name));
-      const response = await new Request<MostActiveConsumer[]>(new MostActiveConsumersApi()).build();
+      const response = await new Request<MostActiveConsumer[]>(new MostActiveConsumersApi(params)).build();
       dispatch(
         createNewList(
           new MostActiveConsumers({

@@ -38,9 +38,13 @@ import moment from 'moment';
 import Navigation from '../../layout/Navigation';
 import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
-import { MostActiveReceivers, MostActiveUsers } from '../../lib';
+import { MostActiveUsers } from '../../lib';
 import { v4 as uuid } from 'uuid';
-import { selectMostActiveConsumersList, selectMostActiveLocationsList } from '../../store/selectors';
+import {
+  selectMostActiveConsumersList,
+  selectMostActiveLocationsList,
+  selectMostActiveReceiversList,
+} from '../../store/selectors';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -63,6 +67,7 @@ const Dashboard: FC = () => {
   const selectors = useSelector();
   const mostActiveConsumersList = selectMostActiveConsumersList(selectors);
   const mostActiveLocationsList = selectMostActiveLocationsList(selectors);
+  const mostActiveReceiversList = selectMostActiveReceiversList(selectors);
   const isCurrentAdmin = auth.isCurrentAdmin();
   const isCurrentOwner = auth.isCurrentOwner();
   const isCurrentOwnerOrAdmin = isCurrentOwner || isCurrentAdmin;
@@ -184,38 +189,32 @@ const Dashboard: FC = () => {
 
     actions.getInitialMostActiveConsumers({ page: 1, take: mostActiveConsumersList.take });
     actions.getInitialMostActiveLocations({ page: 1, take: mostActiveLocationsList.take });
+    actions.getInitialMostActiveReceivers({ page: 1, take: mostActiveReceiversList.take });
 
     Promise.allSettled<
       [
         Promise<AxiosResponse<BillQuantities>>,
         Promise<AxiosResponse<LastYearBillsObj[]>>,
-        Promise<AxiosResponse<DeletedBillQuantities>>,
-        Promise<AxiosResponse<MostActiveReceivers[]>>
+        Promise<AxiosResponse<DeletedBillQuantities>>
       ]
     >([
       request.build(new BillQuantitiesApi().setInitialApi()),
       request.build(new LastYearBillsApi().setInitialApi()),
       request.build(new DeletedBillQuantitiesApi().setInitialApi()),
-      request.build(new MostActiveReceiversApi().setInitialApi()),
-    ]).then(
-      ([billQuantitiesResponse, lastYearBillsResponse, deletedBillQuantitiesResponse, mostActiveReceiversResponse]) => {
-        if (billQuantitiesResponse.status === 'fulfilled') {
-          const { quantities, amount } = billQuantitiesResponse.value.data;
-          actions.setSpecificDetails('billquantities', new BillQuantities(amount, quantities));
-        }
-
-        if (lastYearBillsResponse.status === 'fulfilled')
-          actions.setSpecificDetails('lastYearBills', lastYearBillsResponse.value.data);
-
-        if (deletedBillQuantitiesResponse.status === 'fulfilled') {
-          const { quantities, amount } = deletedBillQuantitiesResponse.value.data;
-          actions.setSpecificDetails('deletedBillQuantities', new DeletedBillQuantities(amount, quantities));
-        }
-
-        if (mostActiveReceiversResponse.status === 'fulfilled')
-          actions.setSpecificDetails('mostActiveReceivers', mostActiveReceiversResponse.value.data);
+    ]).then(([billQuantitiesResponse, lastYearBillsResponse, deletedBillQuantitiesResponse]) => {
+      if (billQuantitiesResponse.status === 'fulfilled') {
+        const { quantities, amount } = billQuantitiesResponse.value.data;
+        actions.setSpecificDetails('billquantities', new BillQuantities(amount, quantities));
       }
-    );
+
+      if (lastYearBillsResponse.status === 'fulfilled')
+        actions.setSpecificDetails('lastYearBills', lastYearBillsResponse.value.data);
+
+      if (deletedBillQuantitiesResponse.status === 'fulfilled') {
+        const { quantities, amount } = deletedBillQuantitiesResponse.value.data;
+        actions.setSpecificDetails('deletedBillQuantities', new DeletedBillQuantities(amount, quantities));
+      }
+    });
   }, []);
 
   function getChartData() {
@@ -431,7 +430,7 @@ const Dashboard: FC = () => {
 
   const receiversChartElIdRef = useRef(uuid());
   useEffect(() => {
-    if (selectors.specificDetails.mostActiveReceivers.length > 0) {
+    if (mostActiveReceiversList.list.length > 0) {
       const el = document.getElementById(receiversChartElIdRef.current) as HTMLDivElement | null;
       if (el) {
         const chart = echarts.init(el);
@@ -461,7 +460,7 @@ const Dashboard: FC = () => {
                   show: false,
                 },
               },
-              data: selectors.specificDetails.mostActiveReceivers.map((item) => ({
+              data: mostActiveReceiversList.list.map((item) => ({
                 value: item.quantities,
                 name: item.receiver.name,
               })),
@@ -476,7 +475,7 @@ const Dashboard: FC = () => {
         return () => window.removeEventListener('resize', onResize);
       }
     }
-  }, [selectors.specificDetails.mostActiveReceivers]);
+  }, [mostActiveReceiversList.list]);
 
   const locationsChartElIdRef = useRef(uuid());
   useEffect(() => {
@@ -665,8 +664,7 @@ const Dashboard: FC = () => {
                     </Typography>
                   </Box>
                 </Card>
-              ) : isInitialMostActiveReceiversApiSuccessed &&
-                selectors.specificDetails.mostActiveReceivers.length > 0 ? (
+              ) : isInitialMostActiveReceiversApiSuccessed && mostActiveReceiversList.list.length > 0 ? (
                 <Card>
                   <CardContent
                     style={{ position: 'relative', height: '350px', overflow: 'hidden' }}

@@ -1,4 +1,10 @@
-import { MostActiveReceiversApi, ReceiversApi, ReceiversApiConstructorType, Request } from '../../apis';
+import {
+  MostActiveReceiversApi,
+  MostActiveReceiversApiConstructorType,
+  ReceiversApi,
+  ReceiversApiConstructorType,
+  Request,
+} from '../../apis';
 import { MostActiveReceivers, Receiver, Receivers } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
@@ -10,7 +16,6 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
-import { setSpecificDetails } from './speceficDetails';
 
 export function getInitialReceivers(params: ReceiversApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -40,12 +45,21 @@ export function getReceivers(params: ReceiversApiConstructorType = {}) {
   };
 }
 
-export function getInitialMostActiveReceivers() {
+export function getInitialMostActiveReceivers(params: MostActiveReceiversApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
     try {
       dispatch(initialProcessingApiLoading(MostActiveReceiversApi.name));
-      const response = await new Request<MostActiveReceivers[]>(new MostActiveReceiversApi()).build();
-      dispatch(setSpecificDetails('mostActiveReceivers', response.data));
+      const response = await new Request<MostActiveReceivers[]>(new MostActiveReceiversApi(params)).build();
+      dispatch(
+        createNewList(
+          new MostActiveReceivers({
+            list: response.data,
+            total: response.data.length,
+            page: params.page,
+            take: params.take,
+          })
+        )
+      );
       dispatch(initialProcessingApiSuccess(MostActiveReceiversApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(MostActiveReceiversApi.name));

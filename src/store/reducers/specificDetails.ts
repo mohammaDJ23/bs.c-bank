@@ -8,8 +8,6 @@ import {
   Receiver,
   UserStatusObj,
   UserWithBillInfo,
-  MostActiveLocations,
-  MostActiveReceivers,
 } from '../../lib';
 import { RootActions, SetSpecificDetailsAction } from '../actions';
 import { ClearState } from './clearState';
@@ -115,7 +113,6 @@ export interface SpecificDetailsState {
   allNotificationQuantities: AllNotificationQuantities | null;
   usersStatus: UsersStatusType;
   mostActiveUsers: MostActiveUsers[];
-  mostActiveReceivers: MostActiveReceivers[];
 }
 
 const initialState: SpecificDetailsState = {
@@ -140,7 +137,6 @@ const initialState: SpecificDetailsState = {
   allNotificationQuantities: null,
   usersStatus: {},
   mostActiveUsers: [],
-  mostActiveReceivers: [],
 };
 
 function setSpecificDetails(state: SpecificDetailsState, action: SetSpecificDetailsAction): SpecificDetailsState {
@@ -173,7 +169,6 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     notificationQuantities: null,
     allNotificationQuantities: null,
     mostActiveUsers: [],
-    mostActiveReceivers: [],
   };
 }
 

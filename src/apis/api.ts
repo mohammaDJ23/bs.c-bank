@@ -700,7 +700,7 @@ export class MostActiveLocationsApi extends RootApi {
 export type MostActiveLocationsApiConstructorType = ConstructorParameters<typeof MostActiveLocationsApi>[0];
 
 export class MostActiveReceiversApi extends RootApi {
-  constructor(params: Partial<ListParams<MostActiveReceivers>> = {}) {
+  constructor(params: Partial<ListParams> = {}) {
     super(
       {
         url: '/api/v1/bank/receiver/most-active-receivers',
@@ -711,3 +711,5 @@ export class MostActiveReceiversApi extends RootApi {
     );
   }
 }
+
+export type MostActiveReceiversApiConstructorType = ConstructorParameters<typeof MostActiveReceiversApi>[0];
