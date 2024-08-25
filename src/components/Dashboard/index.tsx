@@ -125,46 +125,32 @@ const Dashboard: FC = () => {
 
     if (isCurrentOwnerOrAdmin) {
       actions.getInitialUserQuantities();
+      actions.getInitialDeletedUserQuantities();
 
       Promise.allSettled<
         [
-          Promise<AxiosResponse<DeletedUserQuantities>>,
           Promise<AxiosResponse<LastYearUsersObj[]>>,
           Promise<AxiosResponse<AllBillQuantities>>,
           Promise<AxiosResponse<AllDeletedBillQuantities>>
         ]
       >([
-        request.build(new DeletedUserQuantitiesApi().setInitialApi()),
         request.build(new LastYearUsersApi().setInitialApi()),
         request.build(new AllBillQuantitiesApi().setInitialApi()),
         request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
-      ]).then(
-        ([
-          deletedUserQuantitiesResponse,
-          lastYearUsersResponse,
-          allBillQuantitiesResponse,
-          allDeletedBillQuantitiesResponse,
-        ]) => {
-          if (deletedUserQuantitiesResponse.status === 'fulfilled')
-            actions.setSpecificDetails(
-              'deletedUserQuantities',
-              new DeletedUserQuantities(deletedUserQuantitiesResponse.value.data)
-            );
+      ]).then(([lastYearUsersResponse, allBillQuantitiesResponse, allDeletedBillQuantitiesResponse]) => {
+        if (lastYearUsersResponse.status === 'fulfilled')
+          actions.setSpecificDetails('lastYearUsers', lastYearUsersResponse.value.data);
 
-          if (lastYearUsersResponse.status === 'fulfilled')
-            actions.setSpecificDetails('lastYearUsers', lastYearUsersResponse.value.data);
-
-          if (allBillQuantitiesResponse.status === 'fulfilled') {
-            const { quantities, amount } = allBillQuantitiesResponse.value.data;
-            actions.setSpecificDetails('allBillQuantities', new AllBillQuantities(amount, quantities));
-          }
-
-          if (allDeletedBillQuantitiesResponse.status === 'fulfilled') {
-            const { quantities, amount } = allDeletedBillQuantitiesResponse.value.data;
-            actions.setSpecificDetails('allDeletedBillQuantities', new AllDeletedBillQuantities(amount, quantities));
-          }
+        if (allBillQuantitiesResponse.status === 'fulfilled') {
+          const { quantities, amount } = allBillQuantitiesResponse.value.data;
+          actions.setSpecificDetails('allBillQuantities', new AllBillQuantities(amount, quantities));
         }
-      );
+
+        if (allDeletedBillQuantitiesResponse.status === 'fulfilled') {
+          const { quantities, amount } = allDeletedBillQuantitiesResponse.value.data;
+          actions.setSpecificDetails('allDeletedBillQuantities', new AllDeletedBillQuantities(amount, quantities));
+        }
+      });
     }
 
     actions.getInitialMostActiveConsumers({ page: 1, take: mostActiveConsumersList.take });

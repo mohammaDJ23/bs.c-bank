@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
 import {
   CreateUserApi,
+  DeletedUserQuantitiesApi,
   DeletedUsersApi,
   DeletedUsersApiConstructorType,
   MostActiveUsersApi,
@@ -21,7 +22,7 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
-import { Exception, UserQuantities } from '../reducers';
+import { DeletedUserQuantities, Exception, UserQuantities } from '../reducers';
 import { setSpecificDetails } from './speceficDetails';
 
 export function getInitialUsers(params: UsersApiConstructorType = {}) {
@@ -123,6 +124,19 @@ export function getInitialUserQuantities() {
       dispatch(initialProcessingApiSuccess(UserQuantitiesApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(UserQuantitiesApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialDeletedUserQuantities() {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(DeletedUserQuantitiesApi.name));
+      const response = await new Request<DeletedUserQuantities>(new DeletedUserQuantitiesApi()).build();
+      dispatch(setSpecificDetails('deletedUserQuantities', new DeletedUserQuantities(response.data)));
+      dispatch(initialProcessingApiSuccess(DeletedUserQuantitiesApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(DeletedUserQuantitiesApi.name, error as AxiosError<Exception>));
     }
   };
 }
