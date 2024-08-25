@@ -10,20 +10,30 @@ import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
 import { selectBillsList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const actions = useAction();
   const selectors = useSelector();
   const request = useRequest();
+  const { enqueueSnackbar } = useSnackbar();
   const billListFiltersFormInstance = useForm(BillListFilters);
   const billListFiltersForm = billListFiltersFormInstance.getForm();
   const isInitialBillsApiProcessing = request.isInitialApiProcessing(BillsApi);
   const isBillsApiProcessing = request.isApiProcessing(BillsApi);
+  const isBillsApiFailed = request.isProcessingApiFailed(BillsApi);
+  const billsApiExceptionMessage = request.getExceptionMessage(BillsApi);
   const billsList = selectBillsList(selectors);
 
   useEffect(() => {
     actions.getInitialBills({ page: 1, take: billsList.take });
   }, []);
+
+  useEffect(() => {
+    if (isBillsApiFailed) {
+      enqueueSnackbar({ message: billsApiExceptionMessage, variant: 'error' });
+    }
+  }, [isBillsApiFailed]);
 
   const changePage = useCallback(
     (page: number) => {

@@ -61,7 +61,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
 
   const deleteBill = useCallback(() => {
     actions.deleteBill(bill.id);
-  }, [bill, request]);
+  }, [bill]);
 
   return (
     <>
