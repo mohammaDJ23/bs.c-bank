@@ -2,14 +2,14 @@ import { PropsWithChildren, FC } from 'react';
 import { ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
-import { Pathes, ConsumerObj, getDynamicPath } from '../../lib';
+import { Pathes, Consumer, getDynamicPath } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
 import { useNavigate } from 'react-router-dom';
-import { List } from '../../lib/lists/newList';
+import { List } from '../../lib/lists/list';
 
 interface ConsumerCardImportation extends PropsWithChildren {
-  consumer: ConsumerObj;
+  consumer: Consumer;
   index: number;
   list: List;
 }

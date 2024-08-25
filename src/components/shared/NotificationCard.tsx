@@ -7,7 +7,7 @@ import { getDynamicPath, Notification, Pathes } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
 import { useAuth } from '../../hooks';
-import { List } from '../../lib/lists/newList';
+import { List } from '../../lib/lists/list';
 
 interface NotificationCardImportation extends PropsWithChildren {
   notification: Notification;

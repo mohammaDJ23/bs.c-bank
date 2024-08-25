@@ -3,7 +3,6 @@ import {
   ListContainerActions,
   ModalActions,
   SpecificDetailsActions,
-  PaginationListActions,
   RequestProcessActions,
   FormActions,
   ClearStateActions,
@@ -17,7 +16,6 @@ export type RootActions =
   | ListContainerActions
   | HistoryActions
   | SpecificDetailsActions
-  | PaginationListActions
   | FormActions
   | ClearStateActions
   | UserServiceSocketActions

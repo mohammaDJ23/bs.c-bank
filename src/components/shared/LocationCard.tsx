@@ -6,7 +6,7 @@ import { Location, Pathes, getDynamicPath } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
 import { useNavigate } from 'react-router-dom';
-import { List } from '../../lib/lists/newList';
+import { List } from '../../lib/lists/list';
 
 interface LocationCardImportation extends PropsWithChildren {
   location: Location;

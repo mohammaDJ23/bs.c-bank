@@ -4,7 +4,7 @@ import { useAction, useRequest, useSelector } from '../../hooks';
 import { useEffect, FC } from 'react';
 import Skeleton from './Skeleton';
 import { LocaitonApi } from '../../apis';
-import { LocationObj } from '../../lib';
+import { Location } from '../../lib';
 import NotFound from './NotFound';
 import Details from './Details';
 import Navigation from '../../layout/Navigation';
@@ -20,7 +20,7 @@ const LocationContent: FC = () => {
   useEffect(() => {
     const locationId = params.id;
     if (locationId) {
-      request.build<LocationObj, string>(new LocaitonApi(+locationId).setInitialApi()).then((response) => {
+      request.build<Location, string>(new LocaitonApi(+locationId).setInitialApi()).then((response) => {
         actions.setSpecificDetails('location', response.data);
       });
     }

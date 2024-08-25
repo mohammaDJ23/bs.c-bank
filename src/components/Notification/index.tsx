@@ -4,7 +4,7 @@ import { useAction, useRequest, useSelector } from '../../hooks';
 import { useEffect, FC } from 'react';
 import Skeleton from './Skeleton';
 import { NotificationApi } from '../../apis';
-import { NotificationObj } from '../../lib';
+import { Notification } from '../../lib';
 import NotFound from './NotFound';
 import Details from './Details';
 import Navigation from '../../layout/Navigation';
@@ -20,7 +20,7 @@ const NotificationContent: FC = () => {
   useEffect(() => {
     const notificationId = params.id;
     if (notificationId) {
-      request.build<NotificationObj, number>(new NotificationApi(+notificationId).setInitialApi()).then((response) => {
+      request.build<Notification, number>(new NotificationApi(+notificationId).setInitialApi()).then((response) => {
         actions.setSpecificDetails('notification', response.data);
       });
     }

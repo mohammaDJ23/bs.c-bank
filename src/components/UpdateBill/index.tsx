@@ -1,6 +1,6 @@
 import FormContainer from '../../layout/FormContainer';
 import Form from './Form';
-import { BillObj, UpdateBill } from '../../lib';
+import { Bill, UpdateBill } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { useEffect, FC } from 'react';
 import { useParams } from 'react-router-dom';
@@ -20,7 +20,7 @@ const UpdateBillContent: FC = () => {
   useEffect(() => {
     const billId = params.id;
     if (billId) {
-      request.build<BillObj, string>(new BillApi(billId).setInitialApi()).then((response) => {
+      request.build<Bill, string>(new BillApi(billId).setInitialApi()).then((response) => {
         actions.setSpecificDetails('bill', response.data);
         updateBillFormInstance.initializeForm(
           new UpdateBill({

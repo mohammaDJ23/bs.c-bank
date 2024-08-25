@@ -4,12 +4,12 @@ import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
 import { FC, useCallback } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
-import { BillObj, Pathes, deletedAtColor } from '../../lib';
+import { Bill, Pathes, deletedAtColor } from '../../lib';
 import { ModalNames } from '../../store';
 import { RestoreBillApi } from '../../apis';
 
 interface DetailsImporation {
-  bill: BillObj;
+  bill: Bill;
 }
 
 const Details: FC<DetailsImporation> = ({ bill }) => {

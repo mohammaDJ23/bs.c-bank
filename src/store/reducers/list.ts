@@ -1,5 +1,5 @@
-import { newLists, copyConstructor } from '../../lib';
-import { List } from '../../lib/lists/newList';
+import { lists, copyConstructor } from '../../lib';
+import { List } from '../../lib/lists/list';
 import {
   CreateNewListAction,
   RootActions,
@@ -24,7 +24,7 @@ interface ListsState {
 
 function makeLists() {
   let state: ListsState = {};
-  for (let list in newLists) state[list] = new newLists[list as keyof typeof newLists]();
+  for (let list in lists) state[list] = new lists[list as keyof typeof lists]();
   return state;
 }
 

@@ -1,4 +1,4 @@
-import { ConsumerObj, getDynamicPath, Pathes, UpdateConsumer, wait } from '../../lib';
+import { Consumer, getDynamicPath, Pathes, UpdateConsumer, wait } from '../../lib';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { Box, TextField, Button } from '@mui/material';
 import Modal from '../shared/Modal';
@@ -26,7 +26,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateConsumerFormInstance })
   const formSubmition = useCallback(() => {
     updateConsumerFormInstance.onSubmit(() => {
       request
-        .build<ConsumerObj, UpdateConsumer>(new UpdateConsumerApi(updateConsumerForm))
+        .build<Consumer, UpdateConsumer>(new UpdateConsumerApi(updateConsumerForm))
         .then((response) => {
           const consumerId = params.id as string;
           actions.hideModal(ModalNames.CONFIRMATION);

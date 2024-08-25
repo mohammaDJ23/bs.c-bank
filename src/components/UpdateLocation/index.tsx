@@ -1,6 +1,6 @@
 import FormContainer from '../../layout/FormContainer';
 import Form from './Form';
-import { LocationObj, UpdateLocation } from '../../lib';
+import { Location, UpdateLocation } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { useEffect, FC } from 'react';
 import { useParams } from 'react-router-dom';
@@ -20,7 +20,7 @@ const UpdateLocationContent: FC = () => {
   useEffect(() => {
     const locationId = params.id;
     if (locationId) {
-      request.build<LocationObj, string>(new LocaitonApi(+locationId).setInitialApi()).then((response) => {
+      request.build<Location, string>(new LocaitonApi(+locationId).setInitialApi()).then((response) => {
         actions.setSpecificDetails('location', response.data);
         updateLocationFormInstance.initializeForm(
           new UpdateLocation({

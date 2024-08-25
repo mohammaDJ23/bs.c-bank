@@ -1,6 +1,6 @@
 import FormContainer from '../../layout/FormContainer';
 import Form from './Form';
-import { ReceiverObj, UpdateReceiver } from '../../lib';
+import { Receiver, UpdateReceiver } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { useEffect, FC } from 'react';
 import { useParams } from 'react-router-dom';
@@ -20,7 +20,7 @@ const UpdateReceiverContent: FC = () => {
   useEffect(() => {
     const receiverId = params.id;
     if (receiverId) {
-      request.build<ReceiverObj, string>(new ReceiverApi(+receiverId).setInitialApi()).then((response) => {
+      request.build<Receiver, string>(new ReceiverApi(+receiverId).setInitialApi()).then((response) => {
         actions.setSpecificDetails('receiver', response.data);
         updateReceiverFormInstance.initializeForm(
           new UpdateReceiver({

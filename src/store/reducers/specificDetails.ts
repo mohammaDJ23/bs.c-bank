@@ -1,17 +1,16 @@
 import {
-  BillObj,
-  ConsumerObj,
-  DeletedUserObj,
-  LocationObj,
-  MostActiveConsumerObj,
-  MostActiveLocationObj,
-  MostActiveReceiverObj,
-  MostActiveUserObj,
-  NotificationObj,
-  ReceiverObj,
-  UserObj,
+  Bill,
+  Consumer,
+  User,
+  Location,
+  MostActiveConsumers,
+  MostActiveUsers,
+  Notification,
+  Receiver,
   UserStatusObj,
-  UserWithBillInfoObj,
+  UserWithBillInfo,
+  MostActiveLocations,
+  MostActiveReceivers,
 } from '../../lib';
 import { RootActions, SetSpecificDetailsAction } from '../actions';
 import { ClearState } from './clearState';
@@ -96,12 +95,12 @@ export class DeletedUserQuantities {
 export type UsersStatusType = Record<number, UserStatusObj>;
 
 export interface SpecificDetailsState {
-  user: UserObj | null;
-  userWithBillInfo: UserWithBillInfoObj | null;
-  bill: BillObj | null;
-  receiver: ReceiverObj | null;
-  location: LocationObj | null;
-  consumer: ConsumerObj | null;
+  user: User | null;
+  userWithBillInfo: UserWithBillInfo | null;
+  bill: Bill | null;
+  receiver: Receiver | null;
+  location: Location | null;
+  consumer: Consumer | null;
   billquantities: BillQuantities | null;
   deletedBillQuantities: AllDeletedBillQuantities | null;
   lastYearBills: LastYearBillsObj[];
@@ -110,16 +109,16 @@ export interface SpecificDetailsState {
   deletedUserQuantities: DeletedUserQuantities | null;
   allBillQuantities: AllBillQuantities | null;
   allDeletedBillQuantities: AllDeletedBillQuantities | null;
-  deletedUser: DeletedUserObj | null;
-  deletedBill: BillObj | null;
-  notification: NotificationObj | null;
+  deletedUser: User | null;
+  deletedBill: Bill | null;
+  notification: Notification | null;
   notificationQuantities: NotificationQuantities | null;
   allNotificationQuantities: AllNotificationQuantities | null;
   usersStatus: UsersStatusType;
-  mostActiveUsers: MostActiveUserObj[];
-  mostActiveConsumers: MostActiveConsumerObj[];
-  mostActiveLocations: MostActiveLocationObj[];
-  mostActiveReceivers: MostActiveReceiverObj[];
+  mostActiveUsers: MostActiveUsers[];
+  mostActiveConsumers: MostActiveConsumers[];
+  mostActiveLocations: MostActiveLocations[];
+  mostActiveReceivers: MostActiveReceivers[];
 }
 
 const initialState: SpecificDetailsState = {

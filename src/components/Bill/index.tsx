@@ -4,7 +4,7 @@ import { useAction, useRequest, useSelector } from '../../hooks';
 import { useEffect, FC } from 'react';
 import Skeleton from './Skeleton';
 import { BillApi } from '../../apis';
-import { BillObj } from '../../lib';
+import { Bill } from '../../lib';
 import NotFound from './NotFound';
 import Details from './Details';
 import Navigation from '../../layout/Navigation';
@@ -20,7 +20,7 @@ const BillContent: FC = () => {
   useEffect(() => {
     const billId = params.id;
     if (billId) {
-      request.build<BillObj, string>(new BillApi(billId).setInitialApi()).then((response) => {
+      request.build<Bill, string>(new BillApi(billId).setInitialApi()).then((response) => {
         actions.setSpecificDetails('bill', response.data);
       });
     }

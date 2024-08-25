@@ -1,5 +1,5 @@
 import { UserRoles } from '../auth';
-import { List } from './newList';
+import { List } from './list';
 
 export interface User {
   id: number;
@@ -16,3 +16,14 @@ export interface User {
 }
 
 export class Users extends List<User> {}
+
+export interface UserWithBillInfo extends User {
+  bill: {
+    counts: string;
+    amounts: string;
+  };
+  parent: User;
+  users: {
+    quantities: string;
+  };
+}

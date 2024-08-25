@@ -1,5 +1,5 @@
 import { decodeToken } from 'react-jwt';
-import { getTime, LocalStorage, UserObj } from '../';
+import { getTime, LocalStorage, User } from '../';
 
 export enum UserRoles {
   OWNER = 'owner',
@@ -90,19 +90,19 @@ export function isCurrentOwner(): boolean {
   return userInfo.role === UserRoles.OWNER;
 }
 
-export function isUser(user: UserObj): boolean {
+export function isUser(user: User): boolean {
   return user.role === UserRoles.USER;
 }
 
-export function isAdmin(user: UserObj): boolean {
+export function isAdmin(user: User): boolean {
   return user.role === UserRoles.ADMIN;
 }
 
-export function isOwner(user: UserObj): boolean {
+export function isOwner(user: User): boolean {
   return user.role === UserRoles.OWNER;
 }
 
-export function isUserEqualToCurrentUser(data: UserObj | number): boolean {
+export function isUserEqualToCurrentUser(data: User | number): boolean {
   const userInfo = getDecodedToken()!;
   if (typeof data === 'number') {
     return data === userInfo.id;
@@ -111,28 +111,28 @@ export function isUserEqualToCurrentUser(data: UserObj | number): boolean {
   }
 }
 
-export function isUserCreatedByCurrentUser(user: UserObj): boolean {
+export function isUserCreatedByCurrentUser(user: User): boolean {
   const userInfo = getDecodedToken()!;
   return user.parent.id === userInfo.id;
 }
 
-export function hasUserRoleAuthroized(user: UserObj): boolean {
+export function hasUserRoleAuthroized(user: User): boolean {
   return isUserEqualToCurrentUser(user) && isCurrentUser();
 }
 
-export function hasAdminRoleAuthorized(user: UserObj): boolean {
+export function hasAdminRoleAuthorized(user: User): boolean {
   return isUserEqualToCurrentUser(user) && isCurrentAdmin();
 }
 
-export function hasOwnerRoleAuthorized(user: UserObj): boolean {
+export function hasOwnerRoleAuthorized(user: User): boolean {
   return isUserEqualToCurrentUser(user) && isCurrentOwner();
 }
 
-export function hasCreatedByOwnerRoleAuthorized(user: UserObj): boolean {
+export function hasCreatedByOwnerRoleAuthorized(user: User): boolean {
   return isUserCreatedByCurrentUser(user) && !isOwner(user) && isCurrentOwner();
 }
 
-export function hasRoleAuthorized(user: UserObj): boolean {
+export function hasRoleAuthorized(user: User): boolean {
   return (
     hasUserRoleAuthroized(user) ||
     hasAdminRoleAuthorized(user) ||

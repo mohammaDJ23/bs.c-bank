@@ -1,4 +1,4 @@
-import { getDynamicPath, Pathes, ReceiverObj, UpdateReceiver, wait } from '../../lib';
+import { getDynamicPath, Pathes, Receiver, UpdateReceiver, wait } from '../../lib';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { Box, TextField, Button } from '@mui/material';
 import Modal from '../shared/Modal';
@@ -26,7 +26,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateReceiverFormInstance })
   const formSubmition = useCallback(() => {
     updateReceiverFormInstance.onSubmit(() => {
       request
-        .build<ReceiverObj, UpdateReceiver>(new UpdateReceiverApi(updateReceiverForm))
+        .build<Receiver, UpdateReceiver>(new UpdateReceiverApi(updateReceiverForm))
         .then((response) => {
           const receiverId = params.id as string;
           actions.hideModal(ModalNames.CONFIRMATION);

@@ -4,12 +4,12 @@ import Modal from '../shared/Modal';
 import { FC, useCallback } from 'react';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import { RestoreUserApi } from '../../apis';
-import { DeletedUserObj, Pathes } from '../../lib';
+import { User, Pathes } from '../../lib';
 import { ModalNames } from '../../store';
 import { useNavigate } from 'react-router-dom';
 
 interface DetailsImporation {
-  user: DeletedUserObj;
+  user: User;
 }
 
 const Details: FC<DetailsImporation> = ({ user }) => {

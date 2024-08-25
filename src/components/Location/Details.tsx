@@ -5,12 +5,12 @@ import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
 import { FC, useCallback, useState } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
-import { getDynamicPath, LocationObj, Pathes } from '../../lib';
+import { getDynamicPath, Location, Pathes } from '../../lib';
 import { ModalNames } from '../../store';
 import { DeleteLocationApi } from '../../apis';
 
 interface DetailsImporation {
-  location: LocationObj;
+  location: Location;
 }
 
 const Details: FC<DetailsImporation> = ({ location }) => {
@@ -47,7 +47,7 @@ const Details: FC<DetailsImporation> = ({ location }) => {
 
   const deleteLocation = useCallback(() => {
     request
-      .build<LocationObj, string>(new DeleteLocationApi(location.id))
+      .build<Location, string>(new DeleteLocationApi(location.id))
       .then(() => {
         actions.hideModal(ModalNames.CONFIRMATION);
         navigate(Pathes.LOCATIONS);

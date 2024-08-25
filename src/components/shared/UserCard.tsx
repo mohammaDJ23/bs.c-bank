@@ -3,13 +3,13 @@ import moment from 'moment';
 import { FC, PropsWithChildren } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks';
-import { getDynamicPath, Pathes, UserObj } from '../../lib';
+import { getDynamicPath, Pathes, User } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
-import { List } from '../../lib/lists/newList';
+import { List } from '../../lib/lists/list';
 
 interface UserCardImportion extends PropsWithChildren {
-  user: UserObj;
+  user: User;
   index: number;
   list: List;
 }

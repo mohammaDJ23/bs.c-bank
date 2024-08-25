@@ -3,13 +3,13 @@ import { ListItem, ListItemButton, ListItemText, Typography } from '@mui/materia
 import { Box } from '@mui/system';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
-import { BillObj, deletedAtColor, getDynamicPath, Pathes } from '../../lib';
+import { Bill, deletedAtColor, getDynamicPath, Pathes } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
-import { List } from '../../lib/lists/newList';
+import { List } from '../../lib/lists/list';
 
 interface BillCardImportation extends PropsWithChildren {
-  bill: BillObj;
+  bill: Bill;
   index: number;
   list: List;
 }

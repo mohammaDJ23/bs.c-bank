@@ -1,6 +1,6 @@
 import FormContainer from '../../layout/FormContainer';
 import Form from './Form';
-import { UpdateUserByOwner, UserObj } from '../../lib';
+import { UpdateUserByOwner, User } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { useEffect, FC } from 'react';
 import { useParams } from 'react-router-dom';
@@ -20,7 +20,7 @@ const UpdateUserByOwnerContent: FC = () => {
   useEffect(() => {
     const userId = params.id;
     if (userId) {
-      request.build<UserObj, number>(new UserApi(+userId).setInitialApi()).then((response) => {
+      request.build<User, number>(new UserApi(+userId).setInitialApi()).then((response) => {
         actions.setSpecificDetails('user', response.data);
         updateUserByOwnerFormInstance.initializeForm(
           new UpdateUserByOwner({

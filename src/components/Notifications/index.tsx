@@ -1,4 +1,4 @@
-import { useAction, usePaginationList, useRequest, useSelector } from '../../hooks';
+import { useAction, useRequest, useSelector } from '../../hooks';
 import ListContainer from '../../layout/ListContainer';
 import { NotificationsApi } from '../../apis';
 import List from './List';

@@ -38,7 +38,7 @@ import moment from 'moment';
 import Navigation from '../../layout/Navigation';
 import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
-import { MostActiveConsumerObj, MostActiveLocationObj, MostActiveReceiverObj, MostActiveUserObj } from '../../lib';
+import { MostActiveConsumers, MostActiveLocations, MostActiveReceivers, MostActiveUsers } from '../../lib';
 import { v4 as uuid } from 'uuid';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
@@ -113,7 +113,7 @@ const Dashboard: FC = () => {
         [
           Promise<AxiosResponse<NotificationQuantities>>,
           Promise<AxiosResponse<AllNotificationQuantities>>,
-          Promise<AxiosResponse<MostActiveUserObj[]>>
+          Promise<AxiosResponse<MostActiveUsers[]>>
         ]
       >([
         request.build(new NotificationQuantitiesApi().setInitialApi()),
@@ -184,9 +184,9 @@ const Dashboard: FC = () => {
         Promise<AxiosResponse<BillQuantities>>,
         Promise<AxiosResponse<LastYearBillsObj[]>>,
         Promise<AxiosResponse<DeletedBillQuantities>>,
-        Promise<AxiosResponse<MostActiveConsumerObj[]>>,
-        Promise<AxiosResponse<MostActiveLocationObj[]>>,
-        Promise<AxiosResponse<MostActiveReceiverObj[]>>
+        Promise<AxiosResponse<MostActiveConsumers[]>>,
+        Promise<AxiosResponse<MostActiveLocations[]>>,
+        Promise<AxiosResponse<MostActiveReceivers[]>>
       ]
     >([
       request.build(new BillQuantitiesApi().setInitialApi()),

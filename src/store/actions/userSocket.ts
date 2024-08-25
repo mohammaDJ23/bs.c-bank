@@ -8,7 +8,7 @@ export interface SetUserServiceConnectionSocketAction {
 
 export type UserServiceSocketActions = SetUserServiceConnectionSocketAction;
 
-export function setUserServiceConnectionSocket(socket: Socket) {
+export function setUserServiceConnectionSocket(socket: Socket): SetUserServiceConnectionSocketAction {
   return {
     type: UserServiceSocket.SET_CONNECTION_SOCKET,
     payload: { socket },

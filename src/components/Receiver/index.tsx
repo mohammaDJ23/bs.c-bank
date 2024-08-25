@@ -4,7 +4,7 @@ import { useAction, useRequest, useSelector } from '../../hooks';
 import { useEffect, FC } from 'react';
 import Skeleton from './Skeleton';
 import { ReceiverApi } from '../../apis';
-import { ReceiverObj } from '../../lib';
+import { Receiver } from '../../lib';
 import NotFound from './NotFound';
 import Details from './Details';
 import Navigation from '../../layout/Navigation';
@@ -20,7 +20,7 @@ const ReceiverContent: FC = () => {
   useEffect(() => {
     const receiverId = params.id;
     if (receiverId) {
-      request.build<ReceiverObj, string>(new ReceiverApi(+receiverId).setInitialApi()).then((response) => {
+      request.build<Receiver, string>(new ReceiverApi(+receiverId).setInitialApi()).then((response) => {
         actions.setSpecificDetails('receiver', response.data);
       });
     }

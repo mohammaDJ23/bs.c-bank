@@ -1,15 +1,15 @@
-import { ConsumerObj } from './consumer';
-import { LocationObj } from './locations';
-import { List } from './newList';
-import { ReceiverObj } from './receivers';
+import { Consumer } from './consumers';
+import { Location } from './locations';
+import { List } from './list';
+import { Receiver } from './receivers';
 import { User } from './users';
 
 export interface Bill {
   id: string;
   amount: string;
-  receiver: ReceiverObj;
-  location: LocationObj;
-  consumers: ConsumerObj[];
+  receiver: Receiver;
+  location: Location;
+  consumers: Consumer[];
   description: string;
   date: number | null;
   createdAt: Date;

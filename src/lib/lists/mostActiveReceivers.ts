@@ -1,6 +1,6 @@
-import { ReceiverObj } from './receivers';
+import { Receiver } from './receivers';
 
-export interface MostActiveReceiverObj {
+export interface MostActiveReceivers {
   quantities: number;
-  receiver: ReceiverObj;
+  receiver: Receiver;
 }

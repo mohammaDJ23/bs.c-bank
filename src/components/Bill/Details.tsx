@@ -5,12 +5,12 @@ import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
 import { FC, useCallback, useState } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
-import { BillObj, deletedAtColor, getDynamicPath, Pathes } from '../../lib';
+import { Bill, deletedAtColor, getDynamicPath, Pathes } from '../../lib';
 import { ModalNames } from '../../store';
 import { DeleteBillApi } from '../../apis';
 
 interface DetailsImporation {
-  bill: BillObj;
+  bill: Bill;
 }
 
 const Details: FC<DetailsImporation> = ({ bill }) => {
@@ -47,7 +47,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
 
   const deleteBill = useCallback(() => {
     request
-      .build<BillObj, string>(new DeleteBillApi(bill.id))
+      .build<Bill, string>(new DeleteBillApi(bill.id))
       .then(() => {
         actions.hideModal(ModalNames.CONFIRMATION);
         navigate(Pathes.BILLS);

@@ -6,11 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import { DeleteUserApi, DeleteUserByOwnerApi, DownloadBillReportApi } from '../../apis';
-import { UserWithBillInfoObj, UserObj, Pathes, getDynamicPath, LocalStorage } from '../../lib';
+import { UserWithBillInfo, User, Pathes, getDynamicPath, LocalStorage } from '../../lib';
 import { ModalNames, UsersStatusType } from '../../store';
 
 interface DetailsImporation {
-  user: UserWithBillInfoObj;
+  user: UserWithBillInfo;
 }
 
 const Details: FC<DetailsImporation> = ({ user }) => {
@@ -110,7 +110,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
 
   const deleteByUser = useCallback(() => {
     request
-      .build<UserObj, number>(new DeleteUserApi())
+      .build<User, number>(new DeleteUserApi())
       .then((response) => {
         if (connectionSocket) {
           connectionSocket.disconnect();
@@ -124,7 +124,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
 
   const deleteByOwner = useCallback(() => {
     request
-      .build<UserObj, number>(new DeleteUserByOwnerApi(user.id))
+      .build<User, number>(new DeleteUserByOwnerApi(user.id))
       .then((response) => {
         actions.hideModal(ModalNames.CONFIRMATION);
         if (isUserEqualToCurrentUser) {
@@ -148,7 +148,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
       const link = document.createElement('a');
       link.href = href;
       link.setAttribute('download', `${user.firstName}-${user.lastName}-${new Date().toISOString()}.xlsx`);
-      document.body.appendChild(link)
+      document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(href);

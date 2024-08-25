@@ -5,12 +5,12 @@ import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
 import { FC, useCallback, useState } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
-import { ConsumerObj, getDynamicPath, Pathes } from '../../lib';
+import { Consumer, getDynamicPath, Pathes } from '../../lib';
 import { ModalNames } from '../../store';
 import { DeleteConsumerApi } from '../../apis';
 
 interface DetailsImporation {
-  consumer: ConsumerObj;
+  consumer: Consumer;
 }
 
 const Details: FC<DetailsImporation> = ({ consumer }) => {
@@ -47,7 +47,7 @@ const Details: FC<DetailsImporation> = ({ consumer }) => {
 
   const deleteConsumer = useCallback(() => {
     request
-      .build<ConsumerObj, string>(new DeleteConsumerApi(consumer.id))
+      .build<Consumer, string>(new DeleteConsumerApi(consumer.id))
       .then(() => {
         actions.hideModal(ModalNames.CONFIRMATION);
         navigate(Pathes.CONSUMERS);

@@ -1,4 +1,4 @@
-import { List } from './newList';
+import { List } from './list';
 import { User } from './users';
 
 export interface Notification {

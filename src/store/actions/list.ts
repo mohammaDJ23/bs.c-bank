@@ -1,4 +1,4 @@
-import { List } from '../../lib/lists/newList';
+import { List } from '../../lib/lists/list';
 import { Lists } from '../reducers';
 
 export interface ListConstructor {

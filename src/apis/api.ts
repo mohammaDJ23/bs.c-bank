@@ -12,18 +12,17 @@ import {
   UserListFiltersObj,
   DeletedUserListFiltersObj,
   ConsumerListFiltersObj,
-  ReceiverObj,
   LocationListFiltersObj,
   UpdateReceiver,
   UpdateLocation,
   UpdateConsumer,
-  MostActiveUserObj,
-  MostActiveConsumerObj,
-  MostActiveReceiverObj,
+  MostActiveUsers,
+  MostActiveConsumers,
+  MostActiveReceivers,
 } from '../lib';
 import { RootApiObj } from './resetApi';
 import { ReceiverListFiltersObj } from '../lib/forms/receiverListFilters';
-import { ListParams } from '../lib/lists/newList';
+import { ListParams } from '../lib/lists/list';
 
 export type FilterParams<T = any> = Record<'filters', T>;
 
@@ -542,7 +541,7 @@ export class UpdateConsumerApi extends RootApi<UpdateConsumer> {
 }
 
 export class ReceiversApi extends RootApi {
-  constructor(params: Partial<ListParams<ReceiverObj> & FilterParams<Partial<ReceiverListFiltersObj>>> = {}) {
+  constructor(params: Partial<ListParams<Partial<ReceiverListFiltersObj>>> = {}) {
     super(
       {
         url: '/api/v1/bank/receiver/all',
@@ -553,6 +552,8 @@ export class ReceiversApi extends RootApi {
     );
   }
 }
+
+export type ReceiversApiConstructorType = ConstructorParameters<typeof ReceiversApi>[0];
 
 export class ReceiverApi extends RootApi {
   constructor(id: number) {
@@ -656,7 +657,7 @@ export class UpdateLocationApi extends RootApi<UpdateLocation> {
 }
 
 export class MostActiveUsersApi extends RootApi {
-  constructor(params: Partial<ListParams<MostActiveUserObj>> = {}) {
+  constructor(params: Partial<ListParams<MostActiveUsers>> = {}) {
     super(
       {
         url: '/api/v1/bank/owner/bill/most-active-users',
@@ -669,7 +670,7 @@ export class MostActiveUsersApi extends RootApi {
 }
 
 export class MostActiveConsumersApi extends RootApi {
-  constructor(params: Partial<ListParams<MostActiveConsumerObj>> = {}) {
+  constructor(params: Partial<ListParams<MostActiveConsumers>> = {}) {
     super(
       {
         url: '/api/v1/bank/consumer/most-active-consumers',
@@ -682,7 +683,7 @@ export class MostActiveConsumersApi extends RootApi {
 }
 
 export class MostActiveLocationsApi extends RootApi {
-  constructor(params: Partial<ListParams<MostActiveConsumerObj>> = {}) {
+  constructor(params: Partial<ListParams<MostActiveConsumers>> = {}) {
     super(
       {
         url: '/api/v1/bank/location/most-active-locations',
@@ -695,7 +696,7 @@ export class MostActiveLocationsApi extends RootApi {
 }
 
 export class MostActiveReceiversApi extends RootApi {
-  constructor(params: Partial<ListParams<MostActiveReceiverObj>> = {}) {
+  constructor(params: Partial<ListParams<MostActiveReceivers>> = {}) {
     super(
       {
         url: '/api/v1/bank/receiver/most-active-receivers',

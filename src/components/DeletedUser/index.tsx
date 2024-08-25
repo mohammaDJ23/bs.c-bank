@@ -3,7 +3,7 @@ import DefaultContainer from '../../layout/DefaultContainer';
 import { useParams } from 'react-router-dom';
 import { useAction, useRequest, useSelector } from '../../hooks';
 import Skeleton from '../shared/UserSkeleton';
-import { UserWithBillInfoObj } from '../../lib';
+import { UserWithBillInfo } from '../../lib';
 import { DeletedUserApi } from '../../apis';
 import NotFound from './NotFound';
 import Details from './Details';
@@ -20,7 +20,7 @@ const UserContent: FC = () => {
   useEffect(() => {
     const userId = params.id;
     if (userId) {
-      request.build<UserWithBillInfoObj, number>(new DeletedUserApi(+userId).setInitialApi()).then((response) => {
+      request.build<UserWithBillInfo, number>(new DeletedUserApi(+userId).setInitialApi()).then((response) => {
         actions.setSpecificDetails('deletedUser', response.data);
       });
     }

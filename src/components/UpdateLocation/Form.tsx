@@ -1,4 +1,4 @@
-import { getDynamicPath, Pathes, LocationObj, UpdateLocation, wait } from '../../lib';
+import { getDynamicPath, Pathes, Location, UpdateLocation, wait } from '../../lib';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { Box, TextField, Button } from '@mui/material';
 import Modal from '../shared/Modal';
@@ -26,7 +26,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateLocationFormInstance })
   const formSubmition = useCallback(() => {
     updateLocationFormInstance.onSubmit(() => {
       request
-        .build<LocationObj, UpdateLocation>(new UpdateLocationApi(updateLocationForm))
+        .build<Location, UpdateLocation>(new UpdateLocationApi(updateLocationForm))
         .then((response) => {
           const locationId = params.id as string;
           actions.hideModal(ModalNames.CONFIRMATION);

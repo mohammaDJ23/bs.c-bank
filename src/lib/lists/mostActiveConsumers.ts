@@ -1,6 +1,6 @@
-import { ConsumerObj } from './consumer';
+import { Consumer } from './consumers';
 
-export interface MostActiveConsumerObj {
+export interface MostActiveConsumers {
   quantities: number;
-  consumer: ConsumerObj;
+  consumer: Consumer;
 }

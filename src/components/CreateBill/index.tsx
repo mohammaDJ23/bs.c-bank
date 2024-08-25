@@ -2,28 +2,25 @@ import { v4 as uuid } from 'uuid';
 import FormContainer from '../../layout/FormContainer';
 import { Box, TextField, Button, Autocomplete, CircularProgress } from '@mui/material';
 import {
-  ConsumerList,
   ConsumerListFilters,
   ReceiverListFilters,
-  ConsumerObj,
   CreateBill,
-  ReceiverList,
   debounce,
   getTime,
   isoDate,
-  ReceiverObj,
   LocationListFilters,
-  LocationList,
-  LocationObj,
   wait,
 } from '../../lib';
-import { useForm, useRequest, useFocus, usePaginationList } from '../../hooks';
+import { useForm, useRequest, useFocus, useSelector, useAction } from '../../hooks';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
 import { ConsumersApi, CreateBillApi, LocationsApi, ReceiversApi } from '../../apis';
 import { useSnackbar } from 'notistack';
 import Navigation from '../../layout/Navigation';
+import { selectConsumersList, selectLocationsList, selectReceiversList } from '../../store/selectors';
 
 const CreateBillContent: FC = () => {
+  const selectors = useSelector();
+  const actions = useAction();
   const [consumers, setConsumers] = useState<string[]>([]);
   const [receviers, setReceivers] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
@@ -44,9 +41,9 @@ const CreateBillContent: FC = () => {
   const consumerListFiltersForm = consumerListFiltersFormInstance.getForm();
   const receiverListFiltersForm = receiverListFiltersFormInstance.getForm();
   const locationListFiltersForm = locationListFiltersFormInstance.getForm();
-  const consumerListInstance = usePaginationList(ConsumerList);
-  const receiverlistInstance = usePaginationList(ReceiverList);
-  const locationListInstance = usePaginationList(LocationList);
+  const consumersList = selectConsumersList(selectors);
+  const receiverslist = selectReceiversList(selectors);
+  const locationsList = selectLocationsList(selectors);
   const snackbar = useSnackbar();
   const oneQuarterDebounce = useRef(debounce(250));
   const formElIdRef = useRef(uuid());
@@ -70,90 +67,87 @@ const CreateBillContent: FC = () => {
       const q = event.target.value.trim();
       receiverListFiltersFormInstance.onChange('q', q);
       createBillFromInstance.onChange('receiver', q);
-
       oneQuarterDebounce.current(() => {
         receiverListFiltersFormInstance.onSubmit(() => {
           setIsReceiverAutocompleteOpen(true);
-          const receiverApi = new ReceiversApi({
-            take: receiverlistInstance.getTake(),
-            page: receiverlistInstance.getPage(),
+          actions.getReceivers({
+            page: 1,
+            take: receiverslist.take,
             filters: { q },
-          });
-          request.build<[ReceiverObj[], number]>(receiverApi).then((response) => {
-            const [list] = response.data;
-            const receivers: string[] = [];
-            if (q.length) {
-              receivers.splice(receivers.length, 0, q);
-            }
-            receivers.splice(receivers.length, 0, ...list.map((receiver) => receiver.name));
-            const newReceivers = new Set(receivers);
-            setReceivers(Array.from(newReceivers));
           });
         });
       });
     },
-    [createBillFromInstance, receiverListFiltersFormInstance]
+    [createBillFromInstance, receiverListFiltersFormInstance, receiverslist]
   );
+
+  useEffect(() => {
+    const receivers: string[] = [];
+    if (receiverListFiltersForm.q.length) {
+      receivers.splice(receivers.length, 0, receiverListFiltersForm.q);
+    }
+    receivers.splice(receivers.length, 0, ...receiverslist.list.map((receiver) => receiver.name));
+    const newReceivers = new Set(receivers);
+    setReceivers(Array.from(newReceivers));
+  }, [receiverslist, receiverListFiltersForm]);
 
   const onLocationChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const q = event.target.value.trim();
       locationListFiltersFormInstance.onChange('q', q);
       createBillFromInstance.onChange('location', q);
-
       oneQuarterDebounce.current(() => {
         locationListFiltersFormInstance.onSubmit(() => {
           setIsLocationAutocompleteOpen(true);
-          const locationApi = new LocationsApi({
-            take: locationListInstance.getTake(),
-            page: locationListInstance.getPage(),
+          actions.getLocations({
+            page: 1,
+            take: locationsList.take,
             filters: { q },
-          });
-          request.build<[LocationObj[], number]>(locationApi).then((response) => {
-            const [list] = response.data;
-            const locations: string[] = [];
-            if (q.length) {
-              locations.splice(locations.length, 0, q);
-            }
-            locations.splice(locations.length, 0, ...list.map((location) => location.name));
-            const newLocations = new Set(locations);
-            setLocations(Array.from(newLocations));
           });
         });
       });
     },
-    [createBillFromInstance, receiverListFiltersFormInstance]
+    [createBillFromInstance, locationListFiltersFormInstance, locationsList]
   );
+
+  useEffect(() => {
+    const locations: string[] = [];
+    if (locationListFiltersForm.q.length) {
+      locations.splice(locations.length, 0, locationListFiltersForm.q);
+    }
+    locations.splice(locations.length, 0, ...locationsList.list.map((location) => location.name));
+    const newLocations = new Set(locations);
+    setLocations(Array.from(newLocations));
+  }, [locationsList, locationListFiltersForm]);
 
   const onConsumerChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const q = event.target.value.trim();
       consumerListFiltersFormInstance.onChange('q', q);
-
       oneQuarterDebounce.current(() => {
         consumerListFiltersFormInstance.onSubmit(() => {
           setIsConsumerAutocompleteOpen(true);
-          const consumersApi = new ConsumersApi({
-            take: consumerListInstance.getTake(),
-            page: consumerListInstance.getPage(),
+          actions.getConsumers({
+            page: 1,
+            take: consumersList.take,
             filters: { q },
-          });
-          request.build<[ConsumerObj[], number]>(consumersApi).then((response) => {
-            const [list] = response.data;
-            const consumers: string[] = [];
-            if (q.length) {
-              consumers.splice(consumers.length, 0, q);
-            }
-            consumers.splice(consumers.length, 0, ...createBillFrom.consumers);
-            consumers.splice(consumers.length, 0, ...list.map((consumer) => consumer.name));
-            const newConsumers = new Set(consumers);
-            setConsumers(Array.from(newConsumers));
           });
         });
       });
     },
-    [createBillFrom, consumerListFiltersFormInstance]
+    [consumerListFiltersFormInstance, consumersList]
   );
+
+  useEffect(() => {
+    const consumers: string[] = [];
+    if (consumerListFiltersForm.q.length) {
+      consumers.splice(consumers.length, 0, consumerListFiltersForm.q);
+    }
+    consumers.splice(consumers.length, 0, ...createBillFrom.consumers);
+    consumers.splice(consumers.length, 0, ...consumersList.list.map((consumer) => consumer.name));
+    const newConsumers = new Set(consumers);
+    setConsumers(Array.from(newConsumers));
+  }, [consumersList, consumerListFiltersForm, createBillFrom]);
 
   useEffect(() => {
     (async () => {

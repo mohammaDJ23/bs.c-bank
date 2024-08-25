@@ -1,6 +1,6 @@
-import { LocationObj } from './locations';
+import { Location } from './locations';
 
-export interface MostActiveLocationObj {
+export interface MostActiveLocations {
   quantities: number;
-  location: LocationObj;
+  location: Location;
 }

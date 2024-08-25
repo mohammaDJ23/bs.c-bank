@@ -1,4 +1,4 @@
 import { Bill } from './bills';
-import { List } from './newList';
+import { List } from './list';
 
 export class DeletedBills extends List<Bill> {}

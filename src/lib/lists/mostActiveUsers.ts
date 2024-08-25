@@ -1,6 +1,6 @@
-import { UserObj } from './user';
+import { User } from './users';
 
-export interface MostActiveUserObj {
+export interface MostActiveUsers {
   quantities: number;
-  user: UserObj;
+  user: User;
 }

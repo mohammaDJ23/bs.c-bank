@@ -1,4 +1,4 @@
-import { List } from './newList';
+import { List } from './list';
 
 export interface Location {
   id: number;

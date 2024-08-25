@@ -4,7 +4,7 @@ import { useAction, useRequest, useSelector } from '../../hooks';
 import { useEffect, FC } from 'react';
 import Skeleton from '../shared/BillSkeleton';
 import { DeletedBillApi } from '../../apis';
-import { BillObj } from '../../lib';
+import { Bill } from '../../lib';
 import NotFound from './NotFound';
 import Details from './Details';
 import Navigation from '../../layout/Navigation';
@@ -20,7 +20,7 @@ const DeletedBillContent: FC = () => {
   useEffect(() => {
     const billId = params.id;
     if (billId) {
-      request.build<BillObj, string>(new DeletedBillApi(billId).setInitialApi()).then((response) => {
+      request.build<Bill, string>(new DeletedBillApi(billId).setInitialApi()).then((response) => {
         actions.setSpecificDetails('deletedBill', response.data);
       });
     }

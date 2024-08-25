@@ -5,12 +5,12 @@ import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
 import { FC, useCallback, useState } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
-import { getDynamicPath, Pathes, ReceiverObj } from '../../lib';
+import { getDynamicPath, Pathes, Receiver } from '../../lib';
 import { ModalNames } from '../../store';
 import { DeleteReceiverApi } from '../../apis';
 
 interface DetailsImporation {
-  receiver: ReceiverObj;
+  receiver: Receiver;
 }
 
 const Details: FC<DetailsImporation> = ({ receiver }) => {
@@ -47,7 +47,7 @@ const Details: FC<DetailsImporation> = ({ receiver }) => {
 
   const deleteReceiver = useCallback(() => {
     request
-      .build<ReceiverObj, string>(new DeleteReceiverApi(receiver.id))
+      .build<Receiver, string>(new DeleteReceiverApi(receiver.id))
       .then(() => {
         actions.hideModal(ModalNames.CONFIRMATION);
         navigate(Pathes.RECEIVERS);
