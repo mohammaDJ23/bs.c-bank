@@ -52,7 +52,9 @@ const CreateBillContent: FC = () => {
   const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
-    actions.createBill(createBillFrom);
+    createBillFromInstance.onSubmit(() => {
+      actions.createBill(createBillFrom);
+    });
   }, [createBillFromInstance, createBillFrom, request]);
 
   useEffect(() => {

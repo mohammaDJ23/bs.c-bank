@@ -2,7 +2,7 @@ import FormContainer from '../../layout/FormContainer';
 import { v4 as uuid } from 'uuid';
 import { Box, TextField, Button, Select, FormControl, MenuItem, InputLabel, FormHelperText } from '@mui/material';
 import { CreateUser, wait } from '../../lib';
-import { useAuth, useForm, useRequest, useFocus } from '../../hooks';
+import { useAuth, useForm, useRequest, useFocus, useAction } from '../../hooks';
 import { CreateUserApi } from '../../apis';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { useSnackbar } from 'notistack';
@@ -13,20 +13,30 @@ const CreateUserContent: FC = () => {
   const createUserFormInstance = useForm(CreateUser);
   const request = useRequest();
   const focus = useFocus();
+  const actions = useAction();
   const isCreateUserApiProcessing = request.isApiProcessing(CreateUserApi);
+  const isCreateUserApiSuccessed = request.isProcessingApiSuccessed(CreateUserApi);
+  const isCreateUserApiFailed = request.isProcessingApiFailed(CreateUserApi);
+  const createUserApiExceptionMessage = request.getExceptionMessage(CreateUserApi);
   const form = createUserFormInstance.getForm();
   const snackbar = useSnackbar();
   const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     createUserFormInstance.onSubmit(() => {
-      request.build<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
-        createUserFormInstance.resetForm();
-        snackbar.enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
-        focus('firstName');
-      });
+      actions.createUser(form);
     });
-  }, [createUserFormInstance, form, request]);
+  }, [createUserFormInstance, form]);
+
+  useEffect(() => {
+    if (isCreateUserApiSuccessed) {
+      createUserFormInstance.resetForm();
+      snackbar.enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
+      focus('firstName');
+    } else if (isCreateUserApiFailed) {
+      snackbar.enqueueSnackbar({ message: createUserApiExceptionMessage, variant: 'error' });
+    }
+  }, [isCreateUserApiSuccessed, isCreateUserApiFailed]);
 
   useEffect(() => {
     focus('firstName');

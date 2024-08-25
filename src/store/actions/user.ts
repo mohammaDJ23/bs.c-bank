@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import {
+  CreateUserApi,
   DeletedUsersApi,
   DeletedUsersApiConstructorType,
   MostActiveUsersApi,
@@ -8,7 +9,7 @@ import {
   UsersApi,
   UsersApiConstructorType,
 } from '../../apis';
-import { DeletedUsers, MostActiveUser, MostActiveUsers, User, Users } from '../../lib';
+import { CreateUser, DeletedUsers, MostActiveUser, MostActiveUsers, User, Users } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -95,6 +96,18 @@ export function getInitialMostActiveUsers(params: MostActiveUsersApiConstructorT
       dispatch(initialProcessingApiSuccess(MostActiveUsersApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(MostActiveUsersApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function createUser(data: CreateUser) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(CreateUserApi.name));
+      await new Request<User, CreateUser>(new CreateUserApi(data)).build();
+      dispatch(processingApiSuccess(CreateUserApi.name));
+    } catch (error) {
+      dispatch(processingApiError(CreateUserApi.name, error as AxiosError<Exception>));
     }
   };
 }

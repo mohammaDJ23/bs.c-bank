@@ -86,6 +86,8 @@ export function useRequest() {
       let message = 'Something went wrong';
       if (exception && exception.response) {
         message = exception.response.data.message;
+      } else if (exception && exception.message) {
+        message = exception.message;
       }
       return message;
     },
@@ -98,6 +100,8 @@ export function useRequest() {
       let message = 'Something went wrong';
       if (exception && exception.response) {
         message = exception.response.data.message;
+      } else if (exception && exception.message) {
+        message = exception.message;
       }
       return message;
     },
