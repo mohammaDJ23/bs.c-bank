@@ -1,5 +1,11 @@
-import { ConsumersApi, ConsumersApiConstructorType, Request } from '../../apis';
-import { Consumers } from '../../lib';
+import {
+  ConsumersApi,
+  ConsumersApiConstructorType,
+  MostActiveConsumersApi,
+  MostActiveConsumersApiConstructorType,
+  Request,
+} from '../../apis';
+import { Consumers, MostActiveConsumer, MostActiveConsumers } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -35,6 +41,28 @@ export function getConsumers(params: ConsumersApiConstructorType = {}) {
       dispatch(processingApiSuccess(ConsumersApi.name));
     } catch (error) {
       dispatch(processingApiError(ConsumersApi.name));
+    }
+  };
+}
+
+export function getInitialMostActiveConsumers(params: MostActiveConsumersApiConstructorType = {}) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(MostActiveConsumersApi.name));
+      const response = await new Request<MostActiveConsumer[]>(new MostActiveConsumersApi()).build();
+      dispatch(
+        createNewList(
+          new MostActiveConsumers({
+            list: response.data,
+            total: response.data.length,
+            page: params.page,
+            take: params.take,
+          })
+        )
+      );
+      dispatch(initialProcessingApiSuccess(MostActiveConsumersApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(MostActiveConsumersApi.name));
     }
   };
 }

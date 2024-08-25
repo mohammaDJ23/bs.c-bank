@@ -3,7 +3,6 @@ import {
   Consumer,
   User,
   Location,
-  MostActiveConsumers,
   MostActiveUsers,
   Notification,
   Receiver,
@@ -116,7 +115,6 @@ export interface SpecificDetailsState {
   allNotificationQuantities: AllNotificationQuantities | null;
   usersStatus: UsersStatusType;
   mostActiveUsers: MostActiveUsers[];
-  mostActiveConsumers: MostActiveConsumers[];
   mostActiveLocations: MostActiveLocations[];
   mostActiveReceivers: MostActiveReceivers[];
 }
@@ -143,7 +141,6 @@ const initialState: SpecificDetailsState = {
   allNotificationQuantities: null,
   usersStatus: {},
   mostActiveUsers: [],
-  mostActiveConsumers: [],
   mostActiveLocations: [],
   mostActiveReceivers: [],
 };
@@ -178,7 +175,6 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     notificationQuantities: null,
     allNotificationQuantities: null,
     mostActiveUsers: [],
-    mostActiveConsumers: [],
     mostActiveLocations: [],
     mostActiveReceivers: [],
   };

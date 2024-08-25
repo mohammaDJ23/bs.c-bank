@@ -5,6 +5,7 @@ import {
   DeletedBills,
   DeletedUsers,
   Locations,
+  MostActiveConsumers,
   Notifications,
   Receivers,
   Users,
@@ -45,4 +46,8 @@ export function selectNotificationsList(state: RootState): Notifications {
 
 export function selectReceiversList(state: RootState): Receivers {
   return state.lists[Receivers.name];
+}
+
+export function selectMostActiveConsumersList(state: RootState): MostActiveConsumers {
+  return state.lists[MostActiveConsumers.name];
 }

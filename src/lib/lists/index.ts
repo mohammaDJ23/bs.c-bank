@@ -7,6 +7,7 @@ import { Users } from './users';
 import { Bills } from './bills';
 import { AllBills } from './allBills';
 import { Consumers } from './consumers';
+import { MostActiveConsumers } from './mostActiveConsumers';
 
 export * from './deletedUsers';
 export * from './deletedBills';
@@ -21,6 +22,7 @@ export * from './users';
 export * from './bills';
 export * from './allBills';
 export * from './consumers';
+export * from './mostActiveConsumers';
 
 export const lists = {
   Users,
@@ -32,4 +34,5 @@ export const lists = {
   Locations,
   Notifications,
   Receivers,
+  MostActiveConsumers,
 };

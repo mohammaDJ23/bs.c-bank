@@ -40,6 +40,7 @@ import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
 import { MostActiveConsumers, MostActiveLocations, MostActiveReceivers, MostActiveUsers } from '../../lib';
 import { v4 as uuid } from 'uuid';
+import { selectMostActiveConsumersList } from '../../store/selectors';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -60,6 +61,7 @@ const Dashboard: FC = () => {
   const auth = useAuth();
   const actions = useAction();
   const selectors = useSelector();
+  const mostActiveConsumersList = selectMostActiveConsumersList(selectors);
   const isCurrentAdmin = auth.isCurrentAdmin();
   const isCurrentOwner = auth.isCurrentOwner();
   const isCurrentOwnerOrAdmin = isCurrentOwner || isCurrentAdmin;
@@ -179,12 +181,13 @@ const Dashboard: FC = () => {
       );
     }
 
+    actions.getInitialMostActiveConsumers({ page: 1, take: mostActiveConsumersList.take });
+
     Promise.allSettled<
       [
         Promise<AxiosResponse<BillQuantities>>,
         Promise<AxiosResponse<LastYearBillsObj[]>>,
         Promise<AxiosResponse<DeletedBillQuantities>>,
-        Promise<AxiosResponse<MostActiveConsumers[]>>,
         Promise<AxiosResponse<MostActiveLocations[]>>,
         Promise<AxiosResponse<MostActiveReceivers[]>>
       ]
@@ -192,7 +195,6 @@ const Dashboard: FC = () => {
       request.build(new BillQuantitiesApi().setInitialApi()),
       request.build(new LastYearBillsApi().setInitialApi()),
       request.build(new DeletedBillQuantitiesApi().setInitialApi()),
-      request.build(new MostActiveConsumersApi().setInitialApi()),
       request.build(new MostActiveLocationsApi().setInitialApi()),
       request.build(new MostActiveReceiversApi().setInitialApi()),
     ]).then(
@@ -200,7 +202,6 @@ const Dashboard: FC = () => {
         billQuantitiesResponse,
         lastYearBillsResponse,
         deletedBillQuantitiesResponse,
-        mostActiveConsumersResponse,
         mostActiveLocationsResponse,
         mostActiveReceiversResponse,
       ]) => {
@@ -216,9 +217,6 @@ const Dashboard: FC = () => {
           const { quantities, amount } = deletedBillQuantitiesResponse.value.data;
           actions.setSpecificDetails('deletedBillQuantities', new DeletedBillQuantities(amount, quantities));
         }
-
-        if (mostActiveConsumersResponse.status === 'fulfilled')
-          actions.setSpecificDetails('mostActiveConsumers', mostActiveConsumersResponse.value.data);
 
         if (mostActiveLocationsResponse.status === 'fulfilled')
           actions.setSpecificDetails('mostActiveLocations', mostActiveLocationsResponse.value.data);
@@ -393,7 +391,7 @@ const Dashboard: FC = () => {
 
   const consumersChartElIdRef = useRef(uuid());
   useEffect(() => {
-    if (selectors.specificDetails.mostActiveConsumers.length > 0) {
+    if (mostActiveConsumersList.list.length > 0) {
       const el = document.getElementById(consumersChartElIdRef.current) as HTMLDivElement | null;
       if (el) {
         const chart = echarts.init(el);
@@ -423,7 +421,7 @@ const Dashboard: FC = () => {
                   show: false,
                 },
               },
-              data: selectors.specificDetails.mostActiveConsumers.map((item) => ({
+              data: mostActiveConsumersList.list.map((item) => ({
                 value: item.quantities,
                 name: item.consumer.name,
               })),
@@ -438,7 +436,7 @@ const Dashboard: FC = () => {
         return () => window.removeEventListener('resize', onResize);
       }
     }
-  }, [selectors.specificDetails.mostActiveConsumers]);
+  }, [mostActiveConsumersList]);
 
   const receiversChartElIdRef = useRef(uuid());
   useEffect(() => {
@@ -617,8 +615,7 @@ const Dashboard: FC = () => {
                     </Typography>
                   </Box>
                 </Card>
-              ) : isInitialMostActiveConsumersApiSuccessed &&
-                selectors.specificDetails.mostActiveConsumers.length > 0 ? (
+              ) : isInitialMostActiveConsumersApiSuccessed && mostActiveConsumersList.list.length > 0 ? (
                 <Card>
                   <CardContent
                     style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
