@@ -10,20 +10,34 @@ import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import LocationCard from '../shared/LocationCard';
 import { selectLocationsList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const request = useRequest();
   const selectors = useSelector();
   const actions = useAction();
+  const snackbar = useSnackbar();
   const locationListFiltersFormInstance = useForm(LocationListFilters);
   const locationListFiltersForm = locationListFiltersFormInstance.getForm();
   const isInitialLocationsApiProcessing = request.isInitialApiProcessing(LocationsApi);
   const isLocationsApiProcessing = request.isApiProcessing(LocationsApi);
+  const isInitialLocationsApiFailed = request.isInitialProcessingApiFailed(LocationsApi);
+  const isLocationsApiFailed = request.isProcessingApiFailed(LocationsApi);
+  const initialLocationsApiExceptionMessage = request.getInitialExceptionMessage(LocationsApi);
+  const locationsApiExceptionMessage = request.getExceptionMessage(LocationsApi);
   const locationsList = selectLocationsList(selectors);
 
   useEffect(() => {
     actions.getInitialLocations({ page: 1, take: locationsList.take });
   }, []);
+
+  useEffect(() => {
+    if (isInitialLocationsApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialLocationsApiExceptionMessage, variant: 'error' });
+    } else if (isLocationsApiFailed) {
+      snackbar.enqueueSnackbar({ message: locationsApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitialLocationsApiFailed, isLocationsApiFailed]);
 
   const changePage = useCallback(
     (page: number) => {
