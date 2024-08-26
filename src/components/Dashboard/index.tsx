@@ -135,14 +135,11 @@ const Dashboard: FC = () => {
     actions.getInitialMostActiveLocations({ page: 1, take: mostActiveLocationsList.take });
     actions.getInitialMostActiveReceivers({ page: 1, take: mostActiveReceiversList.take });
     actions.getInitialBillQuantities();
+    actions.getInitialLastYearBill();
 
-    Promise.allSettled<[Promise<AxiosResponse<LastYearBill[]>>, Promise<AxiosResponse<DeletedBillQuantities>>]>([
-      request.build(new LastYearBillsApi().setInitialApi()),
+    Promise.allSettled<[Promise<AxiosResponse<DeletedBillQuantities>>]>([
       request.build(new DeletedBillQuantitiesApi().setInitialApi()),
-    ]).then(([lastYearBillsResponse, deletedBillQuantitiesResponse]) => {
-      if (lastYearBillsResponse.status === 'fulfilled')
-        actions.setSpecificDetails('lastYearBills', lastYearBillsResponse.value.data);
-
+    ]).then(([deletedBillQuantitiesResponse]) => {
       if (deletedBillQuantitiesResponse.status === 'fulfilled') {
         const { quantities, amount } = deletedBillQuantitiesResponse.value.data;
         actions.setSpecificDetails('deletedBillQuantities', new DeletedBillQuantities(amount, quantities));

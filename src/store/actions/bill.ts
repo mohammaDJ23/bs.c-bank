@@ -12,6 +12,7 @@ import {
   DeleteBillApi,
   DeletedBillsApi,
   DeletedBillsApiConstructorType,
+  LastYearBillsApi,
   Request,
 } from '../../apis';
 import { AllBills, Bill, Bills, CreateBill, DeletedBills } from '../../lib';
@@ -21,6 +22,7 @@ import {
   BillQuantities,
   DeletedBillQuantities,
   Exception,
+  LastYearBill,
 } from '../reducers';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
@@ -199,6 +201,19 @@ export function getInitialBillQuantities() {
       dispatch(initialProcessingApiSuccess(BillQuantitiesApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(BillQuantitiesApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialLastYearBill() {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(LastYearBillsApi.name));
+      const response = await new Request<LastYearBill[]>(new LastYearBillsApi()).build();
+      dispatch(setSpecificDetails('lastYearBills', response.data));
+      dispatch(initialProcessingApiSuccess(LastYearBillsApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(LastYearBillsApi.name, error as AxiosError<Exception>));
     }
   };
 }
