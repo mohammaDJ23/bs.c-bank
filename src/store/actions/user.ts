@@ -11,6 +11,7 @@ import {
   Request,
   RestoreUserApi,
   UpdateUserApi,
+  UpdateUserByOwnerApi,
   UserApi,
   UserQuantitiesApi,
   UsersApi,
@@ -23,6 +24,7 @@ import {
   MostActiveUser,
   MostActiveUsers,
   UpdateUser,
+  UpdateUserByOwner,
   User,
   Users,
   UserWithBillInfo,
@@ -216,6 +218,19 @@ export function updateUser(data: UpdateUser) {
       dispatch(processingApiSuccess(UpdateUserApi.name));
     } catch (error) {
       dispatch(processingApiError(UpdateUserApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function updateUserByOwner(data: UpdateUserByOwner, id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(UpdateUserByOwnerApi.name));
+      const response = await new Request<AccessTokenObj, UpdateUserByOwner>(new UpdateUserByOwnerApi(data, id)).build();
+      dispatch(setSpecificDetails('updatedUserByOwner', response.data));
+      dispatch(processingApiSuccess(UpdateUserByOwnerApi.name));
+    } catch (error) {
+      dispatch(processingApiError(UpdateUserByOwnerApi.name, error as AxiosError<Exception>));
     }
   };
 }

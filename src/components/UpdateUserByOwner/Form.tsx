@@ -1,16 +1,8 @@
 import { FC, useCallback, useEffect, useRef } from 'react';
-import {
-  AccessTokenObj,
-  getDynamicPath,
-  getUserRoles,
-  Pathes,
-  reInitializeToken,
-  UpdateUserByOwner,
-  wait,
-} from '../../lib';
+import { getDynamicPath, getUserRoles, Pathes, reInitializeToken, UpdateUserByOwner, wait } from '../../lib';
 import Modal from '../shared/Modal';
 import { ModalNames } from '../../store';
-import { useAction, useAuth, useForm, useRequest } from '../../hooks';
+import { useAction, useAuth, useForm, useRequest, useSelector } from '../../hooks';
 import { Box, TextField, Button, Select, FormControl, MenuItem, InputLabel, FormHelperText } from '@mui/material';
 import { UpdateUserByOwnerApi } from '../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -25,37 +17,41 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
   const params = useParams();
   const navigate = useNavigate();
   const actions = useAction();
+  const selectors = useSelector();
   const request = useRequest();
   const isUpdateUserByOwnerApiProcessing = request.isApiProcessing(UpdateUserByOwnerApi);
+  const isUpdateUserByOwnerApiFailed = request.isProcessingApiFailed(UpdateUserByOwnerApi);
+  const isUpdateUserByOwnerApiSuccessed = request.isProcessingApiSuccessed(UpdateUserByOwnerApi);
+  const updateUserByOwnerApiExceptionMessage = request.getExceptionMessage(UpdateUserByOwnerApi);
   const form = formInstance.getForm();
   const snackbar = useSnackbar();
   const auth = useAuth();
   const decodedToken = auth.getDecodedToken();
   const formElIdRef = useRef(uuid());
+  const updatedUserByOwner = selectors.specificDetails.updatedUserByOwner;
 
   const formSubmition = useCallback(() => {
     formInstance.onSubmit(() => {
-      const isUserIdExist = !!params.id;
-      if (!isUserIdExist) {
-        return;
-      }
-      const userId = +params.id!;
-      request
-        .build<AccessTokenObj, UpdateUserByOwner>(new UpdateUserByOwnerApi(form, userId))
-        .then((response) => {
-          actions.hideModal(ModalNames.CONFIRMATION);
-          formInstance.resetForm();
-
-          if (decodedToken && decodedToken.id === userId) {
-            reInitializeToken(response.data.accessToken);
-          } else {
-            snackbar.enqueueSnackbar({ message: 'You have updated the user successfully.', variant: 'success' });
-          }
-          navigate(getDynamicPath(Pathes.USER, { id: userId }));
-        })
-        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+      actions.updateUserByOwner(form, +(params.id as string));
     });
-  }, [formInstance, form, params, request]);
+  }, [formInstance, form]);
+
+  useEffect(() => {
+    if (isUpdateUserByOwnerApiSuccessed && updatedUserByOwner) {
+      const id = params.id as string;
+      actions.hideModal(ModalNames.CONFIRMATION);
+      formInstance.resetForm();
+      if (decodedToken && decodedToken.id === +id) {
+        reInitializeToken(updatedUserByOwner.accessToken);
+      } else {
+        snackbar.enqueueSnackbar({ message: 'You have updated the user successfully.', variant: 'success' });
+      }
+      navigate(getDynamicPath(Pathes.USER, { id }));
+    } else if (isUpdateUserByOwnerApiFailed && !updatedUserByOwner) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      snackbar.enqueueSnackbar({ message: updateUserByOwnerApiExceptionMessage, variant: 'error' });
+    }
+  }, [isUpdateUserByOwnerApiFailed, isUpdateUserByOwnerApiSuccessed, updatedUserByOwner]);
 
   useEffect(() => {
     (async () => {

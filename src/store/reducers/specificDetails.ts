@@ -113,6 +113,7 @@ export interface SpecificDetailsState {
   allNotificationQuantities: AllNotificationQuantities | null;
   usersStatus: UsersStatusType;
   updatedUser: AccessTokenObj | null;
+  updatedUserByOwner: AccessTokenObj | null;
 }
 
 const initialState: SpecificDetailsState = {
@@ -137,6 +138,7 @@ const initialState: SpecificDetailsState = {
   allNotificationQuantities: null,
   usersStatus: {},
   updatedUser: null,
+  updatedUserByOwner: null,
 };
 
 function setSpecificDetails(state: SpecificDetailsState, action: SetSpecificDetailsAction): SpecificDetailsState {
@@ -169,6 +171,7 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     notificationQuantities: null,
     allNotificationQuantities: null,
     updatedUser: null,
+    updatedUserByOwner: null,
   };
 }
 
