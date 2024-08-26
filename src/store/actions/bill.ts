@@ -14,6 +14,7 @@ import {
   DeletedBillQuantitiesApi,
   DeletedBillsApi,
   DeletedBillsApiConstructorType,
+  DownloadBillReportApi,
   LastYearBillsApi,
   Request,
   RestoreBillApi,
@@ -273,6 +274,19 @@ export function updateBill(data: UpdateBill) {
       dispatch(processingApiSuccess(UpdateBillApi.name));
     } catch (error) {
       dispatch(processingApiError(UpdateBillApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function downloadBillReport(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(DownloadBillReportApi.name));
+      const response = await new Request<Blob, number>(new DownloadBillReportApi(id)).build();
+      dispatch(setSpecificDetails('downloadedBillReport', response.data));
+      dispatch(processingApiSuccess(DownloadBillReportApi.name));
+    } catch (error) {
+      dispatch(processingApiError(DownloadBillReportApi.name, error as AxiosError<Exception>));
     }
   };
 }

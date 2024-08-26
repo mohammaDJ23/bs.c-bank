@@ -114,6 +114,7 @@ export interface SpecificDetailsState {
   usersStatus: UsersStatusType;
   updatedUser: AccessTokenObj | null;
   updatedUserByOwner: AccessTokenObj | null;
+  downloadedBillReport: Blob | null;
 }
 
 const initialState: SpecificDetailsState = {
@@ -139,6 +140,7 @@ const initialState: SpecificDetailsState = {
   usersStatus: {},
   updatedUser: null,
   updatedUserByOwner: null,
+  downloadedBillReport: null,
 };
 
 function setSpecificDetails(state: SpecificDetailsState, action: SetSpecificDetailsAction): SpecificDetailsState {
@@ -172,6 +174,7 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     allNotificationQuantities: null,
     updatedUser: null,
     updatedUserByOwner: null,
+    downloadedBillReport: null,
   };
 }
 

@@ -5,6 +5,8 @@ import {
   DeletedUserQuantitiesApi,
   DeletedUsersApi,
   DeletedUsersApiConstructorType,
+  DeleteUserApi,
+  DeleteUserByOwnerApi,
   LastYearUsersApi,
   MostActiveUsersApi,
   MostActiveUsersApiConstructorType,
@@ -16,6 +18,7 @@ import {
   UserQuantitiesApi,
   UsersApi,
   UsersApiConstructorType,
+  UserWithBillInfoApi,
 } from '../../apis';
 import {
   AccessTokenObj,
@@ -231,6 +234,43 @@ export function updateUserByOwner(data: UpdateUserByOwner, id: number) {
       dispatch(processingApiSuccess(UpdateUserByOwnerApi.name));
     } catch (error) {
       dispatch(processingApiError(UpdateUserByOwnerApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialUserWithBillInfo(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(UserWithBillInfoApi.name));
+      const response = await new Request<UserWithBillInfo, number>(new UserWithBillInfoApi(id)).build();
+      dispatch(setSpecificDetails('userWithBillInfo', response.data));
+      dispatch(initialProcessingApiSuccess(UserWithBillInfoApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(UserWithBillInfoApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function deleteUser() {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(DeleteUserApi.name));
+      await new Request<User>(new DeleteUserApi()).build();
+      dispatch(processingApiSuccess(DeleteUserApi.name));
+    } catch (error) {
+      dispatch(processingApiError(DeleteUserApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function deleteUserByOwner(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(DeleteUserByOwnerApi.name));
+      await new Request<User, number>(new DeleteUserByOwnerApi(id)).build();
+      dispatch(processingApiSuccess(DeleteUserByOwnerApi.name));
+    } catch (error) {
+      dispatch(processingApiError(DeleteUserByOwnerApi.name, error as AxiosError<Exception>));
     }
   };
 }
