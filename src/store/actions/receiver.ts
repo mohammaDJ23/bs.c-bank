@@ -7,8 +7,9 @@ import {
   ReceiversApi,
   ReceiversApiConstructorType,
   Request,
+  UpdateReceiverApi,
 } from '../../apis';
-import { MostActiveReceivers, Receiver, Receivers } from '../../lib';
+import { MostActiveReceivers, Receiver, Receivers, UpdateReceiver } from '../../lib';
 import { Exception } from '../reducers';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
@@ -93,6 +94,18 @@ export function deleteReceiver(id: number) {
       dispatch(processingApiSuccess(DeleteReceiverApi.name));
     } catch (error) {
       dispatch(processingApiError(DeleteReceiverApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function updateReceiver(data: UpdateReceiver) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(UpdateReceiverApi.name));
+      await new Request<Receiver, UpdateReceiver>(new UpdateReceiverApi(data)).build();
+      dispatch(processingApiSuccess(UpdateReceiverApi.name));
+    } catch (error) {
+      dispatch(processingApiError(UpdateReceiverApi.name, error as AxiosError<Exception>));
     }
   };
 }
