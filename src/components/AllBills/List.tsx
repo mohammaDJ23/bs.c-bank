@@ -1,99 +1,94 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button, Autocomplete } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { AllBillList, AllBillListFilters, getTime, isoDate, BillObj, UserRoles } from '../../lib';
-import { useForm, usePaginationList, useRequest } from '../../hooks';
-import { AllBillsApi, AllBillsApiConstructorType } from '../../apis';
+import { AllBillListFilters, getTime, isoDate, UserRoles } from '../../lib';
+import { useAction, useForm, useRequest, useSelector } from '../../hooks';
+import { AllBillsApi } from '../../apis';
 import BillsSkeleton from '../shared/BillsSkeleton';
 import EmptyList from './EmptyList';
 import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import BillWithUserCard from '../shared/BillWithUserCard';
+import { selectAllBillsList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
+  const actions = useAction();
   const request = useRequest();
-  const allBillListInstance = usePaginationList(AllBillList);
+  const selectors = useSelector();
+  const snackbar = useSnackbar();
   const allBillListFiltersFormInstance = useForm(AllBillListFilters);
   const allBillListFiltersForm = allBillListFiltersFormInstance.getForm();
   const isInitialAllBillsApiProcessing = request.isInitialApiProcessing(AllBillsApi);
+  const isInitialAllBillsApiFailed = request.isInitialProcessingApiFailed(AllBillsApi);
   const isAllBillsApiProcessing = request.isApiProcessing(AllBillsApi);
+  const isAllBillsApiFailed = request.isProcessingApiFailed(AllBillsApi);
+  const initialAllBillsApiExceptionMessage = request.getInitialExceptionMessage(AllBillsApi);
+  const allBillsApiExceptionMessage = request.getExceptionMessage(AllBillsApi);
+  const allBillsList = selectAllBillsList(selectors);
 
-  const getAllBillsApi = useCallback(
-    (options: Partial<AllBillsApiConstructorType> = {}) => {
-      return new AllBillsApi({
-        take: allBillListInstance.getTake(),
-        page: allBillListInstance.getPage(),
+  useEffect(() => {
+    actions.getInitialAllBills({ page: 1, take: allBillsList.take });
+  }, []);
+
+  useEffect(() => {
+    if (isInitialAllBillsApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialAllBillsApiExceptionMessage, variant: 'error' });
+    } else if (isAllBillsApiFailed) {
+      snackbar.enqueueSnackbar({ message: allBillsApiExceptionMessage, variant: 'error' });
+    }
+  }, [isAllBillsApiFailed, isInitialAllBillsApiFailed]);
+
+  const changePage = useCallback(
+    (page: number) => {
+      if (allBillsList.page === page || isAllBillsApiProcessing) return;
+      actions.getAllBills({
+        page,
+        take: allBillsList.take,
         filters: {
           q: allBillListFiltersForm.q,
           roles: allBillListFiltersForm.roles,
           fromDate: allBillListFiltersForm.fromDate,
           toDate: allBillListFiltersForm.toDate,
         },
-        ...options,
       });
     },
-    [allBillListFiltersForm]
-  );
-
-  const getAllBillsList = useCallback(
-    (api: AllBillsApi) => {
-      request.build<[BillObj[], number]>(api).then((response) => {
-        const [list, total] = response.data;
-        allBillListInstance.updateAndConcatList(list, api.api.params.page);
-        allBillListInstance.updatePage(api.api.params.page);
-        allBillListInstance.updateTotal(total);
-      });
-    },
-    [allBillListInstance, request]
-  );
-
-  useEffect(() => {
-    const api = getAllBillsApi();
-    api.setInitialApi();
-    getAllBillsList(api);
-  }, []);
-
-  const changePage = useCallback(
-    (newPage: number) => {
-      allBillListInstance.updatePage(newPage);
-
-      if (allBillListInstance.isNewPageEqualToCurrentPage(newPage) || isAllBillsApiProcessing) return;
-
-      if (!allBillListInstance.isNewPageExist(newPage)) {
-        const api = getAllBillsApi({ page: newPage });
-        getAllBillsList(api);
-      }
-    },
-    [isAllBillsApiProcessing, allBillListInstance, getAllBillsList, getAllBillsApi]
+    [isAllBillsApiProcessing, allBillsList, allBillListFiltersForm]
   );
 
   const allBillListFilterFormSubmition = useCallback(() => {
     allBillListFiltersFormInstance.onSubmit(() => {
-      const newPage = 1;
-      allBillListInstance.updatePage(newPage);
-      const api = getAllBillsApi({ page: newPage });
-      getAllBillsList(api);
+      actions.getAllBills({
+        page: 1,
+        take: allBillsList.take,
+        filters: {
+          q: allBillListFiltersForm.q,
+          roles: allBillListFiltersForm.roles,
+          fromDate: allBillListFiltersForm.fromDate,
+          toDate: allBillListFiltersForm.toDate,
+        },
+      });
     });
-  }, [allBillListFiltersFormInstance, allBillListInstance, getAllBillsList, getAllBillsApi]);
+  }, [allBillListFiltersFormInstance, allBillsList, allBillListFiltersForm]);
 
   return (
     <>
       {isInitialAllBillsApiProcessing || isAllBillsApiProcessing ? (
-        <BillsSkeleton take={allBillListInstance.getTake()} />
-      ) : allBillListInstance.isListEmpty() ? (
+        <BillsSkeleton take={allBillsList.take} />
+      ) : allBillsList.total <= 0 ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {allBillListInstance.getList().map((bill, index) => (
-              <BillWithUserCard key={index} index={index} bill={bill} listInstance={allBillListInstance} />
+            {allBillsList.list.map((bill, index) => (
+              <BillWithUserCard key={index} index={index} bill={bill} list={allBillsList} />
             ))}
           </MuiList>
 
-          {allBillListInstance.getTotal() > allBillListInstance.getTake() && (
+          {allBillsList.take < allBillsList.total && (
             <Pagination
-              page={allBillListInstance.getPage()}
-              count={allBillListInstance.getCount()}
+              page={allBillsList.page}
+              count={Math.ceil(allBillsList.total / allBillsList.take)}
               onPageChange={changePage}
             />
           )}

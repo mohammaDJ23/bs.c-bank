@@ -1,8 +1,4 @@
-import { BaseList } from './list';
-import { UserObj } from './user';
+import { List } from './list';
+import { User } from './users';
 
-export class DeletedUserList<T = UserObj> extends BaseList<T> {
-  constructor(arg: Partial<BaseList<T>> = {}) {
-    super(arg);
-  }
-}
+export class DeletedUsers extends List<User> {}

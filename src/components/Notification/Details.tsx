@@ -1,11 +1,11 @@
 import { Box, Typography } from '@mui/material';
 import moment from 'moment';
 import { FC } from 'react';
-import { NotificationObj, Pathes, getDynamicPath } from '../../lib';
+import { Notification, Pathes, getDynamicPath } from '../../lib';
 import { useNavigate } from 'react-router-dom';
 
 interface DetailsImporation {
-  notification: NotificationObj;
+  notification: Notification;
 }
 
 const Details: FC<DetailsImporation> = ({ notification }) => {

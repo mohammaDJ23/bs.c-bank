@@ -4,27 +4,34 @@ import { useAction, useRequest, useSelector } from '../../hooks';
 import { useEffect, FC } from 'react';
 import Skeleton from './Skeleton';
 import { NotificationApi } from '../../apis';
-import { NotificationObj } from '../../lib';
 import NotFound from './NotFound';
 import Details from './Details';
 import Navigation from '../../layout/Navigation';
+import { useSnackbar } from 'notistack';
 
 const NotificationContent: FC = () => {
   const params = useParams();
   const request = useRequest();
   const actions = useAction();
   const selectors = useSelector();
+  const snackbar = useSnackbar();
   const isInitialNotificationApiProcessing = request.isInitialApiProcessing(NotificationApi);
+  const isInitialNotificationApiFailed = request.isInitialProcessingApiFailed(NotificationApi);
+  const initialNotificationApiExceptionMessage = request.getInitialExceptionMessage(NotificationApi);
   const notification = selectors.specificDetails.notification;
 
   useEffect(() => {
-    const notificationId = params.id;
-    if (notificationId) {
-      request.build<NotificationObj, number>(new NotificationApi(+notificationId).setInitialApi()).then((response) => {
-        actions.setSpecificDetails('notification', response.data);
-      });
+    const id = params.id;
+    if (id) {
+      actions.getInitialNotification(+id);
     }
   }, []);
+
+  useEffect(() => {
+    if (isInitialNotificationApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialNotificationApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitialNotificationApiFailed]);
 
   return (
     <Navigation>

@@ -1,98 +1,92 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { BillList, BillListFilters, BillObj, getTime, isoDate } from '../../lib';
-import { useForm, usePaginationList, useRequest } from '../../hooks';
-import { BillsApi, BillsApiConstructorType } from '../../apis';
+import { BillListFilters, getTime, isoDate } from '../../lib';
+import { useAction, useForm, useRequest, useSelector } from '../../hooks';
+import { BillsApi } from '../../apis';
 import BillsSkeleton from '../shared/BillsSkeleton';
 import EmptyList from './EmptyList';
 import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
+import { selectBillsList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
+  const actions = useAction();
+  const selectors = useSelector();
   const request = useRequest();
-  const billListInstance = usePaginationList(BillList);
+  const snackbar = useSnackbar();
   const billListFiltersFormInstance = useForm(BillListFilters);
   const billListFiltersForm = billListFiltersFormInstance.getForm();
   const isInitialBillsApiProcessing = request.isInitialApiProcessing(BillsApi);
+  const isInitialBillsApiFailed = request.isInitialProcessingApiFailed(BillsApi);
   const isBillsApiProcessing = request.isApiProcessing(BillsApi);
+  const isBillsApiFailed = request.isProcessingApiFailed(BillsApi);
+  const billsApiExceptionMessage = request.getExceptionMessage(BillsApi);
+  const initialBillsApiExceptionMessage = request.getInitialExceptionMessage(BillsApi);
+  const billsList = selectBillsList(selectors);
 
-  const getBillsListApi = useCallback(
-    (options: Partial<BillsApiConstructorType> = {}) => {
-      return new BillsApi({
-        take: billListInstance.getTake(),
-        page: billListInstance.getPage(),
+  useEffect(() => {
+    actions.getInitialBills({ page: 1, take: billsList.take });
+  }, []);
+
+  useEffect(() => {
+    if (isBillsApiFailed) {
+      snackbar.enqueueSnackbar({ message: billsApiExceptionMessage, variant: 'error' });
+    } else if (isInitialBillsApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialBillsApiExceptionMessage, variant: 'error' });
+    }
+  }, [isBillsApiFailed, isInitialBillsApiFailed]);
+
+  const changePage = useCallback(
+    (page: number) => {
+      if (billsList.page === page || isBillsApiProcessing) return;
+      actions.getBills({
+        page,
+        take: billsList.take,
         filters: {
           q: billListFiltersForm.q,
           fromDate: billListFiltersForm.fromDate,
           toDate: billListFiltersForm.toDate,
         },
-        ...options,
       });
     },
-    [billListFiltersForm]
-  );
-
-  const getBillsList = useCallback(
-    (api: BillsApi) => {
-      request.build<[BillObj[], number], BillObj>(api).then((response) => {
-        const [list, total] = response.data;
-        billListInstance.updateAndConcatList(list, api.api.params.page);
-        billListInstance.updatePage(api.api.params.page);
-        billListInstance.updateTotal(total);
-      });
-    },
-    [billListInstance, billListFiltersForm, request]
-  );
-
-  useEffect(() => {
-    const api = getBillsListApi();
-    api.setInitialApi();
-    getBillsList(api);
-  }, []);
-
-  const changePage = useCallback(
-    (newPage: number) => {
-      billListInstance.updatePage(newPage);
-
-      if (billListInstance.isNewPageEqualToCurrentPage(newPage) || isBillsApiProcessing) return;
-
-      if (!billListInstance.isNewPageExist(newPage)) {
-        const api = getBillsListApi({ page: newPage });
-        getBillsList(api);
-      }
-    },
-    [isBillsApiProcessing, billListInstance, getBillsList]
+    [isBillsApiProcessing, billsList, billListFiltersForm]
   );
 
   const billListFilterFormSubmition = useCallback(() => {
     billListFiltersFormInstance.onSubmit(() => {
-      const newPage = 1;
-      billListInstance.updatePage(newPage);
-      const api = getBillsListApi({ page: newPage });
-      getBillsList(api);
+      actions.getBills({
+        page: 1,
+        take: billsList.take,
+        filters: {
+          q: billListFiltersForm.q,
+          fromDate: billListFiltersForm.fromDate,
+          toDate: billListFiltersForm.toDate,
+        },
+      });
     });
-  }, [billListFiltersFormInstance, billListInstance, getBillsList]);
+  }, [billListFiltersFormInstance, billListFiltersForm, billsList]);
 
   return (
     <>
       {isInitialBillsApiProcessing || isBillsApiProcessing ? (
-        <BillsSkeleton take={billListInstance.getTake()} />
-      ) : billListInstance.isListEmpty() ? (
+        <BillsSkeleton take={billsList.take} />
+      ) : billsList.total <= 0 ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {billListInstance.getList().map((bill, index) => (
-              <BillCard key={index} index={index} bill={bill} listInstance={billListInstance} />
+            {billsList.list.map((bill, index) => (
+              <BillCard key={index} index={index} bill={bill} list={billsList} />
             ))}
           </MuiList>
 
-          {billListInstance.getTotal() > billListInstance.getTake() && (
+          {billsList.take < billsList.total && (
             <Pagination
-              page={billListInstance.getPage()}
-              count={billListInstance.getCount()}
+              page={billsList.page}
+              count={Math.ceil(billsList.total / billsList.take)}
               onPageChange={changePage}
             />
           )}

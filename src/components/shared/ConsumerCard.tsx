@@ -2,19 +2,19 @@ import { PropsWithChildren, FC } from 'react';
 import { ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
-import { Pathes, ConsumerObj, getDynamicPath, ConsumerList } from '../../lib';
+import { Pathes, Consumer, getDynamicPath } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
-import { usePaginationList } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
+import { List } from '../../lib/lists/list';
 
 interface ConsumerCardImportation extends PropsWithChildren {
-  consumer: ConsumerObj;
+  consumer: Consumer;
   index: number;
-  listInstance: ReturnType<typeof usePaginationList<ConsumerList>>;
+  list: List;
 }
 
-const ConsumerCard: FC<ConsumerCardImportation> = ({ consumer, index, listInstance }) => {
+const ConsumerCard: FC<ConsumerCardImportation> = ({ consumer, index, list }) => {
   const navigate = useNavigate();
 
   return (
@@ -47,7 +47,7 @@ const ConsumerCard: FC<ConsumerCardImportation> = ({ consumer, index, listInstan
             </Box>
           </Box>
 
-          <CountBadge index={index} page={listInstance.getPage()} take={listInstance.getTake()} />
+          <CountBadge index={index} page={list.page} take={list.take} />
         </ListItem>
       </ListItemButton>
     </Card>

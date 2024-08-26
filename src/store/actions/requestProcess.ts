@@ -1,4 +1,5 @@
-import { RequestProcess } from '../reducers';
+import { AxiosError } from 'axios';
+import { Exception, RequestProcess } from '../reducers';
 
 export interface ProcessingApiLoadingAction {
   type: RequestProcess.PROCESSING_API_LOADING;
@@ -12,7 +13,7 @@ export interface ProcessingApiSuccessAction {
 
 export interface ProcessingApiErrorAction {
   type: RequestProcess.PROCESSING_API_ERROR;
-  payload: { name: string };
+  payload: { name: string; error: AxiosError<Exception> };
 }
 
 export interface InitialProcessingApiLoadingAction {
@@ -27,7 +28,7 @@ export interface InitialProcessingApiSuccessAction {
 
 export interface InitialProcessingApiErrorAction {
   type: RequestProcess.INITIAL_PROCESSING_API_ERROR;
-  payload: { name: string };
+  payload: { name: string; error: AxiosError<Exception> };
 }
 
 export type RequestProcessActions =
@@ -38,44 +39,44 @@ export type RequestProcessActions =
   | InitialProcessingApiSuccessAction
   | InitialProcessingApiErrorAction;
 
-export function processingApiLoading(name: string) {
+export function processingApiLoading(name: string): ProcessingApiLoadingAction {
   return {
     type: RequestProcess.PROCESSING_API_LOADING,
     payload: { name },
   };
 }
 
-export function processingApiSuccess(name: string) {
+export function processingApiSuccess(name: string): ProcessingApiSuccessAction {
   return {
     type: RequestProcess.PROCESSING_API_SUCCESS,
     payload: { name },
   };
 }
 
-export function processingApiError(name: string) {
+export function processingApiError(name: string, error: AxiosError<Exception>): ProcessingApiErrorAction {
   return {
     type: RequestProcess.PROCESSING_API_ERROR,
-    payload: { name },
+    payload: { name, error },
   };
 }
 
-export function initialProcessingApiLoading(name: string) {
+export function initialProcessingApiLoading(name: string): InitialProcessingApiLoadingAction {
   return {
     type: RequestProcess.INITIAL_PROCESSING_API_LOADING,
     payload: { name },
   };
 }
 
-export function initialProcessingApiSuccess(name: string) {
+export function initialProcessingApiSuccess(name: string): InitialProcessingApiSuccessAction {
   return {
     type: RequestProcess.INITIAL_PROCESSING_API_SUCCESS,
     payload: { name },
   };
 }
 
-export function initialProcessingApiError(name: string) {
+export function initialProcessingApiError(name: string, error: AxiosError<Exception>): InitialProcessingApiErrorAction {
   return {
     type: RequestProcess.INITIAL_PROCESSING_API_ERROR,
-    payload: { name },
+    payload: { name, error },
   };
 }

@@ -6,11 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import { DeleteUserApi, DeleteUserByOwnerApi, DownloadBillReportApi } from '../../apis';
-import { UserWithBillInfoObj, UserObj, Pathes, getDynamicPath, LocalStorage } from '../../lib';
+import { UserWithBillInfo, Pathes, getDynamicPath, LocalStorage } from '../../lib';
 import { ModalNames, UsersStatusType } from '../../store';
+import { useSnackbar } from 'notistack';
 
 interface DetailsImporation {
-  user: UserWithBillInfoObj;
+  user: UserWithBillInfo;
 }
 
 const Details: FC<DetailsImporation> = ({ user }) => {
@@ -21,6 +22,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const selectors = useSelector();
   const request = useRequest();
   const auth = useAuth();
+  const snackbar = useSnackbar();
   const isUserOnline = auth.isUserOnline(user.id);
   const isCurrentOwner = auth.isCurrentOwner();
   const isCurrentAdmin = auth.isCurrentAdmin();
@@ -30,8 +32,19 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const hasCreatedByOwnerRoleAuthorized = auth.hasCreatedByOwnerRoleAuthorized(user);
   const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(user);
   const isDeleteUserApiProcessing = request.isApiProcessing(DeleteUserApi);
+  const isDeleteUserApiFailed = request.isProcessingApiFailed(DeleteUserApi);
+  const isDeleteUserApiSuccessed = request.isProcessingApiSuccessed(DeleteUserApi);
+  const deleteUserApiExceptionMessage = request.getExceptionMessage(DeleteUserApi);
+  const isDeleteUserByOwnerApiProcessing = request.isApiProcessing(DeleteUserByOwnerApi);
+  const isDeleteUserByOwnerApiFailed = request.isProcessingApiFailed(DeleteUserByOwnerApi);
+  const isDeleteUserByOwnerApiSuccessed = request.isProcessingApiSuccessed(DeleteUserByOwnerApi);
+  const deleteUserByOwnerApiExceptionMessage = request.getExceptionMessage(DeleteUserByOwnerApi);
   const isDownloadBillReportApiProcessing = request.isApiProcessing(DownloadBillReportApi);
+  const isDownloadBillReportApiFailed = request.isProcessingApiFailed(DownloadBillReportApi);
+  const isDownloadBillReportApiSuccessed = request.isProcessingApiSuccessed(DownloadBillReportApi);
+  const downloadBillReportApiExceptionMessage = request.getExceptionMessage(DownloadBillReportApi);
   const connectionSocket = selectors.userServiceSocket.connection;
+  const downloadedBillReport = selectors.specificDetails.downloadedBillReport;
 
   const getOptions = useCallback(() => {
     const options = [];
@@ -109,51 +122,64 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   }, [connectionSocket, isCurrentOwner]);
 
   const deleteByUser = useCallback(() => {
-    request
-      .build<UserObj, number>(new DeleteUserApi())
-      .then((response) => {
-        if (connectionSocket) {
-          connectionSocket.disconnect();
-        }
-        actions.hideModal(ModalNames.CONFIRMATION);
-        LocalStorage.clear();
-        navigate(Pathes.LOGIN);
-      })
-      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+    actions.deleteUser();
   }, [connectionSocket]);
 
+  useEffect(() => {
+    if (isDeleteUserApiSuccessed) {
+      if (connectionSocket) {
+        connectionSocket.disconnect();
+      }
+      actions.hideModal(ModalNames.CONFIRMATION);
+      LocalStorage.clear();
+      navigate(Pathes.LOGIN);
+    } else if (isDeleteUserApiFailed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      snackbar.enqueueSnackbar({ message: deleteUserApiExceptionMessage, variant: 'error' });
+    }
+  }, [isDeleteUserApiFailed, isDeleteUserApiSuccessed, connectionSocket]);
+
   const deleteByOwner = useCallback(() => {
-    request
-      .build<UserObj, number>(new DeleteUserByOwnerApi(user.id))
-      .then((response) => {
-        actions.hideModal(ModalNames.CONFIRMATION);
-        if (isUserEqualToCurrentUser) {
-          LocalStorage.clear();
-          navigate(Pathes.LOGIN);
-        } else {
-          if (isUserOnline) {
-            onLogoutUser();
-          }
-          navigate(Pathes.USERS);
+    actions.deleteUserByOwner(user.id);
+  }, [user]);
+
+  useEffect(() => {
+    if (isDeleteUserByOwnerApiSuccessed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      if (isUserEqualToCurrentUser) {
+        LocalStorage.clear();
+        navigate(Pathes.LOGIN);
+      } else {
+        if (isUserOnline) {
+          onLogoutUser();
         }
-      })
-      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
-  }, [user, isUserEqualToCurrentUser]);
+        navigate(Pathes.USERS);
+      }
+    } else if (isDeleteUserByOwnerApiFailed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      snackbar.enqueueSnackbar({ message: deleteUserByOwnerApiExceptionMessage, variant: 'error' });
+    }
+  }, [isDeleteUserByOwnerApiFailed, isDeleteUserByOwnerApiSuccessed, isUserEqualToCurrentUser, onLogoutUser]);
 
   const downloadBillReport = useCallback(() => {
     if (isDownloadBillReportApiProcessing) return;
+    actions.downloadBillReport(user.id);
+  }, [isDownloadBillReportApiProcessing, user]);
 
-    request.build<Blob>(new DownloadBillReportApi(user.id)).then((response) => {
-      const href = URL.createObjectURL(response.data);
+  useEffect(() => {
+    if (isDownloadBillReportApiSuccessed && downloadedBillReport) {
+      const href = URL.createObjectURL(downloadedBillReport);
       const link = document.createElement('a');
       link.href = href;
       link.setAttribute('download', `${user.firstName}-${user.lastName}-${new Date().toISOString()}.xlsx`);
-      document.body.appendChild(link)
+      document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(href);
-    });
-  }, [isDownloadBillReportApiProcessing, user]);
+    } else if (isDownloadBillReportApiFailed && !downloadedBillReport) {
+      snackbar.enqueueSnackbar({ message: downloadBillReportApiExceptionMessage, variant: 'error' });
+    }
+  }, [isDownloadBillReportApiFailed, isDownloadBillReportApiSuccessed, user, downloadedBillReport]);
 
   return (
     <>
@@ -287,7 +313,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
         <Box mt="30px" display={'flex'} alignItems={'center'} gap={'10px'}>
           {hasRoleAuthorized && (
             <Button
-              disabled={isDeleteUserApiProcessing}
+              disabled={isDeleteUserApiProcessing || isDeleteUserByOwnerApiProcessing}
               onClick={onDeleteAccount}
               variant="contained"
               color="error"
@@ -299,7 +325,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
           )}
           {hasCreatedByOwnerRoleAuthorized && isUserOnline && (
             <Button
-              disabled={isDeleteUserApiProcessing}
+              disabled={isDeleteUserApiProcessing || isDeleteUserByOwnerApiProcessing}
               onClick={onLogoutUser}
               variant="outlined"
               color="primary"

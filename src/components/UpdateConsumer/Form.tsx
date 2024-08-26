@@ -1,4 +1,4 @@
-import { ConsumerObj, getDynamicPath, Pathes, UpdateConsumer, wait } from '../../lib';
+import { getDynamicPath, Pathes, UpdateConsumer, wait } from '../../lib';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { Box, TextField, Button } from '@mui/material';
 import Modal from '../shared/Modal';
@@ -19,24 +19,31 @@ const Form: FC<FormImportation> = ({ formInstance: updateConsumerFormInstance })
   const navigate = useNavigate();
   const request = useRequest();
   const isUpdateConsumerApiProcessing = request.isApiProcessing(UpdateConsumerApi);
+  const isUpdateConsumerApiFailed = request.isProcessingApiFailed(UpdateConsumerApi);
+  const isUpdateConsumerApiSuccessed = request.isProcessingApiSuccessed(UpdateConsumerApi);
+  const updateConsumerApiExceptionMessage = request.getExceptionMessage(UpdateConsumerApi);
   const updateConsumerForm = updateConsumerFormInstance.getForm();
   const snackbar = useSnackbar();
   const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     updateConsumerFormInstance.onSubmit(() => {
-      request
-        .build<ConsumerObj, UpdateConsumer>(new UpdateConsumerApi(updateConsumerForm))
-        .then((response) => {
-          const consumerId = params.id as string;
-          actions.hideModal(ModalNames.CONFIRMATION);
-          updateConsumerFormInstance.resetForm();
-          snackbar.enqueueSnackbar({ message: 'You have updated the consumer successfully.', variant: 'success' });
-          navigate(getDynamicPath(Pathes.CONSUMER, { id: consumerId }));
-        })
-        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+      actions.updateConsumer(updateConsumerForm);
     });
-  }, [updateConsumerForm, updateConsumerFormInstance, params, request]);
+  }, [updateConsumerForm, updateConsumerFormInstance]);
+
+  useEffect(() => {
+    if (isUpdateConsumerApiSuccessed) {
+      const consumerId = params.id as string;
+      actions.hideModal(ModalNames.CONFIRMATION);
+      updateConsumerFormInstance.resetForm();
+      snackbar.enqueueSnackbar({ message: 'You have updated the consumer successfully.', variant: 'success' });
+      navigate(getDynamicPath(Pathes.CONSUMER, { id: consumerId }));
+    } else if (isUpdateConsumerApiFailed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      snackbar.enqueueSnackbar({ message: updateConsumerApiExceptionMessage, variant: 'error' });
+    }
+  }, [isUpdateConsumerApiFailed, isUpdateConsumerApiSuccessed]);
 
   useEffect(() => {
     (async () => {
@@ -46,7 +53,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateConsumerFormInstance })
       if (el) {
         for (const node of Array.from(el.childNodes)) {
           // @ts-ignore
-          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          node.style.transition = 'opacity 0.1s, transform 0.2s';
           // @ts-ignore
           node.style.opacity = 1;
           // @ts-ignore
@@ -86,7 +93,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateConsumerFormInstance })
         />
 
         <Box
-          sx={{ opacity: 0, transform: 'translateX(20px)' }}
+          sx={{ opacity: 0, transform: 'translateX(15px)' }}
           component="div"
           display="flex"
           alignItems="center"

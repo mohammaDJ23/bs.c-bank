@@ -2,19 +2,19 @@ import { PropsWithChildren, FC } from 'react';
 import { ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
-import { Pathes, ReceiverList, ReceiverObj, getDynamicPath } from '../../lib';
+import { Pathes, Receiver, getDynamicPath } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
-import { usePaginationList } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
+import { List } from '../../lib/lists/list';
 
 interface ReceiverCardImportation extends PropsWithChildren {
-  receiver: ReceiverObj;
+  receiver: Receiver;
   index: number;
-  listInstance: ReturnType<typeof usePaginationList<ReceiverList>>;
+  list: List;
 }
 
-const ReceiverCard: FC<ReceiverCardImportation> = ({ receiver, index, listInstance }) => {
+const ReceiverCard: FC<ReceiverCardImportation> = ({ receiver, index, list }) => {
   const navigate = useNavigate();
 
   return (
@@ -47,7 +47,7 @@ const ReceiverCard: FC<ReceiverCardImportation> = ({ receiver, index, listInstan
             </Box>
           </Box>
 
-          <CountBadge index={index} page={listInstance.getPage()} take={listInstance.getTake()} />
+          <CountBadge index={index} page={list.page} take={list.take} />
         </ListItem>
       </ListItemButton>
     </Card>

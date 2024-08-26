@@ -10,7 +10,7 @@ export interface SetSpecificDetailsAction {
 
 export type SpecificDetailsActions = SetSpecificDetailsAction;
 
-export function setSpecificDetails(key: SpecificDetailsKeys, data: SpecificDetailsVal) {
+export function setSpecificDetails(key: SpecificDetailsKeys, data: SpecificDetailsVal): SetSpecificDetailsAction {
   return {
     type: SpecificDetails.SET_SPECIFIC_DETAILS,
     payload: { key, data },

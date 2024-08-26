@@ -1,8 +1,4 @@
-import { BillObj } from './bill';
-import { BaseList } from './list';
+import { Bill } from './bills';
+import { List } from './list';
 
-export class DeletedBillList<T = BillObj> extends BaseList<T> {
-  constructor(arg: Partial<BaseList<T>> = {}) {
-    super(arg);
-  }
-}
+export class DeletedBills extends List<Bill> {}

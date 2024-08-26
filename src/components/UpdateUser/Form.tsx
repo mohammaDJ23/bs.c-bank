@@ -1,12 +1,13 @@
 import { FC, useCallback, useEffect, useRef } from 'react';
-import { AccessTokenObj, getDynamicPath, Pathes, reInitializeToken, UpdateUser, wait } from '../../lib';
+import { getDynamicPath, Pathes, reInitializeToken, UpdateUser, wait } from '../../lib';
 import Modal from '../shared/Modal';
 import { ModalNames } from '../../store';
-import { useAction, useForm, useRequest } from '../../hooks';
+import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { Box, TextField, Button } from '@mui/material';
 import { UpdateUserApi } from '../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
+import { useSnackbar } from 'notistack';
 
 interface FormImportation {
   formInstance: ReturnType<typeof useForm<UpdateUser>>;
@@ -17,25 +18,35 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
   const navigate = useNavigate();
   const actions = useAction();
   const request = useRequest();
+  const snackbar = useSnackbar();
+  const selectors = useSelector();
   const isUpdateUserApiProcessing = request.isApiProcessing(UpdateUserApi);
+  const isUpdateUserApiFailed = request.isProcessingApiFailed(UpdateUserApi);
+  const isUpdateUserApiSuccessed = request.isProcessingApiSuccessed(UpdateUserApi);
+  const updateUserApiExceptionMessage = request.getExceptionMessage(UpdateUserApi);
   const form = formInstance.getForm();
+  const updatedUser = selectors.specificDetails.updatedUser;
+
   const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     formInstance.onSubmit(() => {
-      request
-        .build<AccessTokenObj, UpdateUser>(new UpdateUserApi(form))
-        .then((response) => {
-          const userId = params.id as string;
-          actions.hideModal(ModalNames.CONFIRMATION);
-          formInstance.resetForm();
-
-          reInitializeToken(response.data.accessToken);
-          navigate(getDynamicPath(Pathes.USER, { id: userId }));
-        })
-        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+      actions.updateUser(form);
     });
-  }, [form, formInstance, params, request]);
+  }, [form]);
+
+  useEffect(() => {
+    if (isUpdateUserApiSuccessed && updatedUser) {
+      const userId = params.id as string;
+      actions.hideModal(ModalNames.CONFIRMATION);
+      formInstance.resetForm();
+      reInitializeToken(updatedUser.accessToken);
+      navigate(getDynamicPath(Pathes.USER, { id: userId }));
+    } else if (isUpdateUserApiFailed && !updatedUser) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      snackbar.enqueueSnackbar({ message: updateUserApiExceptionMessage, variant: 'error' });
+    }
+  }, [isUpdateUserApiFailed, isUpdateUserApiSuccessed, updatedUser]);
 
   useEffect(() => {
     (async () => {
@@ -45,7 +56,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
       if (el) {
         for (const node of Array.from(el.childNodes)) {
           // @ts-ignore
-          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          node.style.transition = 'opacity 0.1s, transform 0.2s';
           // @ts-ignore
           node.style.opacity = 1;
           // @ts-ignore
@@ -84,7 +95,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           disabled={isUpdateUserApiProcessing}
         />
         <TextField
-          sx={{ opacity: 0, transform: 'translateX(20px)' }}
+          sx={{ opacity: 0, transform: 'translateX(15px)' }}
           label="Last Name"
           variant="standard"
           type="text"
@@ -95,7 +106,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           disabled={isUpdateUserApiProcessing}
         />
         <TextField
-          sx={{ opacity: 0, transform: 'translateX(30px)' }}
+          sx={{ opacity: 0, transform: 'translateX(20px)' }}
           label="Email"
           type="email"
           variant="standard"
@@ -106,7 +117,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           disabled={isUpdateUserApiProcessing}
         />
         <TextField
-          sx={{ opacity: 0, transform: 'translateX(40px)' }}
+          sx={{ opacity: 0, transform: 'translateX(25px)' }}
           label="Phone"
           type="text"
           variant="standard"
@@ -117,7 +128,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           disabled={isUpdateUserApiProcessing}
         />
         <Box
-          sx={{ opacity: 0, transform: 'translateX(50px)' }}
+          sx={{ opacity: 0, transform: 'translateX(30px)' }}
           component="div"
           display="flex"
           alignItems="center"

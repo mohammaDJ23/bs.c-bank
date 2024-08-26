@@ -3,18 +3,18 @@ import { ListItem, ListItemButton, ListItemText, Typography } from '@mui/materia
 import { Box } from '@mui/system';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
-import { BillList, BillObj, deletedAtColor, DeletedBillList, getDynamicPath, Pathes } from '../../lib';
+import { Bill, deletedAtColor, getDynamicPath, Pathes } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
-import { usePaginationList } from '../../hooks';
+import { List } from '../../lib/lists/list';
 
 interface BillCardImportation extends PropsWithChildren {
-  bill: BillObj;
+  bill: Bill;
   index: number;
-  listInstance: ReturnType<typeof usePaginationList<BillList | DeletedBillList>>;
+  list: List;
 }
 
-const BillCard: FC<BillCardImportation> = ({ bill, index, listInstance }) => {
+const BillCard: FC<BillCardImportation> = ({ bill, index, list }) => {
   const navigate = useNavigate();
 
   return (
@@ -115,7 +115,7 @@ const BillCard: FC<BillCardImportation> = ({ bill, index, listInstance }) => {
             </Box>
           </Box>
 
-          <CountBadge index={index} page={listInstance.getPage()} take={listInstance.getTake()} />
+          <CountBadge index={index} page={list.page} take={list.take} />
         </ListItem>
       </ListItemButton>
     </Card>

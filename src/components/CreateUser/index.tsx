@@ -2,7 +2,7 @@ import FormContainer from '../../layout/FormContainer';
 import { v4 as uuid } from 'uuid';
 import { Box, TextField, Button, Select, FormControl, MenuItem, InputLabel, FormHelperText } from '@mui/material';
 import { CreateUser, wait } from '../../lib';
-import { useAuth, useForm, useRequest, useFocus } from '../../hooks';
+import { useAuth, useForm, useRequest, useFocus, useAction } from '../../hooks';
 import { CreateUserApi } from '../../apis';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { useSnackbar } from 'notistack';
@@ -13,20 +13,30 @@ const CreateUserContent: FC = () => {
   const createUserFormInstance = useForm(CreateUser);
   const request = useRequest();
   const focus = useFocus();
+  const actions = useAction();
   const isCreateUserApiProcessing = request.isApiProcessing(CreateUserApi);
+  const isCreateUserApiSuccessed = request.isProcessingApiSuccessed(CreateUserApi);
+  const isCreateUserApiFailed = request.isProcessingApiFailed(CreateUserApi);
+  const createUserApiExceptionMessage = request.getExceptionMessage(CreateUserApi);
   const form = createUserFormInstance.getForm();
   const snackbar = useSnackbar();
   const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     createUserFormInstance.onSubmit(() => {
-      request.build<CreateUser, CreateUser>(new CreateUserApi(form)).then((response) => {
-        createUserFormInstance.resetForm();
-        snackbar.enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
-        focus('firstName');
-      });
+      actions.createUser(form);
     });
-  }, [createUserFormInstance, form, request]);
+  }, [createUserFormInstance, form]);
+
+  useEffect(() => {
+    if (isCreateUserApiSuccessed) {
+      createUserFormInstance.resetForm();
+      snackbar.enqueueSnackbar({ message: 'Your have created a new user successfully.', variant: 'success' });
+      focus('firstName');
+    } else if (isCreateUserApiFailed) {
+      snackbar.enqueueSnackbar({ message: createUserApiExceptionMessage, variant: 'error' });
+    }
+  }, [isCreateUserApiSuccessed, isCreateUserApiFailed]);
 
   useEffect(() => {
     focus('firstName');
@@ -38,7 +48,7 @@ const CreateUserContent: FC = () => {
       if (el) {
         for (const node of Array.from(el.childNodes)) {
           // @ts-ignore
-          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          node.style.transition = 'opacity 0.1s, transform 0.2s';
           // @ts-ignore
           node.style.opacity = 1;
           // @ts-ignore
@@ -79,7 +89,7 @@ const CreateUserContent: FC = () => {
             name="firstName"
           />
           <TextField
-            sx={{ opacity: 0, transform: 'translateX(20px)' }}
+            sx={{ opacity: 0, transform: 'translateX(15px)' }}
             label="Last Name"
             variant="standard"
             type="text"
@@ -90,7 +100,7 @@ const CreateUserContent: FC = () => {
             disabled={isCreateUserApiProcessing}
           />
           <TextField
-            sx={{ opacity: 0, transform: 'translateX(30px)' }}
+            sx={{ opacity: 0, transform: 'translateX(20px)' }}
             label="Email"
             type="email"
             variant="standard"
@@ -101,7 +111,7 @@ const CreateUserContent: FC = () => {
             disabled={isCreateUserApiProcessing}
           />
           <TextField
-            sx={{ opacity: 0, transform: 'translateX(40px)' }}
+            sx={{ opacity: 0, transform: 'translateX(25px)' }}
             label="Password"
             type="password"
             variant="standard"
@@ -113,7 +123,7 @@ const CreateUserContent: FC = () => {
             disabled={isCreateUserApiProcessing}
           />
           <TextField
-            sx={{ opacity: 0, transform: 'translateX(50px)' }}
+            sx={{ opacity: 0, transform: 'translateX(30px)' }}
             label="Phone"
             type="text"
             variant="standard"
@@ -123,7 +133,7 @@ const CreateUserContent: FC = () => {
             error={createUserFormInstance.isInputInValid('phone')}
             disabled={isCreateUserApiProcessing}
           />
-          <FormControl variant="standard" sx={{ opacity: 0, transform: 'translateX(60px)' }}>
+          <FormControl variant="standard" sx={{ opacity: 0, transform: 'translateX(35px)' }}>
             <InputLabel id="role">Role</InputLabel>
             <Select
               disabled={isCreateUserApiProcessing}
@@ -145,7 +155,7 @@ const CreateUserContent: FC = () => {
             )}
           </FormControl>
           <Box
-            sx={{ opacity: 0, transform: 'translateX(70px)' }}
+            sx={{ opacity: 0, transform: 'translateX(40px)' }}
             component="div"
             display="flex"
             alignItems="center"

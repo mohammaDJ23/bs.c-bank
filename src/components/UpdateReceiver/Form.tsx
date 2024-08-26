@@ -1,4 +1,4 @@
-import { getDynamicPath, Pathes, ReceiverObj, UpdateReceiver, wait } from '../../lib';
+import { getDynamicPath, Pathes, UpdateReceiver, wait } from '../../lib';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { Box, TextField, Button } from '@mui/material';
 import Modal from '../shared/Modal';
@@ -19,24 +19,31 @@ const Form: FC<FormImportation> = ({ formInstance: updateReceiverFormInstance })
   const navigate = useNavigate();
   const request = useRequest();
   const isUpdateReceiverApiProcessing = request.isApiProcessing(UpdateReceiverApi);
+  const isUpdateReceiverApiFailed = request.isProcessingApiFailed(UpdateReceiverApi);
+  const isUpdateReceiverApiSuccessed = request.isProcessingApiSuccessed(UpdateReceiverApi);
+  const updateReceiverApiExceptionMessage = request.getExceptionMessage(UpdateReceiverApi);
   const updateReceiverForm = updateReceiverFormInstance.getForm();
   const snackbar = useSnackbar();
   const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     updateReceiverFormInstance.onSubmit(() => {
-      request
-        .build<ReceiverObj, UpdateReceiver>(new UpdateReceiverApi(updateReceiverForm))
-        .then((response) => {
-          const receiverId = params.id as string;
-          actions.hideModal(ModalNames.CONFIRMATION);
-          updateReceiverFormInstance.resetForm();
-          snackbar.enqueueSnackbar({ message: 'You have updated the receiver successfully.', variant: 'success' });
-          navigate(getDynamicPath(Pathes.RECEIVER, { id: receiverId }));
-        })
-        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+      actions.updateReceiver(updateReceiverForm);
     });
-  }, [updateReceiverForm, updateReceiverFormInstance, params, request]);
+  }, [updateReceiverForm, updateReceiverFormInstance]);
+
+  useEffect(() => {
+    if (isUpdateReceiverApiSuccessed) {
+      const receiverId = params.id as string;
+      actions.hideModal(ModalNames.CONFIRMATION);
+      updateReceiverFormInstance.resetForm();
+      snackbar.enqueueSnackbar({ message: 'You have updated the receiver successfully.', variant: 'success' });
+      navigate(getDynamicPath(Pathes.RECEIVER, { id: receiverId }));
+    } else if (isUpdateReceiverApiFailed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      snackbar.enqueueSnackbar({ message: updateReceiverApiExceptionMessage, variant: 'error' });
+    }
+  }, [isUpdateReceiverApiFailed, isUpdateReceiverApiSuccessed]);
 
   useEffect(() => {
     (async () => {
@@ -46,7 +53,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateReceiverFormInstance })
       if (el) {
         for (const node of Array.from(el.childNodes)) {
           // @ts-ignore
-          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          node.style.transition = 'opacity 0.1s, transform 0.2s';
           // @ts-ignore
           node.style.opacity = 1;
           // @ts-ignore
@@ -86,7 +93,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateReceiverFormInstance })
         />
 
         <Box
-          sx={{ opacity: 0, transform: 'translateX(20px)' }}
+          sx={{ opacity: 0, transform: 'translateX(15px)' }}
           component="div"
           display="flex"
           alignItems="center"

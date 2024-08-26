@@ -1,103 +1,93 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button, Autocomplete } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { NotificationList, NotificationObj, NotificationListFilters, getTime, isoDate, UserRoles } from '../../lib';
-import { useForm, usePaginationList, useRequest } from '../../hooks';
-import { NotificationsApiConstructorType, NotificationsApi } from '../../apis';
+import { NotificationListFilters, getTime, isoDate, UserRoles } from '../../lib';
+import { useAction, useForm, useRequest, useSelector } from '../../hooks';
+import { NotificationsApi } from '../../apis';
 import NotificationsSkeleton from '../shared/NotificationsSkeleton';
 import EmptyList from './EmptyList';
 import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import NotificationCard from '../shared/NotificationCard';
+import { selectNotificationsList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const request = useRequest();
-  const notificationListInstance = usePaginationList(NotificationList);
+  const actions = useAction();
+  const selectors = useSelector();
+  const snackbar = useSnackbar();
   const notificationListFiltersFormInstance = useForm(NotificationListFilters);
   const notificationListFiltersForm = notificationListFiltersFormInstance.getForm();
   const isInitialNotificationsApiProcessing = request.isInitialApiProcessing(NotificationsApi);
   const isNotificationsApiProcessing = request.isApiProcessing(NotificationsApi);
+  const isInitialNotificationsApiFailed = request.isInitialProcessingApiFailed(NotificationsApi);
+  const isNotificationsApiFailed = request.isProcessingApiFailed(NotificationsApi);
+  const initialNotificationsApiExceptionMessage = request.getInitialExceptionMessage(NotificationsApi);
+  const notificationsApiExceptionMessage = request.getExceptionMessage(NotificationsApi);
+  const notificationsList = selectNotificationsList(selectors);
 
-  const getNotificationsApi = useCallback(
-    (options: Partial<NotificationsApiConstructorType> = {}) => {
-      return new NotificationsApi({
-        take: notificationListInstance.getTake(),
-        page: notificationListInstance.getPage(),
+  useEffect(() => {
+    actions.getInitialNotifications({ page: 1, take: notificationsList.take });
+  }, []);
+
+  useEffect(() => {
+    if (isInitialNotificationsApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialNotificationsApiExceptionMessage, variant: 'error' });
+    } else if (isNotificationsApiFailed) {
+      snackbar.enqueueSnackbar({ message: notificationsApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitialNotificationsApiFailed, isNotificationsApiFailed]);
+
+  const changePage = useCallback(
+    (page: number) => {
+      if (notificationsList.page === page || isNotificationsApiProcessing) return;
+      actions.getNotifications({
+        page,
+        take: notificationsList.take,
         filters: {
           q: notificationListFiltersForm.q,
           roles: notificationListFiltersForm.roles,
           fromDate: notificationListFiltersForm.fromDate,
           toDate: notificationListFiltersForm.toDate,
         },
-        ...options,
       });
     },
-    [notificationListFiltersForm]
-  );
-
-  const getNotificationList = useCallback(
-    (api: NotificationsApi) => {
-      request.build<[NotificationObj[], number], NotificationObj>(api).then((response) => {
-        const [list, total] = response.data;
-        notificationListInstance.updateAndConcatList(list, api.api.params.page);
-        notificationListInstance.updatePage(api.api.params.page);
-        notificationListInstance.updateTotal(total);
-      });
-    },
-    [notificationListInstance, notificationListFiltersForm, request]
-  );
-
-  useEffect(() => {
-    const api = getNotificationsApi();
-    api.setInitialApi();
-    getNotificationList(api);
-  }, []);
-
-  const changePage = useCallback(
-    (newPage: number) => {
-      notificationListInstance.updatePage(newPage);
-
-      if (notificationListInstance.isNewPageEqualToCurrentPage(newPage) || isNotificationsApiProcessing) return;
-
-      if (!notificationListInstance.isNewPageExist(newPage)) {
-        const api = getNotificationsApi({ page: newPage });
-        getNotificationList(api);
-      }
-    },
-    [isNotificationsApiProcessing, notificationListInstance, getNotificationList]
+    [isNotificationsApiProcessing, notificationsList, notificationListFiltersForm]
   );
 
   const notificationListFilterFormSubmition = useCallback(() => {
     notificationListFiltersFormInstance.onSubmit(() => {
-      const newPage = 1;
-      notificationListInstance.updatePage(newPage);
-      const api = getNotificationsApi({ page: newPage });
-      getNotificationList(api);
+      actions.getNotifications({
+        page: 1,
+        take: notificationsList.take,
+        filters: {
+          q: notificationListFiltersForm.q,
+          roles: notificationListFiltersForm.roles,
+          fromDate: notificationListFiltersForm.fromDate,
+          toDate: notificationListFiltersForm.toDate,
+        },
+      });
     });
-  }, [notificationListFiltersFormInstance, notificationListInstance, getNotificationList]);
+  }, [notificationListFiltersFormInstance, notificationsList, notificationListFiltersForm]);
 
   return (
     <>
       {isInitialNotificationsApiProcessing || isNotificationsApiProcessing ? (
-        <NotificationsSkeleton take={notificationListInstance.getTake()} />
-      ) : notificationListInstance.isListEmpty() ? (
+        <NotificationsSkeleton take={notificationsList.take} />
+      ) : notificationsList.total <= 0 ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {notificationListInstance.getList().map((notification, index) => (
-              <NotificationCard
-                key={index}
-                index={index}
-                notification={notification}
-                listInstance={notificationListInstance}
-              />
+            {notificationsList.list.map((notification, index) => (
+              <NotificationCard key={index} index={index} notification={notification} list={notificationsList} />
             ))}
           </MuiList>
-          {notificationListInstance.getTotal() > notificationListInstance.getTake() && (
+          {notificationsList.take < notificationsList.total && (
             <Pagination
-              page={notificationListInstance.getPage()}
-              count={notificationListInstance.getCount()}
+              page={notificationsList.page}
+              count={Math.ceil(notificationsList.total / notificationsList.take)}
               onPageChange={changePage}
             />
           )}

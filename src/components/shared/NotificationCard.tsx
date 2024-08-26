@@ -3,18 +3,19 @@ import { ListItem, ListItemButton, ListItemText, Typography } from '@mui/materia
 import { Box } from '@mui/system';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
-import { getDynamicPath, NotificationList, NotificationObj, Pathes } from '../../lib';
+import { getDynamicPath, Notification, Pathes } from '../../lib';
 import Card from './Card';
 import CountBadge from './CountBadge';
-import { useAuth, usePaginationList } from '../../hooks';
+import { useAuth } from '../../hooks';
+import { List } from '../../lib/lists/list';
 
 interface NotificationCardImportation extends PropsWithChildren {
-  notification: NotificationObj;
+  notification: Notification;
   index: number;
-  listInstance: ReturnType<typeof usePaginationList<NotificationList>>;
+  list: List;
 }
 
-const NotificationCard: FC<NotificationCardImportation> = ({ notification, index, listInstance }) => {
+const NotificationCard: FC<NotificationCardImportation> = ({ notification, index, list }) => {
   const navigate = useNavigate();
   const auth = useAuth();
   const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(notification.user);
@@ -107,7 +108,7 @@ const NotificationCard: FC<NotificationCardImportation> = ({ notification, index
             </Box>
           </Box>
 
-          <CountBadge index={index} page={listInstance.getPage()} take={listInstance.getTake()} />
+          <CountBadge index={index} page={list.page} take={list.page} />
         </ListItem>
       </ListItemButton>
     </Card>
