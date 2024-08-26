@@ -164,7 +164,7 @@ const CreateBillContent: FC = () => {
       if (el) {
         for (const node of Array.from(el.childNodes)) {
           // @ts-ignore
-          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          node.style.transition = 'opacity 0.1s, transform 0.2s';
           // @ts-ignore
           node.style.opacity = 1;
           // @ts-ignore
@@ -204,7 +204,7 @@ const CreateBillContent: FC = () => {
             disabled={isCreateBillApiProcessing}
             name="amount"
           />
-          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(20px)' }}>
+          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(15px)' }}>
             <Autocomplete
               freeSolo
               open={isReceiverAutocompleteOpen}
@@ -258,7 +258,7 @@ const CreateBillContent: FC = () => {
               <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
             )}
           </Box>
-          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(30px)' }}>
+          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(20px)' }}>
             <Autocomplete
               freeSolo
               open={isLocationAutocompleteOpen}
@@ -312,7 +312,7 @@ const CreateBillContent: FC = () => {
               <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
             )}
           </Box>
-          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(40px)' }}>
+          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(25px)' }}>
             <Autocomplete
               multiple
               freeSolo
@@ -363,7 +363,7 @@ const CreateBillContent: FC = () => {
             )}
           </Box>
           <TextField
-            sx={{ opacity: 0, transform: 'translateX(50px)' }}
+            sx={{ opacity: 0, transform: 'translateX(30px)' }}
             label="Date"
             type="date"
             variant="standard"
@@ -377,7 +377,7 @@ const CreateBillContent: FC = () => {
             disabled={isCreateBillApiProcessing}
           />
           <TextField
-            sx={{ opacity: 0, transform: 'translateX(60px)' }}
+            sx={{ opacity: 0, transform: 'translateX(35px)' }}
             label="Description"
             type="text"
             rows="5"
@@ -395,7 +395,7 @@ const CreateBillContent: FC = () => {
             alignItems="center"
             gap="10px"
             marginTop="20px"
-            sx={{ opacity: 0, transform: 'translateX(70px)' }}
+            sx={{ opacity: 0, transform: 'translateX(40px)' }}
           >
             <Button
               disabled={isCreateBillApiProcessing || !createBillFromInstance.isFormValid()}

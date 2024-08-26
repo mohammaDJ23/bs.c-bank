@@ -61,7 +61,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
       if (el) {
         for (const node of Array.from(el.childNodes)) {
           // @ts-ignore
-          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          node.style.transition = 'opacity 0.1s, transform 0.2s';
           // @ts-ignore
           node.style.opacity = 1;
           // @ts-ignore
@@ -100,7 +100,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           disabled={isUpdateUserByOwnerApiProcessing}
         />
         <TextField
-          sx={{ opacity: 0, transform: 'translateX(20px)' }}
+          sx={{ opacity: 0, transform: 'translateX(15px)' }}
           label="Last Name"
           variant="standard"
           type="text"
@@ -111,7 +111,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           disabled={isUpdateUserByOwnerApiProcessing}
         />
         <TextField
-          sx={{ opacity: 0, transform: 'translateX(30px)' }}
+          sx={{ opacity: 0, transform: 'translateX(20px)' }}
           label="Email"
           type="email"
           variant="standard"
@@ -122,7 +122,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           disabled={isUpdateUserByOwnerApiProcessing}
         />
         <TextField
-          sx={{ opacity: 0, transform: 'translateX(40px)' }}
+          sx={{ opacity: 0, transform: 'translateX(25px)' }}
           label="Phone"
           type="text"
           variant="standard"
@@ -132,7 +132,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           error={formInstance.isInputInValid('phone')}
           disabled={isUpdateUserByOwnerApiProcessing}
         />
-        <FormControl variant="standard" sx={{ opacity: 0, transform: 'translateX(50px)' }}>
+        <FormControl variant="standard" sx={{ opacity: 0, transform: 'translateX(30px)' }}>
           <InputLabel id="role">Role</InputLabel>
           <Select
             labelId="role"
@@ -153,7 +153,7 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           )}
         </FormControl>
         <Box
-          sx={{ opacity: 0, transform: 'translateX(60px)' }}
+          sx={{ opacity: 0, transform: 'translateX(35px)' }}
           component="div"
           display="flex"
           alignItems="center"

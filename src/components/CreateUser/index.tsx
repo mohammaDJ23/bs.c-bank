@@ -48,7 +48,7 @@ const CreateUserContent: FC = () => {
       if (el) {
         for (const node of Array.from(el.childNodes)) {
           // @ts-ignore
-          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          node.style.transition = 'opacity 0.1s, transform 0.2s';
           // @ts-ignore
           node.style.opacity = 1;
           // @ts-ignore
@@ -89,7 +89,7 @@ const CreateUserContent: FC = () => {
             name="firstName"
           />
           <TextField
-            sx={{ opacity: 0, transform: 'translateX(20px)' }}
+            sx={{ opacity: 0, transform: 'translateX(15px)' }}
             label="Last Name"
             variant="standard"
             type="text"
@@ -100,7 +100,7 @@ const CreateUserContent: FC = () => {
             disabled={isCreateUserApiProcessing}
           />
           <TextField
-            sx={{ opacity: 0, transform: 'translateX(30px)' }}
+            sx={{ opacity: 0, transform: 'translateX(20px)' }}
             label="Email"
             type="email"
             variant="standard"
@@ -111,7 +111,7 @@ const CreateUserContent: FC = () => {
             disabled={isCreateUserApiProcessing}
           />
           <TextField
-            sx={{ opacity: 0, transform: 'translateX(40px)' }}
+            sx={{ opacity: 0, transform: 'translateX(25px)' }}
             label="Password"
             type="password"
             variant="standard"
@@ -123,7 +123,7 @@ const CreateUserContent: FC = () => {
             disabled={isCreateUserApiProcessing}
           />
           <TextField
-            sx={{ opacity: 0, transform: 'translateX(50px)' }}
+            sx={{ opacity: 0, transform: 'translateX(30px)' }}
             label="Phone"
             type="text"
             variant="standard"
@@ -133,7 +133,7 @@ const CreateUserContent: FC = () => {
             error={createUserFormInstance.isInputInValid('phone')}
             disabled={isCreateUserApiProcessing}
           />
-          <FormControl variant="standard" sx={{ opacity: 0, transform: 'translateX(60px)' }}>
+          <FormControl variant="standard" sx={{ opacity: 0, transform: 'translateX(35px)' }}>
             <InputLabel id="role">Role</InputLabel>
             <Select
               disabled={isCreateUserApiProcessing}
@@ -155,7 +155,7 @@ const CreateUserContent: FC = () => {
             )}
           </FormControl>
           <Box
-            sx={{ opacity: 0, transform: 'translateX(70px)' }}
+            sx={{ opacity: 0, transform: 'translateX(40px)' }}
             component="div"
             display="flex"
             alignItems="center"

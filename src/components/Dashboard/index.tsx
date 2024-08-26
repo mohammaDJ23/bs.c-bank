@@ -717,7 +717,7 @@ const Dashboard: FC = () => {
                 ) : (
                   isInitialMostActiveUsersApiSuccessed &&
                   mostActiveUsersList.list.length > 0 && (
-                    <HorizonCarousel infinity height="53px">
+                    <HorizonCarousel infinity height="53px" timer={4000}>
                       {mostActiveUsersList.list.map((item) => (
                         <Card key={item.user.id}>
                           <CardContent>

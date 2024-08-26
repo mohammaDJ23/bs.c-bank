@@ -191,7 +191,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
       if (el) {
         for (const node of Array.from(el.childNodes)) {
           // @ts-ignore
-          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          node.style.transition = 'opacity 0.1s, transform 0.2s';
           // @ts-ignore
           node.style.opacity = 1;
           // @ts-ignore
@@ -229,7 +229,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           error={updateBillFormInstance.isInputInValid('amount')}
           disabled={isUpdateBillApiProcessing}
         />
-        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(20px)' }}>
+        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(15px)' }}>
           <Autocomplete
             freeSolo
             open={isReceiverAutocompleteOpen}
@@ -283,7 +283,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
           )}
         </Box>
-        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(30px)' }}>
+        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(20px)' }}>
           <Autocomplete
             freeSolo
             open={isLocationAutocompleteOpen}
@@ -337,7 +337,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
           )}
         </Box>
-        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(40px)' }}>
+        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(25px)' }}>
           <Autocomplete
             multiple
             freeSolo
@@ -388,7 +388,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           )}
         </Box>
         <TextField
-          sx={{ opacity: 0, transform: 'translateX(50px)' }}
+          sx={{ opacity: 0, transform: 'translateX(30px)' }}
           label="Date"
           type="date"
           variant="standard"
@@ -402,7 +402,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           disabled={isUpdateBillApiProcessing}
         />
         <TextField
-          sx={{ opacity: 0, transform: 'translateX(60px)' }}
+          sx={{ opacity: 0, transform: 'translateX(35px)' }}
           label="Description"
           type="text"
           rows="5"
@@ -415,7 +415,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           disabled={isUpdateBillApiProcessing}
         />
         <Box
-          sx={{ opacity: 0, transform: 'translateX(70px)' }}
+          sx={{ opacity: 0, transform: 'translateX(40px)' }}
           component="div"
           display="flex"
           alignItems="center"
