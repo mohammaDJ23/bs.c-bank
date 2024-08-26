@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios';
 import { FC, useEffect, useRef } from 'react';
 import { Box, styled, Typography } from '@mui/material';
 import {
@@ -8,7 +7,6 @@ import {
   DeletedBillQuantitiesApi,
   DeletedUserQuantitiesApi,
   LastYearBillsApi,
-  LastYearUsersApi,
   NotificationQuantitiesApi,
   BillQuantitiesApi,
   UserQuantitiesApi,
@@ -19,19 +17,7 @@ import {
 } from '../../apis';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import MainContainer from '../../layout/MainContainer';
-import {
-  AllBillQuantities,
-  DeletedUserQuantities,
-  LastYearBill,
-  LastYearReport,
-  LastYearUser,
-  UserQuantities,
-  DeletedBillQuantities,
-  AllDeletedBillQuantities,
-  NotificationQuantities,
-  AllNotificationQuantities,
-  BillQuantities,
-} from '../../store';
+import { LastYearReport } from '../../store';
 import Skeleton from '../shared/Skeleton';
 import Card from '../shared/Card';
 import moment from 'moment';
@@ -486,16 +472,36 @@ const Dashboard: FC = () => {
                   </Typography>
                 </Box>
               </Card>
+            ) : isInitialLastYearBillsApiSuccessed && chartData.length > 0 ? (
+              <Card>
+                <CardContent
+                  style={{ position: 'relative', height: '429px', overflow: 'hidden' }}
+                  id={lastYearChartElIdRef.current}
+                ></CardContent>
+              </Card>
             ) : (
-              isInitialLastYearBillsApiSuccessed &&
-              chartData.length > 0 && (
-                <Card>
-                  <CardContent
-                    style={{ position: 'relative', height: '429px', overflow: 'hidden' }}
-                    id={lastYearChartElIdRef.current}
-                  ></CardContent>
-                </Card>
-              )
+              <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: 'inherit',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography
+                    fontSize={'14px'}
+                    textAlign={'center'}
+                    fontWeight={'500'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    No bills exist.
+                  </Typography>
+                </Box>
+              </Card>
             )}
           </Box>
 
