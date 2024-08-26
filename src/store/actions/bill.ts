@@ -16,6 +16,7 @@ import {
   DeletedBillsApiConstructorType,
   LastYearBillsApi,
   Request,
+  RestoreBillApi,
 } from '../../apis';
 import { AllBills, Bill, Bills, CreateBill, DeletedBills } from '../../lib';
 import {
@@ -247,6 +248,18 @@ export function getInitialDeletedBill(id: string) {
       dispatch(initialProcessingApiSuccess(DeletedBillApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(DeletedBillApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function restoreBill(id: string) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(RestoreBillApi.name));
+      await new Request<Bill, string>(new RestoreBillApi(id)).build();
+      dispatch(processingApiSuccess(RestoreBillApi.name));
+    } catch (error) {
+      dispatch(processingApiError(RestoreBillApi.name, error as AxiosError<Exception>));
     }
   };
 }
