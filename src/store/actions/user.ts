@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
 import {
   CreateUserApi,
+  DeletedUserApi,
   DeletedUserQuantitiesApi,
   DeletedUsersApi,
   DeletedUsersApiConstructorType,
@@ -8,11 +9,12 @@ import {
   MostActiveUsersApi,
   MostActiveUsersApiConstructorType,
   Request,
+  RestoreUserApi,
   UserQuantitiesApi,
   UsersApi,
   UsersApiConstructorType,
 } from '../../apis';
-import { CreateUser, DeletedUsers, MostActiveUser, MostActiveUsers, User, Users } from '../../lib';
+import { CreateUser, DeletedUsers, MostActiveUser, MostActiveUsers, User, Users, UserWithBillInfo } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -151,6 +153,31 @@ export function getInitialLastYearUsers() {
       dispatch(initialProcessingApiSuccess(LastYearUsersApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(LastYearUsersApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialDeletedUser(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(DeletedUserApi.name));
+      const response = await new Request<UserWithBillInfo, number>(new DeletedUserApi(id)).build();
+      dispatch(setSpecificDetails('deletedUser', response.data));
+      dispatch(initialProcessingApiSuccess(DeletedUserApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(DeletedUserApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function restoreUser(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(RestoreUserApi.name));
+      await new Request<User, number>(new RestoreUserApi(id)).build();
+      dispatch(processingApiSuccess(RestoreUserApi.name));
+    } catch (error) {
+      dispatch(processingApiError(RestoreUserApi.name, error as AxiosError<Exception>));
     }
   };
 }
