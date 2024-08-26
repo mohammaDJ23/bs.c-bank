@@ -10,20 +10,34 @@ import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import ReceiverCard from '../shared/ReceiverCard';
 import { selectReceiversList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const request = useRequest();
   const actions = useAction();
   const selectors = useSelector();
+  const snackbar = useSnackbar();
   const receiverListFiltersFormInstance = useForm(ReceiverListFilters);
   const receiverListFiltersForm = receiverListFiltersFormInstance.getForm();
   const isInitialReceiversApiProcessing = request.isInitialApiProcessing(ReceiversApi);
   const isReceiversApiProcessing = request.isApiProcessing(ReceiversApi);
+  const isInitialReceiversApiFailed = request.isInitialProcessingApiFailed(ReceiversApi);
+  const isReceiversApiFailed = request.isProcessingApiFailed(ReceiversApi);
+  const initialReceiversApiExceptionMessage = request.getInitialExceptionMessage(ReceiversApi);
+  const receiversApiExceptionMessage = request.getExceptionMessage(ReceiversApi);
   const receiversList = selectReceiversList(selectors);
 
   useEffect(() => {
     actions.getInitialReceivers({ page: 1, take: receiversList.take });
   }, []);
+
+  useEffect(() => {
+    if (isInitialReceiversApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialReceiversApiExceptionMessage, variant: 'error' });
+    } else if (isReceiversApiFailed) {
+      snackbar.enqueueSnackbar({ message: receiversApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitialReceiversApiFailed, isReceiversApiFailed]);
 
   const changePage = useCallback(
     (page: number) => {
