@@ -17,8 +17,9 @@ import {
   LastYearBillsApi,
   Request,
   RestoreBillApi,
+  UpdateBillApi,
 } from '../../apis';
-import { AllBills, Bill, Bills, CreateBill, DeletedBills } from '../../lib';
+import { AllBills, Bill, Bills, CreateBill, DeletedBills, UpdateBill } from '../../lib';
 import {
   AllBillQuantities,
   AllDeletedBillQuantities,
@@ -260,6 +261,18 @@ export function restoreBill(id: string) {
       dispatch(processingApiSuccess(RestoreBillApi.name));
     } catch (error) {
       dispatch(processingApiError(RestoreBillApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function updateBill(data: UpdateBill) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(UpdateBillApi.name));
+      await new Request<UpdateBill, UpdateBill>(new UpdateBillApi(data)).build();
+      dispatch(processingApiSuccess(UpdateBillApi.name));
+    } catch (error) {
+      dispatch(processingApiError(UpdateBillApi.name, error as AxiosError<Exception>));
     }
   };
 }

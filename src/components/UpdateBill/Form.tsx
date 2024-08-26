@@ -16,7 +16,7 @@ import { Box, TextField, Button, Autocomplete, CircularProgress } from '@mui/mat
 import Modal from '../shared/Modal';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { ModalNames } from '../../store';
-import { ConsumersApi, LocationsApi, ReceiversApi, UpdateBillApi } from '../../apis';
+import { ConsumerApi, ConsumersApi, LocationsApi, ReceiversApi, UpdateBillApi } from '../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { selectConsumersList, selectLocationsList, selectReceiversList } from '../../store/selectors';
@@ -41,9 +41,21 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
   const navigate = useNavigate();
   const request = useRequest();
   const isUpdateBillApiProcessing = request.isApiProcessing(UpdateBillApi);
+  const isUpdateBillApiFailed = request.isProcessingApiFailed(UpdateBillApi);
+  const isUpdateBillApiSuccessed = request.isProcessingApiSuccessed(UpdateBillApi);
+  const updateBillApiExceptionMessage = request.getExceptionMessage(UpdateBillApi);
   const isConsumersApiProcessing = request.isApiProcessing(ConsumersApi);
+  const isConsumersApiFailed = request.isProcessingApiFailed(ConsumersApi);
+  const isConsumersApiSuccessed = request.isProcessingApiSuccessed(ConsumersApi);
+  const consumersApiExceptionMessage = request.getExceptionMessage(ConsumersApi);
   const isReceiversApiProcessing = request.isApiProcessing(ReceiversApi);
+  const isReceiversApiFailed = request.isProcessingApiFailed(ReceiversApi);
+  const isReceiversApiSuccessed = request.isProcessingApiSuccessed(ReceiversApi);
+  const receiversApiExceptionMessage = request.getExceptionMessage(ReceiversApi);
   const isLocationsApiProcessing = request.isApiProcessing(LocationsApi);
+  const isLocationsApiFailed = request.isProcessingApiFailed(LocationsApi);
+  const isLocationsApiSuccessed = request.isProcessingApiSuccessed(LocationsApi);
+  const locationsApiExceptionMessage = request.getExceptionMessage(LocationsApi);
   const consumerListFiltersForm = consumerListFiltersFormInstance.getForm();
   const receiverListFiltersForm = receiverListFiltersFormInstance.getForm();
   const locationListFiltersForm = locationListFiltersFormInstance.getForm();
@@ -57,18 +69,22 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
 
   const formSubmition = useCallback(() => {
     updateBillFormInstance.onSubmit(() => {
-      request
-        .build<UpdateBill, UpdateBill>(new UpdateBillApi(updateBillForm))
-        .then((response) => {
-          const billId = params.id as string;
-          actions.hideModal(ModalNames.CONFIRMATION);
-          updateBillFormInstance.resetForm();
-          snackbar.enqueueSnackbar({ message: 'You have updated the bill successfully.', variant: 'success' });
-          navigate(getDynamicPath(Pathes.BILL, { id: billId }));
-        })
-        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+      actions.updateBill(updateBillForm);
     });
-  }, [updateBillForm, updateBillFormInstance, params, request]);
+  }, [updateBillForm, updateBillFormInstance]);
+
+  useEffect(() => {
+    if (isUpdateBillApiSuccessed) {
+      const billId = params.id as string;
+      actions.hideModal(ModalNames.CONFIRMATION);
+      updateBillFormInstance.resetForm();
+      snackbar.enqueueSnackbar({ message: 'You have updated the bill successfully.', variant: 'success' });
+      navigate(getDynamicPath(Pathes.BILL, { id: billId }));
+    } else if (isUpdateBillApiFailed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      snackbar.enqueueSnackbar({ message: updateBillApiExceptionMessage, variant: 'error' });
+    }
+  }, [isUpdateBillApiSuccessed, isUpdateBillApiFailed]);
 
   const onReceiverChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -90,14 +106,18 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
   );
 
   useEffect(() => {
-    const receivers: string[] = [];
-    if (receiverListFiltersForm.q.length) {
-      receivers.splice(receivers.length, 0, receiverListFiltersForm.q);
+    if (isReceiversApiSuccessed) {
+      const receivers: string[] = [];
+      if (receiverListFiltersForm.q.length) {
+        receivers.splice(receivers.length, 0, receiverListFiltersForm.q);
+      }
+      receivers.splice(receivers.length, 0, ...receiversList.list.map((receiver) => receiver.name));
+      const newReceivers = new Set(receivers);
+      setReceivers(Array.from(newReceivers));
+    } else if (isReceiversApiFailed) {
+      snackbar.enqueueSnackbar({ message: receiversApiExceptionMessage, variant: 'error' });
     }
-    receivers.splice(receivers.length, 0, ...receiversList.list.map((receiver) => receiver.name));
-    const newReceivers = new Set(receivers);
-    setReceivers(Array.from(newReceivers));
-  }, [receiversList, receiverListFiltersForm]);
+  }, [receiversList, receiverListFiltersForm, isReceiversApiFailed, isReceiversApiSuccessed]);
 
   const onLocationChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -119,14 +139,18 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
   );
 
   useEffect(() => {
-    const locations: string[] = [];
-    if (locationListFiltersForm.q.length) {
-      locations.splice(locations.length, 0, locationListFiltersForm.q);
+    if (isLocationsApiSuccessed) {
+      const locations: string[] = [];
+      if (locationListFiltersForm.q.length) {
+        locations.splice(locations.length, 0, locationListFiltersForm.q);
+      }
+      locations.splice(locations.length, 0, ...locationsList.list.map((location) => location.name));
+      const newLocations = new Set(locations);
+      setLocations(Array.from(newLocations));
+    } else if (isLocationsApiFailed) {
+      snackbar.enqueueSnackbar({ message: locationsApiExceptionMessage, variant: 'error' });
     }
-    locations.splice(locations.length, 0, ...locationsList.list.map((location) => location.name));
-    const newLocations = new Set(locations);
-    setLocations(Array.from(newLocations));
-  }, [locationsList, locationListFiltersForm]);
+  }, [locationsList, locationListFiltersForm, isLocationsApiSuccessed, isLocationsApiFailed]);
 
   const onConsumerChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -147,15 +171,19 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
   );
 
   useEffect(() => {
-    const consumers: string[] = [];
-    if (consumerListFiltersForm.q.length) {
-      consumers.splice(consumers.length, 0, consumerListFiltersForm.q);
+    if (isConsumersApiSuccessed) {
+      const consumers: string[] = [];
+      if (consumerListFiltersForm.q.length) {
+        consumers.splice(consumers.length, 0, consumerListFiltersForm.q);
+      }
+      consumers.splice(consumers.length, 0, ...updateBillForm.consumers);
+      consumers.splice(consumers.length, 0, ...consumersList.list.map((consumer) => consumer.name));
+      const newConsumers = new Set(consumers);
+      setConsumers(Array.from(newConsumers));
+    } else if (isConsumersApiFailed) {
+      snackbar.enqueueSnackbar({ message: consumersApiExceptionMessage, variant: 'error' });
     }
-    consumers.splice(consumers.length, 0, ...updateBillForm.consumers);
-    consumers.splice(consumers.length, 0, ...consumersList.list.map((consumer) => consumer.name));
-    const newConsumers = new Set(consumers);
-    setConsumers(Array.from(newConsumers));
-  }, [consumersList, consumerListFiltersForm, updateBillForm]);
+  }, [consumersList, consumerListFiltersForm, updateBillForm, isConsumersApiSuccessed, isConsumersApiFailed]);
 
   useEffect(() => {
     (async () => {
