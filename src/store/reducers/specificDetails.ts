@@ -1,4 +1,14 @@
-import { Bill, Consumer, User, Location, Notification, Receiver, UserStatusObj, UserWithBillInfo } from '../../lib';
+import {
+  Bill,
+  Consumer,
+  User,
+  Location,
+  Notification,
+  Receiver,
+  UserStatusObj,
+  UserWithBillInfo,
+  AccessTokenObj,
+} from '../../lib';
 import { RootActions, SetSpecificDetailsAction } from '../actions';
 import { ClearState } from './clearState';
 
@@ -102,6 +112,7 @@ export interface SpecificDetailsState {
   notificationQuantities: NotificationQuantities | null;
   allNotificationQuantities: AllNotificationQuantities | null;
   usersStatus: UsersStatusType;
+  updatedUser: AccessTokenObj | null;
 }
 
 const initialState: SpecificDetailsState = {
@@ -125,6 +136,7 @@ const initialState: SpecificDetailsState = {
   notificationQuantities: null,
   allNotificationQuantities: null,
   usersStatus: {},
+  updatedUser: null,
 };
 
 function setSpecificDetails(state: SpecificDetailsState, action: SetSpecificDetailsAction): SpecificDetailsState {
@@ -156,6 +168,7 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     notification: null,
     notificationQuantities: null,
     allNotificationQuantities: null,
+    updatedUser: null,
   };
 }
 

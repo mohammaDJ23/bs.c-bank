@@ -10,11 +10,23 @@ import {
   MostActiveUsersApiConstructorType,
   Request,
   RestoreUserApi,
+  UpdateUserApi,
+  UserApi,
   UserQuantitiesApi,
   UsersApi,
   UsersApiConstructorType,
 } from '../../apis';
-import { CreateUser, DeletedUsers, MostActiveUser, MostActiveUsers, User, Users, UserWithBillInfo } from '../../lib';
+import {
+  AccessTokenObj,
+  CreateUser,
+  DeletedUsers,
+  MostActiveUser,
+  MostActiveUsers,
+  UpdateUser,
+  User,
+  Users,
+  UserWithBillInfo,
+} from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -27,6 +39,19 @@ import {
 } from './requestProcess';
 import { DeletedUserQuantities, Exception, LastYearUser, UserQuantities } from '../reducers';
 import { setSpecificDetails } from './speceficDetails';
+
+export function getInitialUser(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(UserApi.name));
+      const response = await new Request<User, number>(new UserApi(id)).build();
+      dispatch(setSpecificDetails('user', response.data));
+      dispatch(initialProcessingApiSuccess(UserApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(UserApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
 
 export function getInitialUsers(params: UsersApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -178,6 +203,19 @@ export function restoreUser(id: number) {
       dispatch(processingApiSuccess(RestoreUserApi.name));
     } catch (error) {
       dispatch(processingApiError(RestoreUserApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function updateUser(data: UpdateUser) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(UpdateUserApi.name));
+      const response = await new Request<AccessTokenObj, UpdateUser>(new UpdateUserApi(data)).build();
+      dispatch(setSpecificDetails('updatedUser', response.data));
+      dispatch(processingApiSuccess(UpdateUserApi.name));
+    } catch (error) {
+      dispatch(processingApiError(UpdateUserApi.name, error as AxiosError<Exception>));
     }
   };
 }
