@@ -10,17 +10,23 @@ import { ModalNames, UsersStatusType } from '../../store';
 import UserSkeleton from '../shared/UsersSkeleton';
 import UserCard from '../shared/UserCard';
 import { selectUsersList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const selectors = useSelector();
   const actions = useAction();
   const request = useRequest();
+  const snackbar = useSnackbar();
   const auth = useAuth();
   const isCurrentOwner = auth.isCurrentOwner();
   const userListFiltersFormInstance = useForm(UserListFilters);
   const userListFiltersForm = userListFiltersFormInstance.getForm();
   const isInitialUsersApiProcessing = request.isInitialApiProcessing(UsersApi);
   const isUsersApiProcessing = request.isApiProcessing(UsersApi);
+  const isInitialUsersApiFailed = request.isInitialProcessingApiFailed(UsersApi);
+  const initialUsersApiExceptionMessage = request.getInitialExceptionMessage(UsersApi);
+  const isUsersApiFailed = request.isProcessingApiFailed(UsersApi);
+  const usersApiExceptionMessage = request.getExceptionMessage(UsersApi);
   const usersList = selectUsersList(selectors);
 
   useEffect(() => {
@@ -48,6 +54,14 @@ const List: FC = () => {
   useEffect(() => {
     actions.getInitialUsers({ page: 1, take: usersList.take });
   }, []);
+
+  useEffect(() => {
+    if (isInitialUsersApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialUsersApiExceptionMessage, variant: 'error' });
+    } else if (isUsersApiFailed) {
+      snackbar.enqueueSnackbar({ message: usersApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitialUsersApiFailed, isUsersApiFailed]);
 
   useEffect(() => {
     if (selectors.userServiceSocket.connection && isCurrentOwner) {
