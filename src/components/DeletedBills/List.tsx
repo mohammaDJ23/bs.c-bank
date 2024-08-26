@@ -10,24 +10,38 @@ import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
 import { selectDeletedBillsList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const request = useRequest();
   const actions = useAction();
   const selectors = useSelector();
+  const snackbar = useSnackbar();
   const deletedBillListFiltersFormInstance = useForm(DeletedBillListFilters);
   const deletedBillListFiltersForm = deletedBillListFiltersFormInstance.getForm();
-  const isInitialDeletedBillListApiProcessing = request.isInitialApiProcessing(DeletedBillsApi);
-  const isDeletedBillListApiProcessing = request.isApiProcessing(DeletedBillsApi);
+  const isInitialDeletedBillsApiProcessing = request.isInitialApiProcessing(DeletedBillsApi);
+  const isInitialDeletedBillsApiFailed = request.isInitialProcessingApiFailed(DeletedBillsApi);
+  const isDeletedBillsApiFailed = request.isProcessingApiFailed(DeletedBillsApi);
+  const deletedBillsApiExceptionMessage = request.getExceptionMessage(DeletedBillsApi);
+  const initialDeletedBillsApiExceptionMessage = request.getInitialExceptionMessage(DeletedBillsApi);
+  const isDeletedBillsApiProcessing = request.isApiProcessing(DeletedBillsApi);
   const deletedBillsList = selectDeletedBillsList(selectors);
 
   useEffect(() => {
     actions.getInitialDeletedBills({ page: 1, take: deletedBillsList.take });
   }, []);
 
+  useEffect(() => {
+    if (isInitialDeletedBillsApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialDeletedBillsApiExceptionMessage, variant: 'error' });
+    } else if (isDeletedBillsApiFailed) {
+      snackbar.enqueueSnackbar({ message: deletedBillsApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitialDeletedBillsApiFailed, isDeletedBillsApiFailed]);
+
   const changePage = useCallback(
     (page: number) => {
-      if (deletedBillsList.page === page || isDeletedBillListApiProcessing) return;
+      if (deletedBillsList.page === page || isDeletedBillsApiProcessing) return;
       actions.getDeletedBills({
         page,
         take: deletedBillsList.take,
@@ -39,7 +53,7 @@ const List: FC = () => {
         },
       });
     },
-    [isDeletedBillListApiProcessing, deletedBillsList, deletedBillListFiltersForm]
+    [isDeletedBillsApiProcessing, deletedBillsList, deletedBillListFiltersForm]
   );
 
   const deletedBillListFilterFormSubmition = useCallback(() => {
@@ -59,7 +73,7 @@ const List: FC = () => {
 
   return (
     <>
-      {isInitialDeletedBillListApiProcessing || isDeletedBillListApiProcessing ? (
+      {isInitialDeletedBillsApiProcessing || isDeletedBillsApiProcessing ? (
         <BillsSkeleton take={deletedBillsList.take} />
       ) : deletedBillsList.total <= 0 ? (
         <EmptyList />
@@ -105,7 +119,7 @@ const List: FC = () => {
             error={deletedBillListFiltersFormInstance.isInputInValid('q')}
             name="q"
             placeholder="amount, receiver, description"
-            disabled={isDeletedBillListApiProcessing}
+            disabled={isDeletedBillsApiProcessing}
           />
           <TextField
             label="From date"
@@ -117,7 +131,7 @@ const List: FC = () => {
             error={deletedBillListFiltersFormInstance.isInputInValid('fromDate')}
             InputLabelProps={{ shrink: true }}
             name="fromDate"
-            disabled={isDeletedBillListApiProcessing}
+            disabled={isDeletedBillsApiProcessing}
           />
           <TextField
             label="To date"
@@ -129,7 +143,7 @@ const List: FC = () => {
             error={deletedBillListFiltersFormInstance.isInputInValid('toDate')}
             InputLabelProps={{ shrink: true }}
             name="toDate"
-            disabled={isDeletedBillListApiProcessing}
+            disabled={isDeletedBillsApiProcessing}
           />
           <TextField
             label="Deleted date"
@@ -143,11 +157,11 @@ const List: FC = () => {
             error={deletedBillListFiltersFormInstance.isInputInValid('deletedDate')}
             InputLabelProps={{ shrink: true }}
             name="deletedDate"
-            disabled={isDeletedBillListApiProcessing}
+            disabled={isDeletedBillsApiProcessing}
           />
           <Box component="div" display="flex" alignItems="center" gap="10px" marginTop="20px">
             <Button
-              disabled={isDeletedBillListApiProcessing || !deletedBillListFiltersFormInstance.isFormValid()}
+              disabled={isDeletedBillsApiProcessing || !deletedBillListFiltersFormInstance.isFormValid()}
               variant="contained"
               size="small"
               type="submit"
