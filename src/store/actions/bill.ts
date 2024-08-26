@@ -10,6 +10,7 @@ import {
   BillsApiConstructorType,
   CreateBillApi,
   DeleteBillApi,
+  DeletedBillQuantitiesApi,
   DeletedBillsApi,
   DeletedBillsApiConstructorType,
   LastYearBillsApi,
@@ -201,6 +202,24 @@ export function getInitialBillQuantities() {
       dispatch(initialProcessingApiSuccess(BillQuantitiesApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(BillQuantitiesApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialDeletedBillQuantities() {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(DeletedBillQuantitiesApi.name));
+      const response = await new Request<DeletedBillQuantities>(new DeletedBillQuantitiesApi()).build();
+      dispatch(
+        setSpecificDetails(
+          'deletedBillQuantities',
+          new DeletedBillQuantities(response.data.amount, response.data.quantities)
+        )
+      );
+      dispatch(initialProcessingApiSuccess(DeletedBillQuantitiesApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(DeletedBillQuantitiesApi.name, error as AxiosError<Exception>));
     }
   };
 }

@@ -135,16 +135,8 @@ const Dashboard: FC = () => {
     actions.getInitialMostActiveLocations({ page: 1, take: mostActiveLocationsList.take });
     actions.getInitialMostActiveReceivers({ page: 1, take: mostActiveReceiversList.take });
     actions.getInitialBillQuantities();
+    actions.getInitialDeletedBillQuantities();
     actions.getInitialLastYearBill();
-
-    Promise.allSettled<[Promise<AxiosResponse<DeletedBillQuantities>>]>([
-      request.build(new DeletedBillQuantitiesApi().setInitialApi()),
-    ]).then(([deletedBillQuantitiesResponse]) => {
-      if (deletedBillQuantitiesResponse.status === 'fulfilled') {
-        const { quantities, amount } = deletedBillQuantitiesResponse.value.data;
-        actions.setSpecificDetails('deletedBillQuantities', new DeletedBillQuantities(amount, quantities));
-      }
-    });
   }, []);
 
   function getChartData() {
