@@ -3,27 +3,41 @@ import { List as MuiList, Box, TextField, Button, Autocomplete } from '@mui/mate
 import { isoDate, getTime, UserRoles, DeletedUserListFilters } from '../../lib';
 import Pagination from '../shared/Pagination';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
-import { DeletedUsersApi } from '../../apis';
+import { DeletedUserApi, DeletedUsersApi } from '../../apis';
 import Filter from '../shared/Filter';
 import EmptyList from './EmptyList';
 import { ModalNames } from '../../store';
 import UserCard from '../shared/UserCard';
 import UserSkeleton from '../shared/UsersSkeleton';
 import { selectDeletedUsersList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const request = useRequest();
   const actions = useAction();
   const selectors = useSelector();
+  const snackbar = useSnackbar();
   const deletedUserListFiltersFormInstance = useForm(DeletedUserListFilters);
   const deletedUserListFiltersForm = deletedUserListFiltersFormInstance.getForm();
   const isInitialDeletedUsersApiProcessing = request.isInitialApiProcessing(DeletedUsersApi);
+  const isInitialDeletedUsersApiFailed = request.isInitialProcessingApiFailed(DeletedUsersApi);
+  const initialDeletedUsersExceptionMessage = request.getInitialExceptionMessage(DeletedUsersApi);
   const isDeletedUsersApiProcessing = request.isApiProcessing(DeletedUsersApi);
+  const isDeletedUsersApiFailed = request.isProcessingApiFailed(DeletedUsersApi);
+  const deletedUsersApiExceptionMessage = request.getExceptionMessage(DeletedUserApi);
   const deletedUsersList = selectDeletedUsersList(selectors);
 
   useEffect(() => {
     actions.getInitialDeletedUsers({ page: 1, take: deletedUsersList.take });
   }, []);
+
+  useEffect(() => {
+    if (isInitialDeletedUsersApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialDeletedUsersExceptionMessage, variant: 'error' });
+    } else if (isDeletedUsersApiFailed) {
+      snackbar.enqueueSnackbar({ message: deletedUsersApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitialDeletedUsersApiFailed, isDeletedUsersApiFailed]);
 
   const changePage = useCallback(
     (page: number) => {
