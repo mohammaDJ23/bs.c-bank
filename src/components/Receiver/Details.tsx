@@ -3,11 +3,12 @@ import { MoreVert } from '@mui/icons-material';
 import moment from 'moment';
 import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
 import { getDynamicPath, Pathes, Receiver } from '../../lib';
 import { ModalNames } from '../../store';
 import { DeleteReceiverApi } from '../../apis';
+import { useSnackbar } from 'notistack';
 
 interface DetailsImporation {
   receiver: Receiver;
@@ -20,7 +21,11 @@ const Details: FC<DetailsImporation> = ({ receiver }) => {
   const actions = useAction();
   const selectors = useSelector();
   const request = useRequest();
+  const snackbar = useSnackbar();
   const isDeleteReceiverApiProcessing = request.isApiProcessing(DeleteReceiverApi);
+  const isDeleteReceiverApiFailed = request.isProcessingApiFailed(DeleteReceiverApi);
+  const isDeleteReceiverApiSuccessed = request.isProcessingApiSuccessed(DeleteReceiverApi);
+  const deleteReceiverApiExceptionMessage = request.getExceptionMessage(DeleteReceiverApi);
   const options = [{ label: 'Update', path: getDynamicPath(Pathes.UPDATE_RECEIVER, { id: receiver.id }) }];
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -46,14 +51,17 @@ const Details: FC<DetailsImporation> = ({ receiver }) => {
   }, []);
 
   const deleteReceiver = useCallback(() => {
-    request
-      .build<Receiver, string>(new DeleteReceiverApi(receiver.id))
-      .then(() => {
-        actions.hideModal(ModalNames.CONFIRMATION);
-        navigate(Pathes.RECEIVERS);
-      })
-      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
-  }, [receiver, request]);
+    actions.deleteReceiver(receiver.id);
+  }, [receiver]);
+
+  useEffect(() => {
+    if (isDeleteReceiverApiSuccessed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      navigate(Pathes.RECEIVERS);
+    } else if (isDeleteReceiverApiFailed) {
+      snackbar.enqueueSnackbar({ message: deleteReceiverApiExceptionMessage, variant: 'error' });
+    }
+  }, [isDeleteReceiverApiFailed, isDeleteReceiverApiSuccessed]);
 
   return (
     <>

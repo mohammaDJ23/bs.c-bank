@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import {
+  DeleteReceiverApi,
   MostActiveReceiversApi,
   MostActiveReceiversApiConstructorType,
   ReceiverApi,
@@ -80,6 +81,18 @@ export function getInitialReceiver(id: number) {
       dispatch(initialProcessingApiSuccess(ReceiverApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(ReceiverApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function deleteReceiver(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(DeleteReceiverApi.name));
+      await new Request<Receiver, number>(new DeleteReceiverApi(id)).build();
+      dispatch(processingApiSuccess(DeleteReceiverApi.name));
+    } catch (error) {
+      dispatch(processingApiError(DeleteReceiverApi.name, error as AxiosError<Exception>));
     }
   };
 }
