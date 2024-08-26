@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import {
+  LocaitonApi,
   LocationsApi,
   LocationsApiConstructorType,
   MostActiveLocationsApi,
@@ -18,6 +19,7 @@ import {
   processingApiSuccess,
 } from './requestProcess';
 import { Exception } from '../reducers';
+import { setSpecificDetails } from './speceficDetails';
 
 export function getInitialLocations(params: LocationsApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -65,6 +67,19 @@ export function getInitialMostActiveLocations(params: MostActiveLocationsApiCons
       dispatch(initialProcessingApiSuccess(MostActiveLocationsApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(MostActiveLocationsApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialLocation(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(LocaitonApi.name));
+      const response = await new Request<Location, number>(new LocaitonApi(id)).build();
+      dispatch(setSpecificDetails('location', response.data));
+      dispatch(initialProcessingApiSuccess(LocaitonApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(LocaitonApi.name, error as AxiosError<Exception>));
     }
   };
 }
