@@ -10,20 +10,34 @@ import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import NotificationCard from '../shared/NotificationCard';
 import { selectNotificationsList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const request = useRequest();
   const actions = useAction();
   const selectors = useSelector();
+  const snackbar = useSnackbar();
   const notificationListFiltersFormInstance = useForm(NotificationListFilters);
   const notificationListFiltersForm = notificationListFiltersFormInstance.getForm();
   const isInitialNotificationsApiProcessing = request.isInitialApiProcessing(NotificationsApi);
   const isNotificationsApiProcessing = request.isApiProcessing(NotificationsApi);
+  const isInitialNotificationsApiFailed = request.isInitialProcessingApiFailed(NotificationsApi);
+  const isNotificationsApiFailed = request.isProcessingApiFailed(NotificationsApi);
+  const initialNotificationsApiExceptionMessage = request.getInitialExceptionMessage(NotificationsApi);
+  const notificationsApiExceptionMessage = request.getExceptionMessage(NotificationsApi);
   const notificationsList = selectNotificationsList(selectors);
 
   useEffect(() => {
     actions.getInitialNotifications({ page: 1, take: notificationsList.take });
   }, []);
+
+  useEffect(() => {
+    if (isInitialNotificationsApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialNotificationsApiExceptionMessage, variant: 'error' });
+    } else if (isNotificationsApiFailed) {
+      snackbar.enqueueSnackbar({ message: notificationsApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitialNotificationsApiFailed, isNotificationsApiFailed]);
 
   const changePage = useCallback(
     (page: number) => {
