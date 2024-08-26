@@ -1,12 +1,13 @@
 import { AxiosError } from 'axios';
 import {
   AllNotificationQuantitiesApi,
+  NotificationApi,
   NotificationQuantitiesApi,
   NotificationsApi,
   NotificationsApiConstructorType,
   Request,
 } from '../../apis';
-import { Notifications } from '../../lib';
+import { Notification, Notifications } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -70,6 +71,19 @@ export function getInitialAllNotificationQuantities() {
       dispatch(initialProcessingApiSuccess(AllNotificationQuantitiesApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(AllNotificationQuantitiesApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialNotification(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(NotificationApi.name));
+      const response = await new Request<Notification, number>(new NotificationApi(id)).build();
+      dispatch(setSpecificDetails('notification', response.data));
+      dispatch(initialProcessingApiSuccess(NotificationApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(NotificationApi.name, error as AxiosError<Exception>));
     }
   };
 }
