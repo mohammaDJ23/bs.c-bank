@@ -1,28 +1,50 @@
 import { FC, useCallback, useEffect } from 'react';
 import { List as MuiList, Box, TextField, Button, Autocomplete } from '@mui/material';
-import { UserObj, isoDate, getTime, UserRoles, DeletedUserListFilters, DeletedUserList } from '../../lib';
+import { isoDate, getTime, UserRoles, DeletedUserListFilters } from '../../lib';
 import Pagination from '../shared/Pagination';
-import { useForm, usePaginationList, useRequest } from '../../hooks';
-import { DeletedUsersApi, DeletedUsersApiConstructorType } from '../../apis';
+import { useAction, useForm, useRequest, useSelector } from '../../hooks';
+import { DeletedUserApi, DeletedUsersApi } from '../../apis';
 import Filter from '../shared/Filter';
 import EmptyList from './EmptyList';
 import { ModalNames } from '../../store';
 import UserCard from '../shared/UserCard';
 import UserSkeleton from '../shared/UsersSkeleton';
+import { selectDeletedUsersList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const request = useRequest();
-  const deletedUserListInstance = usePaginationList(DeletedUserList);
+  const actions = useAction();
+  const selectors = useSelector();
+  const snackbar = useSnackbar();
   const deletedUserListFiltersFormInstance = useForm(DeletedUserListFilters);
   const deletedUserListFiltersForm = deletedUserListFiltersFormInstance.getForm();
   const isInitialDeletedUsersApiProcessing = request.isInitialApiProcessing(DeletedUsersApi);
+  const isInitialDeletedUsersApiFailed = request.isInitialProcessingApiFailed(DeletedUsersApi);
+  const initialDeletedUsersExceptionMessage = request.getInitialExceptionMessage(DeletedUsersApi);
   const isDeletedUsersApiProcessing = request.isApiProcessing(DeletedUsersApi);
+  const isDeletedUsersApiFailed = request.isProcessingApiFailed(DeletedUsersApi);
+  const deletedUsersApiExceptionMessage = request.getExceptionMessage(DeletedUserApi);
+  const deletedUsersList = selectDeletedUsersList(selectors);
 
-  const getDeletedUsersApi = useCallback(
-    (options: Partial<DeletedUsersApiConstructorType> = {}) => {
-      return new DeletedUsersApi({
-        take: deletedUserListInstance.getTake(),
-        page: deletedUserListInstance.getPage(),
+  useEffect(() => {
+    actions.getInitialDeletedUsers({ page: 1, take: deletedUsersList.take });
+  }, []);
+
+  useEffect(() => {
+    if (isInitialDeletedUsersApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialDeletedUsersExceptionMessage, variant: 'error' });
+    } else if (isDeletedUsersApiFailed) {
+      snackbar.enqueueSnackbar({ message: deletedUsersApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitialDeletedUsersApiFailed, isDeletedUsersApiFailed]);
+
+  const changePage = useCallback(
+    (page: number) => {
+      if (deletedUsersList.page === page || isDeletedUsersApiProcessing) return;
+      actions.getDeletedUsers({
+        page,
+        take: deletedUsersList.take,
         filters: {
           q: deletedUserListFiltersForm.q,
           roles: deletedUserListFiltersForm.roles,
@@ -30,70 +52,44 @@ const List: FC = () => {
           toDate: deletedUserListFiltersForm.toDate,
           deletedDate: deletedUserListFiltersForm.deletedDate,
         },
-        ...options,
       });
     },
-    [deletedUserListFiltersForm]
-  );
-
-  const getDeletedUsersList = useCallback(
-    (api: DeletedUsersApi) => {
-      request.build<[UserObj[], number]>(api).then((response) => {
-        const [list, total] = response.data;
-        deletedUserListInstance.updateAndConcatList(list, api.api.params.page);
-        deletedUserListInstance.updatePage(api.api.params.page);
-        deletedUserListInstance.updateTotal(total);
-      });
-    },
-    [deletedUserListInstance, deletedUserListFiltersForm, request]
-  );
-
-  useEffect(() => {
-    const api = getDeletedUsersApi();
-    api.setInitialApi();
-    getDeletedUsersList(api);
-  }, []);
-
-  const changePage = useCallback(
-    (newPage: number) => {
-      deletedUserListInstance.updatePage(newPage);
-
-      if (deletedUserListInstance.isNewPageEqualToCurrentPage(newPage) || isDeletedUsersApiProcessing) return;
-
-      if (!deletedUserListInstance.isNewPageExist(newPage)) {
-        const api = getDeletedUsersApi({ page: newPage });
-        getDeletedUsersList(api);
-      }
-    },
-    [deletedUserListInstance, isDeletedUsersApiProcessing, getDeletedUsersList]
+    [isDeletedUsersApiProcessing, deletedUsersList, deletedUserListFiltersForm]
   );
 
   const userListFilterFormSubmition = useCallback(() => {
     deletedUserListFiltersFormInstance.onSubmit(() => {
-      const newPage = 1;
-      deletedUserListInstance.updatePage(newPage);
-      const api = getDeletedUsersApi({ page: newPage });
-      getDeletedUsersList(api);
+      actions.getDeletedUsers({
+        page: 1,
+        take: deletedUsersList.take,
+        filters: {
+          q: deletedUserListFiltersForm.q,
+          roles: deletedUserListFiltersForm.roles,
+          fromDate: deletedUserListFiltersForm.fromDate,
+          toDate: deletedUserListFiltersForm.toDate,
+          deletedDate: deletedUserListFiltersForm.deletedDate,
+        },
+      });
     });
-  }, [deletedUserListFiltersFormInstance, deletedUserListInstance, getDeletedUsersList]);
+  }, [deletedUserListFiltersFormInstance, deletedUsersList, deletedUserListFiltersForm]);
 
   return (
     <>
       {isInitialDeletedUsersApiProcessing || isDeletedUsersApiProcessing ? (
-        <UserSkeleton take={deletedUserListInstance.getTake()} />
-      ) : deletedUserListInstance.isListEmpty() ? (
+        <UserSkeleton take={deletedUsersList.take} />
+      ) : deletedUsersList.total <= 0 ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {deletedUserListInstance.getList().map((user, index) => (
-              <UserCard key={index} index={index} user={user} listInstance={deletedUserListInstance} />
+            {deletedUsersList.list.map((user, index) => (
+              <UserCard key={index} index={index} user={user} list={deletedUsersList} />
             ))}
           </MuiList>
-          {deletedUserListInstance.getTotal() > deletedUserListInstance.getTake() && (
+          {deletedUsersList.take < deletedUsersList.total && (
             <Pagination
-              page={deletedUserListInstance.getPage()}
-              count={deletedUserListInstance.getCount()}
+              page={deletedUsersList.page}
+              count={Math.ceil(deletedUsersList.total / deletedUsersList.take)}
               onPageChange={changePage}
             />
           )}

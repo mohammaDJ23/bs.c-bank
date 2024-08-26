@@ -1,36 +1,43 @@
-import { UserList } from './user';
-import { BillList } from './bill';
-import { DeletedUserList } from './deletedUsers';
-import { DeletedBillList } from './deletedBills';
-import { NotificationList } from './notification';
-import { ConsumerList } from './consumer';
-import { AllBillList } from './allBill';
-import { ReceiverList } from './receivers';
-import { LocationList } from './locations';
+import { DeletedUsers } from './deletedUsers';
+import { DeletedBills } from './deletedBills';
+import { Notifications } from './notifications';
+import { Receivers } from './receivers';
+import { Locations } from './locations';
+import { Users } from './users';
+import { Bills } from './bills';
+import { AllBills } from './allBills';
+import { Consumers } from './consumers';
+import { MostActiveConsumers } from './mostActiveConsumers';
+import { MostActiveLocations } from './mostActiveLocations';
+import { MostActiveReceivers } from './mostActiveReceivers';
+import { MostActiveUsers } from './mostActiveUsers';
 
-export * from './bill';
-export * from './list';
-export * from './user';
 export * from './deletedUsers';
 export * from './deletedBills';
-export * from './notification';
-export * from './consumer';
-export * from './allBill';
+export * from './notifications';
 export * from './receivers';
 export * from './locations';
-export * from './mostActiveUsers';
+export * from './users';
+export * from './bills';
+export * from './allBills';
+export * from './consumers';
 export * from './mostActiveConsumers';
 export * from './mostActiveLocations';
 export * from './mostActiveReceivers';
+export * from './mostActiveUsers';
 
 export const lists = {
-  UserList,
-  BillList,
-  DeletedUserList,
-  DeletedBillList,
-  NotificationList,
-  ConsumerList,
-  AllBillList,
-  ReceiverList,
-  LocationList,
+  Users,
+  Bills,
+  AllBills,
+  Consumers,
+  DeletedBills,
+  DeletedUsers,
+  Locations,
+  Notifications,
+  Receivers,
+  MostActiveConsumers,
+  MostActiveLocations,
+  MostActiveReceivers,
+  MostActiveUsers,
 };

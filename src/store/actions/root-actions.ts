@@ -3,11 +3,11 @@ import {
   ListContainerActions,
   ModalActions,
   SpecificDetailsActions,
-  PaginationListActions,
   RequestProcessActions,
   FormActions,
   ClearStateActions,
   UserServiceSocketActions,
+  ListActions,
 } from './';
 
 export type RootActions =
@@ -16,7 +16,7 @@ export type RootActions =
   | ListContainerActions
   | HistoryActions
   | SpecificDetailsActions
-  | PaginationListActions
   | FormActions
   | ClearStateActions
-  | UserServiceSocketActions;
+  | UserServiceSocketActions
+  | ListActions;

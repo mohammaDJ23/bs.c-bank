@@ -1,6 +1,6 @@
-import { BaseList } from './list';
+import { List } from './list';
 
-export interface ReceiverObj {
+export interface Receiver {
   id: number;
   name: string;
   createdAt: Date;
@@ -8,8 +8,4 @@ export interface ReceiverObj {
   deletedAt: Date | null;
 }
 
-export class ReceiverList<T = ReceiverObj> extends BaseList<T> {
-  constructor(arg: Partial<BaseList<T>> = {}) {
-    super(arg);
-  }
-}
+export class Receivers extends List<Receiver> {}

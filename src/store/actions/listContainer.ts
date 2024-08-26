@@ -7,7 +7,7 @@ export interface SetListContainerElementAction {
 
 export type ListContainerActions = SetListContainerElementAction;
 
-export function setListContainerElement(element: HTMLDivElement) {
+export function setListContainerElement(element: HTMLDivElement): SetListContainerElementAction {
   return {
     type: ListContainer.SET_LIST_CONTAINER_ELEMENT,
     payload: { element },

@@ -3,14 +3,15 @@ import { MoreVert } from '@mui/icons-material';
 import moment from 'moment';
 import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
-import { ConsumerObj, getDynamicPath, Pathes } from '../../lib';
+import { Consumer, getDynamicPath, Pathes } from '../../lib';
 import { ModalNames } from '../../store';
 import { DeleteConsumerApi } from '../../apis';
+import { useSnackbar } from 'notistack';
 
 interface DetailsImporation {
-  consumer: ConsumerObj;
+  consumer: Consumer;
 }
 
 const Details: FC<DetailsImporation> = ({ consumer }) => {
@@ -20,7 +21,11 @@ const Details: FC<DetailsImporation> = ({ consumer }) => {
   const actions = useAction();
   const selectors = useSelector();
   const request = useRequest();
+  const snackbar = useSnackbar();
   const isDeleteConsumerApiProcessing = request.isApiProcessing(DeleteConsumerApi);
+  const isDeleteConsumerApiFailed = request.isProcessingApiFailed(DeleteConsumerApi);
+  const isDeleteConsumerApiSuccess = request.isProcessingApiSuccessed(DeleteConsumerApi);
+  const deleteConsumerApiExceptionMesaage = request.getExceptionMessage(DeleteConsumerApi);
   const options = [{ label: 'Update', path: getDynamicPath(Pathes.UPDATE_CONSUMER, { id: consumer.id }) }];
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -46,14 +51,17 @@ const Details: FC<DetailsImporation> = ({ consumer }) => {
   }, []);
 
   const deleteConsumer = useCallback(() => {
-    request
-      .build<ConsumerObj, string>(new DeleteConsumerApi(consumer.id))
-      .then(() => {
-        actions.hideModal(ModalNames.CONFIRMATION);
-        navigate(Pathes.CONSUMERS);
-      })
-      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
-  }, [consumer, request]);
+    actions.deleteConsumer(consumer.id);
+  }, [consumer]);
+
+  useEffect(() => {
+    if (isDeleteConsumerApiSuccess) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      navigate(Pathes.CONSUMERS);
+    } else if (isDeleteConsumerApiFailed) {
+      snackbar.enqueueSnackbar({ message: deleteConsumerApiExceptionMesaage, variant: 'error' });
+    }
+  }, [isDeleteConsumerApiFailed, isDeleteConsumerApiSuccess]);
 
   return (
     <>

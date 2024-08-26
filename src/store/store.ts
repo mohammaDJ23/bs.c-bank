@@ -1,14 +1,15 @@
 import { combineReducers, createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import thunk, { ThunkDispatch } from 'redux-thunk';
+import { RootActions } from './actions';
 import {
   historyReducer,
   listContainerReducer,
   modalReducer,
   requsetProcessReducer,
   specificDetailsReducer,
-  paginationListReducer,
   FormReducer,
   userServiceSocketReducer,
+  listsReducer,
 } from './reducers';
 
 const reducers = combineReducers({
@@ -17,11 +18,12 @@ const reducers = combineReducers({
   listContainer: listContainerReducer,
   history: historyReducer,
   specificDetails: specificDetailsReducer,
-  paginationList: paginationListReducer,
   forms: FormReducer,
   userServiceSocket: userServiceSocketReducer,
+  lists: listsReducer,
 });
 
 export const store = createStore(reducers, {}, applyMiddleware(thunk));
 
 export type RootState = ReturnType<typeof reducers>;
+export type RootDispatch = ThunkDispatch<RootState, any, RootActions>;

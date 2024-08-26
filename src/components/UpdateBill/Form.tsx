@@ -1,18 +1,12 @@
 import {
-  ConsumerList,
   ConsumerListFilters,
-  ConsumerObj,
   debounce,
   getDynamicPath,
   getTime,
   isoDate,
-  LocationList,
   LocationListFilters,
-  LocationObj,
   Pathes,
-  ReceiverList,
   ReceiverListFilters,
-  ReceiverObj,
   UpdateBill,
   wait,
 } from '../../lib';
@@ -20,11 +14,12 @@ import { v4 as uuid } from 'uuid';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Box, TextField, Button, Autocomplete, CircularProgress } from '@mui/material';
 import Modal from '../shared/Modal';
-import { useAction, useForm, usePaginationList, useRequest } from '../../hooks';
+import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { ModalNames } from '../../store';
-import { ConsumersApi, LocationsApi, ReceiversApi, UpdateBillApi } from '../../apis';
+import { ConsumerApi, ConsumersApi, LocationsApi, ReceiversApi, UpdateBillApi } from '../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import { selectConsumersList, selectLocationsList, selectReceiversList } from '../../store/selectors';
 
 interface FormImportation {
   formInstance: ReturnType<typeof useForm<UpdateBill>>;
@@ -41,19 +36,32 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
   const receiverListFiltersFormInstance = useForm(ReceiverListFilters);
   const locationListFiltersFormInstance = useForm(LocationListFilters);
   const params = useParams();
+  const selectors = useSelector();
   const actions = useAction();
   const navigate = useNavigate();
   const request = useRequest();
   const isUpdateBillApiProcessing = request.isApiProcessing(UpdateBillApi);
+  const isUpdateBillApiFailed = request.isProcessingApiFailed(UpdateBillApi);
+  const isUpdateBillApiSuccessed = request.isProcessingApiSuccessed(UpdateBillApi);
+  const updateBillApiExceptionMessage = request.getExceptionMessage(UpdateBillApi);
   const isConsumersApiProcessing = request.isApiProcessing(ConsumersApi);
+  const isConsumersApiFailed = request.isProcessingApiFailed(ConsumersApi);
+  const isConsumersApiSuccessed = request.isProcessingApiSuccessed(ConsumersApi);
+  const consumersApiExceptionMessage = request.getExceptionMessage(ConsumersApi);
   const isReceiversApiProcessing = request.isApiProcessing(ReceiversApi);
+  const isReceiversApiFailed = request.isProcessingApiFailed(ReceiversApi);
+  const isReceiversApiSuccessed = request.isProcessingApiSuccessed(ReceiversApi);
+  const receiversApiExceptionMessage = request.getExceptionMessage(ReceiversApi);
   const isLocationsApiProcessing = request.isApiProcessing(LocationsApi);
+  const isLocationsApiFailed = request.isProcessingApiFailed(LocationsApi);
+  const isLocationsApiSuccessed = request.isProcessingApiSuccessed(LocationsApi);
+  const locationsApiExceptionMessage = request.getExceptionMessage(LocationsApi);
   const consumerListFiltersForm = consumerListFiltersFormInstance.getForm();
   const receiverListFiltersForm = receiverListFiltersFormInstance.getForm();
   const locationListFiltersForm = locationListFiltersFormInstance.getForm();
-  const consumerListInstance = usePaginationList(ConsumerList);
-  const receiverlistInstance = usePaginationList(ReceiverList);
-  const locationListInstance = usePaginationList(LocationList);
+  const consumersList = selectConsumersList(selectors);
+  const receiversList = selectReceiversList(selectors);
+  const locationsList = selectLocationsList(selectors);
   const oneQuarterDebounce = useRef(debounce(250));
   const updateBillForm = updateBillFormInstance.getForm();
   const snackbar = useSnackbar();
@@ -61,108 +69,121 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
 
   const formSubmition = useCallback(() => {
     updateBillFormInstance.onSubmit(() => {
-      request
-        .build<UpdateBill, UpdateBill>(new UpdateBillApi(updateBillForm))
-        .then((response) => {
-          const billId = params.id as string;
-          actions.hideModal(ModalNames.CONFIRMATION);
-          updateBillFormInstance.resetForm();
-          snackbar.enqueueSnackbar({ message: 'You have updated the bill successfully.', variant: 'success' });
-          navigate(getDynamicPath(Pathes.BILL, { id: billId }));
-        })
-        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+      actions.updateBill(updateBillForm);
     });
-  }, [updateBillForm, updateBillFormInstance, params, request]);
+  }, [updateBillForm, updateBillFormInstance]);
+
+  useEffect(() => {
+    if (isUpdateBillApiSuccessed) {
+      const billId = params.id as string;
+      actions.hideModal(ModalNames.CONFIRMATION);
+      updateBillFormInstance.resetForm();
+      snackbar.enqueueSnackbar({ message: 'You have updated the bill successfully.', variant: 'success' });
+      navigate(getDynamicPath(Pathes.BILL, { id: billId }));
+    } else if (isUpdateBillApiFailed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      snackbar.enqueueSnackbar({ message: updateBillApiExceptionMessage, variant: 'error' });
+    }
+  }, [isUpdateBillApiSuccessed, isUpdateBillApiFailed]);
 
   const onReceiverChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const q = event.target.value.trim();
       receiverListFiltersFormInstance.onChange('q', q);
       updateBillFormInstance.onChange('receiver', q);
-
       oneQuarterDebounce.current(() => {
         receiverListFiltersFormInstance.onSubmit(() => {
           setIsReceiverAutocompleteOpen(true);
-          const receiverApi = new ReceiversApi({
-            take: receiverlistInstance.getTake(),
-            page: receiverlistInstance.getPage(),
+          actions.getReceivers({
+            page: 1,
+            take: receiversList.take,
             filters: { q },
-          });
-          request.build<[ReceiverObj[], number]>(receiverApi).then((response) => {
-            const [list] = response.data;
-            const receivers: string[] = [];
-            if (q.length) {
-              receivers.splice(receivers.length, 0, q);
-            }
-            receivers.splice(receivers.length, 0, ...list.map((receiver) => receiver.name));
-            const newReceivers = new Set(receivers);
-            setReceivers(Array.from(newReceivers));
           });
         });
       });
     },
-    [updateBillFormInstance, receiverListFiltersFormInstance]
+    [updateBillFormInstance, receiverListFiltersFormInstance, receiversList]
   );
+
+  useEffect(() => {
+    if (isReceiversApiSuccessed) {
+      const receivers: string[] = [];
+      if (receiverListFiltersForm.q.length) {
+        receivers.splice(receivers.length, 0, receiverListFiltersForm.q);
+      }
+      receivers.splice(receivers.length, 0, ...receiversList.list.map((receiver) => receiver.name));
+      const newReceivers = new Set(receivers);
+      setReceivers(Array.from(newReceivers));
+    } else if (isReceiversApiFailed) {
+      snackbar.enqueueSnackbar({ message: receiversApiExceptionMessage, variant: 'error' });
+    }
+  }, [receiversList, receiverListFiltersForm, isReceiversApiFailed, isReceiversApiSuccessed]);
 
   const onLocationChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const q = event.target.value.trim();
       locationListFiltersFormInstance.onChange('q', q);
       updateBillFormInstance.onChange('location', q);
-
       oneQuarterDebounce.current(() => {
         locationListFiltersFormInstance.onSubmit(() => {
           setIsLocationAutocompleteOpen(true);
-          const locationApi = new LocationsApi({
-            take: locationListInstance.getTake(),
-            page: locationListInstance.getPage(),
+          actions.getLocations({
+            page: 1,
+            take: locationsList.take,
             filters: { q },
-          });
-          request.build<[LocationObj[], number]>(locationApi).then((response) => {
-            const [list] = response.data;
-            const locations: string[] = [];
-            if (q.length) {
-              locations.splice(locations.length, 0, q);
-            }
-            locations.splice(locations.length, 0, ...list.map((location) => location.name));
-            const newLocations = new Set(locations);
-            setLocations(Array.from(newLocations));
           });
         });
       });
     },
-    [updateBillFormInstance, receiverListFiltersFormInstance]
+    [updateBillFormInstance, locationListFiltersFormInstance, locationsList]
   );
+
+  useEffect(() => {
+    if (isLocationsApiSuccessed) {
+      const locations: string[] = [];
+      if (locationListFiltersForm.q.length) {
+        locations.splice(locations.length, 0, locationListFiltersForm.q);
+      }
+      locations.splice(locations.length, 0, ...locationsList.list.map((location) => location.name));
+      const newLocations = new Set(locations);
+      setLocations(Array.from(newLocations));
+    } else if (isLocationsApiFailed) {
+      snackbar.enqueueSnackbar({ message: locationsApiExceptionMessage, variant: 'error' });
+    }
+  }, [locationsList, locationListFiltersForm, isLocationsApiSuccessed, isLocationsApiFailed]);
 
   const onConsumerChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const q = event.target.value.trim();
       consumerListFiltersFormInstance.onChange('q', q);
-
       oneQuarterDebounce.current(() => {
         consumerListFiltersFormInstance.onSubmit(() => {
           setIsConsumerAutocompleteOpen(true);
-          const consumersApi = new ConsumersApi({
-            take: consumerListInstance.getTake(),
-            page: consumerListInstance.getPage(),
+          actions.getConsumers({
+            page: 1,
+            take: consumersList.take,
             filters: { q },
-          });
-          request.build<[ConsumerObj[], number]>(consumersApi).then((response) => {
-            const [list] = response.data;
-            const consumers: string[] = [];
-            if (q.length) {
-              consumers.splice(consumers.length, 0, q);
-            }
-            consumers.splice(consumers.length, 0, ...updateBillForm.consumers);
-            consumers.splice(consumers.length, 0, ...list.map((consumer) => consumer.name));
-            const newConsumers = new Set(consumers);
-            setConsumers(Array.from(newConsumers));
           });
         });
       });
     },
-    [updateBillForm, consumerListFiltersFormInstance]
+    [consumerListFiltersFormInstance, consumersList]
   );
+
+  useEffect(() => {
+    if (isConsumersApiSuccessed) {
+      const consumers: string[] = [];
+      if (consumerListFiltersForm.q.length) {
+        consumers.splice(consumers.length, 0, consumerListFiltersForm.q);
+      }
+      consumers.splice(consumers.length, 0, ...updateBillForm.consumers);
+      consumers.splice(consumers.length, 0, ...consumersList.list.map((consumer) => consumer.name));
+      const newConsumers = new Set(consumers);
+      setConsumers(Array.from(newConsumers));
+    } else if (isConsumersApiFailed) {
+      snackbar.enqueueSnackbar({ message: consumersApiExceptionMessage, variant: 'error' });
+    }
+  }, [consumersList, consumerListFiltersForm, updateBillForm, isConsumersApiSuccessed, isConsumersApiFailed]);
 
   useEffect(() => {
     (async () => {
@@ -170,7 +191,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
       if (el) {
         for (const node of Array.from(el.childNodes)) {
           // @ts-ignore
-          node.style.transition = 'opacity 0.2s, transform 0.3s';
+          node.style.transition = 'opacity 0.1s, transform 0.2s';
           // @ts-ignore
           node.style.opacity = 1;
           // @ts-ignore
@@ -208,7 +229,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           error={updateBillFormInstance.isInputInValid('amount')}
           disabled={isUpdateBillApiProcessing}
         />
-        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(20px)' }}>
+        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(15px)' }}>
           <Autocomplete
             freeSolo
             open={isReceiverAutocompleteOpen}
@@ -262,7 +283,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
           )}
         </Box>
-        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(30px)' }}>
+        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(20px)' }}>
           <Autocomplete
             freeSolo
             open={isLocationAutocompleteOpen}
@@ -316,7 +337,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
             <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
           )}
         </Box>
-        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(40px)' }}>
+        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(25px)' }}>
           <Autocomplete
             multiple
             freeSolo
@@ -367,7 +388,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           )}
         </Box>
         <TextField
-          sx={{ opacity: 0, transform: 'translateX(50px)' }}
+          sx={{ opacity: 0, transform: 'translateX(30px)' }}
           label="Date"
           type="date"
           variant="standard"
@@ -381,7 +402,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           disabled={isUpdateBillApiProcessing}
         />
         <TextField
-          sx={{ opacity: 0, transform: 'translateX(60px)' }}
+          sx={{ opacity: 0, transform: 'translateX(35px)' }}
           label="Description"
           type="text"
           rows="5"
@@ -394,7 +415,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           disabled={isUpdateBillApiProcessing}
         />
         <Box
-          sx={{ opacity: 0, transform: 'translateX(70px)' }}
+          sx={{ opacity: 0, transform: 'translateX(40px)' }}
           component="div"
           display="flex"
           alignItems="center"

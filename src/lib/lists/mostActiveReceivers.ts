@@ -1,6 +1,9 @@
-import { ReceiverObj } from './receivers';
+import { List } from './list';
+import { Receiver } from './receivers';
 
-export interface MostActiveReceiverObj {
+export interface MostActiveReceiver {
   quantities: number;
-  receiver: ReceiverObj;
+  receiver: Receiver;
 }
+
+export class MostActiveReceivers extends List<MostActiveReceiver> {}

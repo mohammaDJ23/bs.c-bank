@@ -2,14 +2,15 @@ import { Box, Typography, Button } from '@mui/material';
 import moment from 'moment';
 import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
-import { BillObj, Pathes, deletedAtColor } from '../../lib';
+import { Bill, Pathes, deletedAtColor } from '../../lib';
 import { ModalNames } from '../../store';
 import { RestoreBillApi } from '../../apis';
+import { useSnackbar } from 'notistack';
 
 interface DetailsImporation {
-  bill: BillObj;
+  bill: Bill;
 }
 
 const Details: FC<DetailsImporation> = ({ bill }) => {
@@ -17,8 +18,11 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
   const actions = useAction();
   const selectors = useSelector();
   const request = useRequest();
-
+  const snackbar = useSnackbar();
+  const isResotreBillApiFailed = request.isProcessingApiFailed(RestoreBillApi);
+  const isRestoreBillApiSuccessed = request.isProcessingApiSuccessed(RestoreBillApi);
   const isRestoreBillApiProcessing = request.isApiProcessing(RestoreBillApi);
+  const restoreBillApiExceptionMessage = request.getExceptionMessage(RestoreBillApi);
 
   const showRestoreBillModal = useCallback(() => {
     actions.showModal(ModalNames.RESTORE_BILL);
@@ -29,10 +33,17 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
   }, []);
 
   const restoreBill = useCallback(() => {
-    request.build(new RestoreBillApi(bill.id)).then((response) => {
-      navigate(Pathes.BILLS);
-    });
+    actions.restoreBill(bill.id);
   }, [bill]);
+
+  useEffect(() => {
+    if (isRestoreBillApiSuccessed) {
+      hideRestoreBillModal();
+      navigate(Pathes.BILLS);
+    } else if (isResotreBillApiFailed) {
+      snackbar.enqueueSnackbar({ message: restoreBillApiExceptionMessage, variant: 'error' });
+    }
+  }, [isResotreBillApiFailed, isRestoreBillApiSuccessed]);
 
   return (
     <>

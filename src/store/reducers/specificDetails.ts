@@ -1,17 +1,13 @@
 import {
-  BillObj,
-  ConsumerObj,
-  DeletedUserObj,
-  LocationObj,
-  MostActiveConsumerObj,
-  MostActiveLocationObj,
-  MostActiveReceiverObj,
-  MostActiveUserObj,
-  NotificationObj,
-  ReceiverObj,
-  UserObj,
+  Bill,
+  Consumer,
+  User,
+  Location,
+  Notification,
+  Receiver,
   UserStatusObj,
-  UserWithBillInfoObj,
+  UserWithBillInfo,
+  AccessTokenObj,
 } from '../../lib';
 import { RootActions, SetSpecificDetailsAction } from '../actions';
 import { ClearState } from './clearState';
@@ -40,7 +36,7 @@ export class BillQuantities {
 
 export class DeletedBillQuantities extends BillQuantities {}
 
-export interface LastYearBillsObj {
+export interface LastYearBill {
   count: number;
   amount: string;
   date: number;
@@ -60,7 +56,7 @@ export class AllNotificationQuantities {
   constructor(public quantities: string) {}
 }
 
-export interface LastYearUsersObj {
+export interface LastYearUser {
   count: number;
   date: number;
 }
@@ -96,30 +92,29 @@ export class DeletedUserQuantities {
 export type UsersStatusType = Record<number, UserStatusObj>;
 
 export interface SpecificDetailsState {
-  user: UserObj | null;
-  userWithBillInfo: UserWithBillInfoObj | null;
-  bill: BillObj | null;
-  receiver: ReceiverObj | null;
-  location: LocationObj | null;
-  consumer: ConsumerObj | null;
+  user: User | null;
+  userWithBillInfo: UserWithBillInfo | null;
+  bill: Bill | null;
+  receiver: Receiver | null;
+  location: Location | null;
+  consumer: Consumer | null;
   billquantities: BillQuantities | null;
   deletedBillQuantities: AllDeletedBillQuantities | null;
-  lastYearBills: LastYearBillsObj[];
-  lastYearUsers: LastYearUsersObj[];
+  lastYearBills: LastYearBill[];
+  lastYearUsers: LastYearUser[];
   userQuantities: UserQuantities | null;
   deletedUserQuantities: DeletedUserQuantities | null;
   allBillQuantities: AllBillQuantities | null;
   allDeletedBillQuantities: AllDeletedBillQuantities | null;
-  deletedUser: DeletedUserObj | null;
-  deletedBill: BillObj | null;
-  notification: NotificationObj | null;
+  deletedUser: User | null;
+  deletedBill: Bill | null;
+  notification: Notification | null;
   notificationQuantities: NotificationQuantities | null;
   allNotificationQuantities: AllNotificationQuantities | null;
   usersStatus: UsersStatusType;
-  mostActiveUsers: MostActiveUserObj[];
-  mostActiveConsumers: MostActiveConsumerObj[];
-  mostActiveLocations: MostActiveLocationObj[];
-  mostActiveReceivers: MostActiveReceiverObj[];
+  updatedUser: AccessTokenObj | null;
+  updatedUserByOwner: AccessTokenObj | null;
+  downloadedBillReport: Blob | null;
 }
 
 const initialState: SpecificDetailsState = {
@@ -143,10 +138,9 @@ const initialState: SpecificDetailsState = {
   notificationQuantities: null,
   allNotificationQuantities: null,
   usersStatus: {},
-  mostActiveUsers: [],
-  mostActiveConsumers: [],
-  mostActiveLocations: [],
-  mostActiveReceivers: [],
+  updatedUser: null,
+  updatedUserByOwner: null,
+  downloadedBillReport: null,
 };
 
 function setSpecificDetails(state: SpecificDetailsState, action: SetSpecificDetailsAction): SpecificDetailsState {
@@ -178,10 +172,9 @@ function cleanState(state: SpecificDetailsState): SpecificDetailsState {
     notification: null,
     notificationQuantities: null,
     allNotificationQuantities: null,
-    mostActiveUsers: [],
-    mostActiveConsumers: [],
-    mostActiveLocations: [],
-    mostActiveReceivers: [],
+    updatedUser: null,
+    updatedUserByOwner: null,
+    downloadedBillReport: null,
   };
 }
 

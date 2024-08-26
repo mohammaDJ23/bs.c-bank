@@ -1,15 +1,16 @@
 import { Box, Typography, Button } from '@mui/material';
 import moment from 'moment';
 import Modal from '../shared/Modal';
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import { RestoreUserApi } from '../../apis';
-import { DeletedUserObj, Pathes } from '../../lib';
+import { User, Pathes } from '../../lib';
 import { ModalNames } from '../../store';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 interface DetailsImporation {
-  user: DeletedUserObj;
+  user: User;
 }
 
 const Details: FC<DetailsImporation> = ({ user }) => {
@@ -18,8 +19,12 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const selectors = useSelector();
   const request = useRequest();
   const auth = useAuth();
+  const snackbar = useSnackbar();
   const isUserCreatedByCurrentUser = auth.isUserCreatedByCurrentUser(user);
   const isRestoreUserApiProcessing = request.isApiProcessing(RestoreUserApi);
+  const isRestoreUserApiFailed = request.isProcessingApiFailed(RestoreUserApi);
+  const isRestoreUserApiSuccessed = request.isProcessingApiSuccessed(RestoreUserApi);
+  const restoreUserApiExceptionMessage = request.getExceptionMessage(RestoreUserApi);
 
   const showRestoreUserModal = useCallback(() => {
     actions.showModal(ModalNames.RESTORE_USER);
@@ -30,10 +35,17 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   }, []);
 
   const restoreUser = useCallback(() => {
-    request.build(new RestoreUserApi(user.id)).then((response) => {
-      navigate(Pathes.USERS);
-    });
+    actions.restoreUser(user.id);
   }, [user]);
+
+  useEffect(() => {
+    if (isRestoreUserApiSuccessed) {
+      hideRestoreUserModal();
+      navigate(Pathes.USERS);
+    } else if (isRestoreUserApiFailed) {
+      snackbar.enqueueSnackbar({ message: restoreUserApiExceptionMessage, variant: 'error' });
+    }
+  }, [isRestoreUserApiSuccessed, isRestoreUserApiFailed]);
 
   return (
     <>

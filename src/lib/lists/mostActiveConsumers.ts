@@ -1,6 +1,9 @@
-import { ConsumerObj } from './consumer';
+import { Consumer } from './consumers';
+import { List } from './list';
 
-export interface MostActiveConsumerObj {
+export interface MostActiveConsumer {
   quantities: number;
-  consumer: ConsumerObj;
+  consumer: Consumer;
 }
+
+export class MostActiveConsumers extends List<MostActiveConsumer> {}

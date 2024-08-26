@@ -1,98 +1,83 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { ReceiverList, ReceiverListFilters, ReceiverObj } from '../../lib';
-import { useForm, usePaginationList, useRequest } from '../../hooks';
+import { ReceiverListFilters } from '../../lib';
+import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { ReceiversApi } from '../../apis';
 import ReceiversSkeleton from '../shared/ReceiversSkeleton';
 import EmptyList from './EmptyList';
 import Filter from '../shared/Filter';
 import { ModalNames } from '../../store';
 import ReceiverCard from '../shared/ReceiverCard';
+import { selectReceiversList } from '../../store/selectors';
+import { useSnackbar } from 'notistack';
 
 const List: FC = () => {
   const request = useRequest();
-  const receiverListInstance = usePaginationList(ReceiverList);
+  const actions = useAction();
+  const selectors = useSelector();
+  const snackbar = useSnackbar();
   const receiverListFiltersFormInstance = useForm(ReceiverListFilters);
   const receiverListFiltersForm = receiverListFiltersFormInstance.getForm();
   const isInitialReceiversApiProcessing = request.isInitialApiProcessing(ReceiversApi);
   const isReceiversApiProcessing = request.isApiProcessing(ReceiversApi);
-
-  const getReceiversList = useCallback(
-    async (api: ReceiversApi) =>
-      request.build<[ReceiverObj[], number], ReceiverObj>(api).then((response) => response.data),
-    [request]
-  );
+  const isInitialReceiversApiFailed = request.isInitialProcessingApiFailed(ReceiversApi);
+  const isReceiversApiFailed = request.isProcessingApiFailed(ReceiversApi);
+  const initialReceiversApiExceptionMessage = request.getInitialExceptionMessage(ReceiversApi);
+  const receiversApiExceptionMessage = request.getExceptionMessage(ReceiversApi);
+  const receiversList = selectReceiversList(selectors);
 
   useEffect(() => {
-    const api = new ReceiversApi();
-    api.setInitialApi();
-    getReceiversList(api).then(([list, total]) => {
-      receiverListInstance.updateAndConcatList(list, 1);
-      receiverListInstance.updateTotal(total);
-    });
+    actions.getInitialReceivers({ page: 1, take: receiversList.take });
   }, []);
 
+  useEffect(() => {
+    if (isInitialReceiversApiFailed) {
+      snackbar.enqueueSnackbar({ message: initialReceiversApiExceptionMessage, variant: 'error' });
+    } else if (isReceiversApiFailed) {
+      snackbar.enqueueSnackbar({ message: receiversApiExceptionMessage, variant: 'error' });
+    }
+  }, [isInitialReceiversApiFailed, isReceiversApiFailed]);
+
   const changePage = useCallback(
-    (newPage: number) => {
-      receiverListInstance.updatePage(newPage);
-
-      if (receiverListInstance.isNewPageEqualToCurrentPage(newPage) || isReceiversApiProcessing) return;
-
-      if (!receiverListInstance.isNewPageExist(newPage)) {
-        getReceiversList(
-          new ReceiversApi({
-            page: newPage,
-            filters: {
-              q: receiverListFiltersForm.q,
-            },
-          })
-        ).then(([list, total]) => {
-          receiverListInstance.updateAndConcatList(list, newPage);
-          receiverListInstance.updatePage(newPage);
-          receiverListInstance.updateTotal(total);
-        });
-      }
+    (page: number) => {
+      if (receiversList.page === page || isReceiversApiProcessing) return;
+      actions.getReceivers({
+        page,
+        take: receiversList.take,
+        filters: { q: receiverListFiltersForm.q },
+      });
     },
-    [isReceiversApiProcessing, receiverListInstance, receiverListFiltersForm, getReceiversList]
+    [isReceiversApiProcessing, receiverListFiltersForm, receiversList]
   );
 
   const receiverListFilterFormSubmition = useCallback(() => {
     receiverListFiltersFormInstance.onSubmit(() => {
-      const newPage = 1;
-      receiverListInstance.updatePage(newPage);
-      getReceiversList(
-        new ReceiversApi({
-          page: newPage,
-          filters: {
-            q: receiverListFiltersForm.q,
-          },
-        })
-      ).then(([list, total]) => {
-        receiverListInstance.updateAndConcatList(list, newPage);
-        receiverListInstance.updateTotal(total);
+      actions.getReceivers({
+        page: 1,
+        take: receiversList.take,
+        filters: { q: receiverListFiltersForm.q },
       });
     });
-  }, [receiverListFiltersFormInstance, receiverListInstance, receiverListFiltersForm, getReceiversList]);
+  }, [receiverListFiltersFormInstance, receiverListFiltersForm, receiversList]);
 
   return (
     <>
       {isInitialReceiversApiProcessing || isReceiversApiProcessing ? (
-        <ReceiversSkeleton take={receiverListInstance.getTake()} />
-      ) : receiverListInstance.isListEmpty() ? (
+        <ReceiversSkeleton take={receiversList.take} />
+      ) : receiversList.total <= 0 ? (
         <EmptyList />
       ) : (
         <>
           <MuiList>
-            {receiverListInstance.getList().map((receiver, index) => (
-              <ReceiverCard key={index} index={index} receiver={receiver} listInstance={receiverListInstance} />
+            {receiversList.list.map((receiver, index) => (
+              <ReceiverCard key={index} index={index} receiver={receiver} list={receiversList} />
             ))}
           </MuiList>
-
-          {receiverListInstance.getTotal() > receiverListInstance.getTake() && (
+          {receiversList.take < receiversList.total && (
             <Pagination
-              page={receiverListInstance.getPage()}
-              count={receiverListInstance.getCount()}
+              page={receiversList.page}
+              count={Math.ceil(receiversList.total / receiversList.take)}
               onPageChange={changePage}
             />
           )}

@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios';
 import { FC, useEffect, useRef } from 'react';
 import { Box, styled, Typography } from '@mui/material';
 import {
@@ -8,7 +7,6 @@ import {
   DeletedBillQuantitiesApi,
   DeletedUserQuantitiesApi,
   LastYearBillsApi,
-  LastYearUsersApi,
   NotificationQuantitiesApi,
   BillQuantitiesApi,
   UserQuantitiesApi,
@@ -19,27 +17,20 @@ import {
 } from '../../apis';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import MainContainer from '../../layout/MainContainer';
-import {
-  AllBillQuantities,
-  DeletedUserQuantities,
-  LastYearBillsObj,
-  LastYearReport,
-  LastYearUsersObj,
-  UserQuantities,
-  DeletedBillQuantities,
-  AllDeletedBillQuantities,
-  NotificationQuantities,
-  AllNotificationQuantities,
-  BillQuantities,
-} from '../../store';
+import { LastYearReport } from '../../store';
 import Skeleton from '../shared/Skeleton';
 import Card from '../shared/Card';
 import moment from 'moment';
 import Navigation from '../../layout/Navigation';
 import CardContent from '../shared/CardContent';
 import HorizonCarousel from '../shared/HorizonCarousel';
-import { MostActiveConsumerObj, MostActiveLocationObj, MostActiveReceiverObj, MostActiveUserObj } from '../../lib';
 import { v4 as uuid } from 'uuid';
+import {
+  selectMostActiveConsumersList,
+  selectMostActiveLocationsList,
+  selectMostActiveReceiversList,
+  selectMostActiveUsersList,
+} from '../../store/selectors';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -60,6 +51,10 @@ const Dashboard: FC = () => {
   const auth = useAuth();
   const actions = useAction();
   const selectors = useSelector();
+  const mostActiveConsumersList = selectMostActiveConsumersList(selectors);
+  const mostActiveLocationsList = selectMostActiveLocationsList(selectors);
+  const mostActiveReceiversList = selectMostActiveReceiversList(selectors);
+  const mostActiveUsersList = selectMostActiveUsersList(selectors);
   const isCurrentAdmin = auth.isCurrentAdmin();
   const isCurrentOwner = auth.isCurrentOwner();
   const isCurrentOwnerOrAdmin = isCurrentOwner || isCurrentAdmin;
@@ -109,124 +104,25 @@ const Dashboard: FC = () => {
 
   useEffect(() => {
     if (isCurrentOwner) {
-      Promise.allSettled<
-        [
-          Promise<AxiosResponse<NotificationQuantities>>,
-          Promise<AxiosResponse<AllNotificationQuantities>>,
-          Promise<AxiosResponse<MostActiveUserObj[]>>
-        ]
-      >([
-        request.build(new NotificationQuantitiesApi().setInitialApi()),
-        request.build(new AllNotificationQuantitiesApi().setInitialApi()),
-        request.build(new MostActiveUsersApi().setInitialApi()),
-      ]).then(([notificationQuantitiesResponse, allNotificationQuantitiesResponse, mostActiveUsersResponse]) => {
-        if (notificationQuantitiesResponse.status === 'fulfilled')
-          actions.setSpecificDetails('notificationQuantities', notificationQuantitiesResponse.value.data);
-
-        if (allNotificationQuantitiesResponse.status === 'fulfilled')
-          actions.setSpecificDetails('allNotificationQuantities', allNotificationQuantitiesResponse.value.data);
-
-        if (mostActiveUsersResponse.status === 'fulfilled')
-          actions.setSpecificDetails('mostActiveUsers', mostActiveUsersResponse.value.data);
-      });
+      actions.getInitialMostActiveUsers({ page: 1, take: mostActiveUsersList.take });
+      actions.getInitialNotificationQuantities();
+      actions.getInitialAllNotificationQuantities();
     }
 
     if (isCurrentOwnerOrAdmin) {
-      Promise.allSettled<
-        [
-          Promise<AxiosResponse<UserQuantities>>,
-          Promise<AxiosResponse<DeletedUserQuantities>>,
-          Promise<AxiosResponse<LastYearUsersObj[]>>,
-          Promise<AxiosResponse<AllBillQuantities>>,
-          Promise<AxiosResponse<AllDeletedBillQuantities>>
-        ]
-      >([
-        request.build(new UserQuantitiesApi().setInitialApi()),
-        request.build(new DeletedUserQuantitiesApi().setInitialApi()),
-        request.build(new LastYearUsersApi().setInitialApi()),
-        request.build(new AllBillQuantitiesApi().setInitialApi()),
-        request.build(new AllDeletedBillQuantitiesApi().setInitialApi()),
-      ]).then(
-        ([
-          userQuantitiesResponse,
-          deletedUserQuantitiesResponse,
-          lastYearUsersResponse,
-          allBillQuantitiesResponse,
-          allDeletedBillQuantitiesResponse,
-        ]) => {
-          if (userQuantitiesResponse.status === 'fulfilled')
-            actions.setSpecificDetails('userQuantities', new UserQuantities(userQuantitiesResponse.value.data));
-
-          if (deletedUserQuantitiesResponse.status === 'fulfilled')
-            actions.setSpecificDetails(
-              'deletedUserQuantities',
-              new DeletedUserQuantities(deletedUserQuantitiesResponse.value.data)
-            );
-
-          if (lastYearUsersResponse.status === 'fulfilled')
-            actions.setSpecificDetails('lastYearUsers', lastYearUsersResponse.value.data);
-
-          if (allBillQuantitiesResponse.status === 'fulfilled') {
-            const { quantities, amount } = allBillQuantitiesResponse.value.data;
-            actions.setSpecificDetails('allBillQuantities', new AllBillQuantities(amount, quantities));
-          }
-
-          if (allDeletedBillQuantitiesResponse.status === 'fulfilled') {
-            const { quantities, amount } = allDeletedBillQuantitiesResponse.value.data;
-            actions.setSpecificDetails('allDeletedBillQuantities', new AllDeletedBillQuantities(amount, quantities));
-          }
-        }
-      );
+      actions.getInitialUserQuantities();
+      actions.getInitialDeletedUserQuantities();
+      actions.getInitialLastYearUsers();
+      actions.getInitialAllBillQuantities();
+      actions.getInitialAllDeletedBillQuantities();
     }
 
-    Promise.allSettled<
-      [
-        Promise<AxiosResponse<BillQuantities>>,
-        Promise<AxiosResponse<LastYearBillsObj[]>>,
-        Promise<AxiosResponse<DeletedBillQuantities>>,
-        Promise<AxiosResponse<MostActiveConsumerObj[]>>,
-        Promise<AxiosResponse<MostActiveLocationObj[]>>,
-        Promise<AxiosResponse<MostActiveReceiverObj[]>>
-      ]
-    >([
-      request.build(new BillQuantitiesApi().setInitialApi()),
-      request.build(new LastYearBillsApi().setInitialApi()),
-      request.build(new DeletedBillQuantitiesApi().setInitialApi()),
-      request.build(new MostActiveConsumersApi().setInitialApi()),
-      request.build(new MostActiveLocationsApi().setInitialApi()),
-      request.build(new MostActiveReceiversApi().setInitialApi()),
-    ]).then(
-      ([
-        billQuantitiesResponse,
-        lastYearBillsResponse,
-        deletedBillQuantitiesResponse,
-        mostActiveConsumersResponse,
-        mostActiveLocationsResponse,
-        mostActiveReceiversResponse,
-      ]) => {
-        if (billQuantitiesResponse.status === 'fulfilled') {
-          const { quantities, amount } = billQuantitiesResponse.value.data;
-          actions.setSpecificDetails('billquantities', new BillQuantities(amount, quantities));
-        }
-
-        if (lastYearBillsResponse.status === 'fulfilled')
-          actions.setSpecificDetails('lastYearBills', lastYearBillsResponse.value.data);
-
-        if (deletedBillQuantitiesResponse.status === 'fulfilled') {
-          const { quantities, amount } = deletedBillQuantitiesResponse.value.data;
-          actions.setSpecificDetails('deletedBillQuantities', new DeletedBillQuantities(amount, quantities));
-        }
-
-        if (mostActiveConsumersResponse.status === 'fulfilled')
-          actions.setSpecificDetails('mostActiveConsumers', mostActiveConsumersResponse.value.data);
-
-        if (mostActiveLocationsResponse.status === 'fulfilled')
-          actions.setSpecificDetails('mostActiveLocations', mostActiveLocationsResponse.value.data);
-
-        if (mostActiveReceiversResponse.status === 'fulfilled')
-          actions.setSpecificDetails('mostActiveReceivers', mostActiveReceiversResponse.value.data);
-      }
-    );
+    actions.getInitialMostActiveConsumers({ page: 1, take: mostActiveConsumersList.take });
+    actions.getInitialMostActiveLocations({ page: 1, take: mostActiveLocationsList.take });
+    actions.getInitialMostActiveReceivers({ page: 1, take: mostActiveReceiversList.take });
+    actions.getInitialBillQuantities();
+    actions.getInitialDeletedBillQuantities();
+    actions.getInitialLastYearBill();
   }, []);
 
   function getChartData() {
@@ -393,7 +289,7 @@ const Dashboard: FC = () => {
 
   const consumersChartElIdRef = useRef(uuid());
   useEffect(() => {
-    if (selectors.specificDetails.mostActiveConsumers.length > 0) {
+    if (mostActiveConsumersList.list.length > 0) {
       const el = document.getElementById(consumersChartElIdRef.current) as HTMLDivElement | null;
       if (el) {
         const chart = echarts.init(el);
@@ -423,7 +319,7 @@ const Dashboard: FC = () => {
                   show: false,
                 },
               },
-              data: selectors.specificDetails.mostActiveConsumers.map((item) => ({
+              data: mostActiveConsumersList.list.map((item) => ({
                 value: item.quantities,
                 name: item.consumer.name,
               })),
@@ -438,11 +334,11 @@ const Dashboard: FC = () => {
         return () => window.removeEventListener('resize', onResize);
       }
     }
-  }, [selectors.specificDetails.mostActiveConsumers]);
+  }, [mostActiveConsumersList]);
 
   const receiversChartElIdRef = useRef(uuid());
   useEffect(() => {
-    if (selectors.specificDetails.mostActiveReceivers.length > 0) {
+    if (mostActiveReceiversList.list.length > 0) {
       const el = document.getElementById(receiversChartElIdRef.current) as HTMLDivElement | null;
       if (el) {
         const chart = echarts.init(el);
@@ -472,7 +368,7 @@ const Dashboard: FC = () => {
                   show: false,
                 },
               },
-              data: selectors.specificDetails.mostActiveReceivers.map((item) => ({
+              data: mostActiveReceiversList.list.map((item) => ({
                 value: item.quantities,
                 name: item.receiver.name,
               })),
@@ -487,11 +383,11 @@ const Dashboard: FC = () => {
         return () => window.removeEventListener('resize', onResize);
       }
     }
-  }, [selectors.specificDetails.mostActiveReceivers]);
+  }, [mostActiveReceiversList.list]);
 
   const locationsChartElIdRef = useRef(uuid());
   useEffect(() => {
-    if (selectors.specificDetails.mostActiveLocations.length > 0) {
+    if (mostActiveLocationsList.list.length > 0) {
       const el = document.getElementById(locationsChartElIdRef.current) as HTMLDivElement | null;
       if (el) {
         const chart = echarts.init(el);
@@ -521,7 +417,7 @@ const Dashboard: FC = () => {
                   show: false,
                 },
               },
-              data: selectors.specificDetails.mostActiveLocations.map((item) => ({
+              data: mostActiveLocationsList.list.map((item) => ({
                 value: item.quantities,
                 name: item.location.name,
               })),
@@ -536,7 +432,7 @@ const Dashboard: FC = () => {
         return () => window.removeEventListener('resize', onResize);
       }
     }
-  }, [selectors.specificDetails.mostActiveLocations]);
+  }, [mostActiveLocationsList.list]);
 
   return (
     <Navigation>
@@ -576,16 +472,36 @@ const Dashboard: FC = () => {
                   </Typography>
                 </Box>
               </Card>
+            ) : isInitialLastYearBillsApiSuccessed && chartData.length > 0 ? (
+              <Card>
+                <CardContent
+                  style={{ position: 'relative', height: '429px', overflow: 'hidden' }}
+                  id={lastYearChartElIdRef.current}
+                ></CardContent>
+              </Card>
             ) : (
-              isInitialLastYearBillsApiSuccessed &&
-              chartData.length > 0 && (
-                <Card>
-                  <CardContent
-                    style={{ position: 'relative', height: '429px', overflow: 'hidden' }}
-                    id={lastYearChartElIdRef.current}
-                  ></CardContent>
-                </Card>
-              )
+              <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: 'inherit',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography
+                    fontSize={'14px'}
+                    textAlign={'center'}
+                    fontWeight={'500'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    No bills exist.
+                  </Typography>
+                </Box>
+              </Card>
             )}
           </Box>
 
@@ -617,8 +533,7 @@ const Dashboard: FC = () => {
                     </Typography>
                   </Box>
                 </Card>
-              ) : isInitialMostActiveConsumersApiSuccessed &&
-                selectors.specificDetails.mostActiveConsumers.length > 0 ? (
+              ) : isInitialMostActiveConsumersApiSuccessed && mostActiveConsumersList.list.length > 0 ? (
                 <Card>
                   <CardContent
                     style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
@@ -677,8 +592,7 @@ const Dashboard: FC = () => {
                     </Typography>
                   </Box>
                 </Card>
-              ) : isInitialMostActiveReceiversApiSuccessed &&
-                selectors.specificDetails.mostActiveReceivers.length > 0 ? (
+              ) : isInitialMostActiveReceiversApiSuccessed && mostActiveReceiversList.list.length > 0 ? (
                 <Card>
                   <CardContent
                     style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
@@ -737,8 +651,7 @@ const Dashboard: FC = () => {
                     </Typography>
                   </Box>
                 </Card>
-              ) : isInitialMostActiveLocationsApiSuccessed &&
-                selectors.specificDetails.mostActiveLocations.length > 0 ? (
+              ) : isInitialMostActiveLocationsApiSuccessed && mostActiveLocationsList.list.length > 0 ? (
                 <Card>
                   <CardContent
                     style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
@@ -803,9 +716,9 @@ const Dashboard: FC = () => {
                   </Card>
                 ) : (
                   isInitialMostActiveUsersApiSuccessed &&
-                  selectors.specificDetails.mostActiveUsers.length > 0 && (
-                    <HorizonCarousel infinity height="53px">
-                      {selectors.specificDetails.mostActiveUsers.map((item) => (
+                  mostActiveUsersList.list.length > 0 && (
+                    <HorizonCarousel infinity height="53px" timer={4000}>
+                      {mostActiveUsersList.list.map((item) => (
                         <Card key={item.user.id}>
                           <CardContent>
                             <Box display="flex" gap="20px" flexDirection="column">
@@ -944,9 +857,9 @@ const Dashboard: FC = () => {
 
           {isCurrentOwnerOrAdmin && (
             <DeviceWrapper>
-              <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+              <Box sx={{ width: '100%', height: '100%', minHeight: '94px' }}>
                 {isInitialAllBillQuantitiesApiProcessing ? (
-                  <Skeleton width="100%" height="53px" />
+                  <Skeleton width="100%" height="94px" />
                 ) : isInitialAllBillQuantitiesApiFailed ? (
                   <Card style={{ height: '100%', minHeight: 'inherit' }}>
                     <Box
@@ -999,9 +912,9 @@ const Dashboard: FC = () => {
                   )
                 )}
               </Box>
-              <Box sx={{ width: '100%', height: '100%', minHeight: '53px' }}>
+              <Box sx={{ width: '100%', height: '100%', minHeight: '94px' }}>
                 {isInitialAllDeletedBillQuantitiesApiProcessing ? (
-                  <Skeleton width="100%" height="53px" />
+                  <Skeleton width="100%" height="94px" />
                 ) : isInitialAllDeletedBillQuantitiesApiFailed ? (
                   <Card style={{ height: '100%', minHeight: 'inherit' }}>
                     <Box
