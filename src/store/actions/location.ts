@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import {
+  DeleteLocationApi,
   LocaitonApi,
   LocationsApi,
   LocationsApiConstructorType,
@@ -80,6 +81,18 @@ export function getInitialLocation(id: number) {
       dispatch(initialProcessingApiSuccess(LocaitonApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(LocaitonApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function deleteLocation(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(DeleteLocationApi.name));
+      await new Request<Location, number>(new DeleteLocationApi(id)).build();
+      dispatch(processingApiSuccess(DeleteLocationApi.name));
+    } catch (error) {
+      dispatch(processingApiError(DeleteLocationApi.name, error as AxiosError<Exception>));
     }
   };
 }

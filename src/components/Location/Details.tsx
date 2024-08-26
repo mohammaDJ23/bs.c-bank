@@ -3,11 +3,12 @@ import { MoreVert } from '@mui/icons-material';
 import moment from 'moment';
 import Modal from '../shared/Modal';
 import { useNavigate } from 'react-router-dom';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useAction, useRequest, useSelector } from '../../hooks';
 import { getDynamicPath, Location, Pathes } from '../../lib';
 import { ModalNames } from '../../store';
 import { DeleteLocationApi } from '../../apis';
+import { useSnackbar } from 'notistack';
 
 interface DetailsImporation {
   location: Location;
@@ -20,7 +21,11 @@ const Details: FC<DetailsImporation> = ({ location }) => {
   const actions = useAction();
   const selectors = useSelector();
   const request = useRequest();
+  const snackbar = useSnackbar();
   const isDeleteLocationApiProcessing = request.isApiProcessing(DeleteLocationApi);
+  const isDeleteLocationApiFailed = request.isProcessingApiFailed(DeleteLocationApi);
+  const isDeleteLocationApiSuccessed = request.isProcessingApiSuccessed(DeleteLocationApi);
+  const deleteLocationApiExceptionMessage = request.getExceptionMessage(DeleteLocationApi);
   const options = [{ label: 'Update', path: getDynamicPath(Pathes.UPDATE_LOCATION, { id: location.id }) }];
 
   const onMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -46,14 +51,17 @@ const Details: FC<DetailsImporation> = ({ location }) => {
   }, []);
 
   const deleteLocation = useCallback(() => {
-    request
-      .build<Location, string>(new DeleteLocationApi(location.id))
-      .then(() => {
-        actions.hideModal(ModalNames.CONFIRMATION);
-        navigate(Pathes.LOCATIONS);
-      })
-      .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
-  }, [location, request]);
+    actions.deleteLocation(location.id);
+  }, [location]);
+
+  useEffect(() => {
+    if (isDeleteLocationApiSuccessed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      navigate(Pathes.LOCATIONS);
+    } else if (isDeleteLocationApiFailed) {
+      snackbar.enqueueSnackbar({ message: deleteLocationApiExceptionMessage, variant: 'error' });
+    }
+  }, [isDeleteLocationApiFailed, isDeleteLocationApiSuccessed]);
 
   return (
     <>
