@@ -9,7 +9,7 @@ import {
   Request,
   UpdateLocationApi,
 } from '../../apis';
-import { Locations, MostActiveLocation, MostActiveLocations, UpdateLocation } from '../../lib';
+import { Location, Locations, MostActiveLocation, MostActiveLocations, UpdateLocation } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -22,7 +22,6 @@ import {
 } from './requestProcess';
 import { Exception } from '../reducers';
 import { setSpecificDetails } from './speceficDetails';
-import UpdateLocation from '../../pages/UpdateLocation';
 
 export function getInitialLocations(params: LocationsApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
