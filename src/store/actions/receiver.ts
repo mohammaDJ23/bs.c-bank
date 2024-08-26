@@ -2,6 +2,7 @@ import { AxiosError } from 'axios';
 import {
   MostActiveReceiversApi,
   MostActiveReceiversApiConstructorType,
+  ReceiverApi,
   ReceiversApi,
   ReceiversApiConstructorType,
   Request,
@@ -18,6 +19,7 @@ import {
   processingApiLoading,
   processingApiSuccess,
 } from './requestProcess';
+import { setSpecificDetails } from './speceficDetails';
 
 export function getInitialReceivers(params: ReceiversApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -65,6 +67,19 @@ export function getInitialMostActiveReceivers(params: MostActiveReceiversApiCons
       dispatch(initialProcessingApiSuccess(MostActiveReceiversApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(MostActiveReceiversApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialReceiver(id: number) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(ReceiverApi.name));
+      const response = await new Request<Receiver, number>(new ReceiverApi(id)).build();
+      dispatch(setSpecificDetails('receiver', response.data));
+      dispatch(initialProcessingApiSuccess(ReceiverApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(ReceiverApi.name, error as AxiosError<Exception>));
     }
   };
 }
