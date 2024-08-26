@@ -7,8 +7,9 @@ import {
   MostActiveLocationsApi,
   MostActiveLocationsApiConstructorType,
   Request,
+  UpdateLocationApi,
 } from '../../apis';
-import { Locations, MostActiveLocation, MostActiveLocations } from '../../lib';
+import { Locations, MostActiveLocation, MostActiveLocations, UpdateLocation } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -21,6 +22,7 @@ import {
 } from './requestProcess';
 import { Exception } from '../reducers';
 import { setSpecificDetails } from './speceficDetails';
+import UpdateLocation from '../../pages/UpdateLocation';
 
 export function getInitialLocations(params: LocationsApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -93,6 +95,18 @@ export function deleteLocation(id: number) {
       dispatch(processingApiSuccess(DeleteLocationApi.name));
     } catch (error) {
       dispatch(processingApiError(DeleteLocationApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function updateLocation(data: UpdateLocation) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(UpdateLocationApi.name));
+      await new Request<Location, UpdateLocation>(new UpdateLocationApi(data)).build();
+      dispatch(processingApiSuccess(UpdateLocationApi.name));
+    } catch (error) {
+      dispatch(processingApiError(UpdateLocationApi.name, error as AxiosError<Exception>));
     }
   };
 }

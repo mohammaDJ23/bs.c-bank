@@ -1,4 +1,4 @@
-import { getDynamicPath, Pathes, Location, UpdateLocation, wait } from '../../lib';
+import { getDynamicPath, Pathes, UpdateLocation, wait } from '../../lib';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { Box, TextField, Button } from '@mui/material';
 import Modal from '../shared/Modal';
@@ -19,24 +19,31 @@ const Form: FC<FormImportation> = ({ formInstance: updateLocationFormInstance })
   const navigate = useNavigate();
   const request = useRequest();
   const isUpdateLocationApiProcessing = request.isApiProcessing(UpdateLocationApi);
+  const isUpdateLocationApiFailed = request.isProcessingApiFailed(UpdateLocationApi);
+  const isUpdateLocationApiSuccessed = request.isProcessingApiSuccessed(UpdateLocationApi);
+  const updateLocationApiExceptionMessage = request.getExceptionMessage(UpdateLocationApi);
   const updateLocationForm = updateLocationFormInstance.getForm();
   const snackbar = useSnackbar();
   const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     updateLocationFormInstance.onSubmit(() => {
-      request
-        .build<Location, UpdateLocation>(new UpdateLocationApi(updateLocationForm))
-        .then((response) => {
-          const locationId = params.id as string;
-          actions.hideModal(ModalNames.CONFIRMATION);
-          updateLocationFormInstance.resetForm();
-          snackbar.enqueueSnackbar({ message: 'You have updated the location successfully.', variant: 'success' });
-          navigate(getDynamicPath(Pathes.LOCATION, { id: locationId }));
-        })
-        .catch((err) => actions.hideModal(ModalNames.CONFIRMATION));
+      actions.updateLocation(updateLocationForm);
     });
-  }, [updateLocationForm, updateLocationFormInstance, params, request]);
+  }, [updateLocationForm, updateLocationFormInstance]);
+
+  useEffect(() => {
+    if (isUpdateLocationApiSuccessed) {
+      const locationId = params.id as string;
+      actions.hideModal(ModalNames.CONFIRMATION);
+      updateLocationFormInstance.resetForm();
+      snackbar.enqueueSnackbar({ message: 'You have updated the location successfully.', variant: 'success' });
+      navigate(getDynamicPath(Pathes.LOCATION, { id: locationId }));
+    } else if (isUpdateLocationApiFailed) {
+      actions.hideModal(ModalNames.CONFIRMATION);
+      snackbar.enqueueSnackbar({ message: updateLocationApiExceptionMessage, variant: 'error' });
+    }
+  }, [isUpdateLocationApiFailed, isUpdateLocationApiSuccessed]);
 
   useEffect(() => {
     (async () => {
