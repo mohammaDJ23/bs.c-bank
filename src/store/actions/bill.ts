@@ -3,6 +3,7 @@ import {
   AllBillQuantitiesApi,
   AllBillsApi,
   AllBillsApiConstructorType,
+  AllDeletedBillQuantitiesApi,
   BillApi,
   BillsApi,
   BillsApiConstructorType,
@@ -13,7 +14,7 @@ import {
   Request,
 } from '../../apis';
 import { AllBills, Bill, Bills, CreateBill, DeletedBills } from '../../lib';
-import { AllBillQuantities, Exception } from '../reducers';
+import { AllBillQuantities, AllDeletedBillQuantities, DeletedBillQuantities, Exception } from '../reducers';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -158,6 +159,24 @@ export function getInitialAllBillQuantities() {
       dispatch(initialProcessingApiSuccess(AllBillQuantitiesApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(AllBillQuantitiesApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialAllDeletedBillQuantities() {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(AllDeletedBillQuantitiesApi.name));
+      const response = await new Request<AllDeletedBillQuantities>(new AllDeletedBillQuantitiesApi()).build();
+      dispatch(
+        setSpecificDetails(
+          'allDeletedBillQuantities',
+          new AllDeletedBillQuantities(response.data.amount, response.data.quantities)
+        )
+      );
+      dispatch(initialProcessingApiSuccess(AllDeletedBillQuantitiesApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(AllDeletedBillQuantitiesApi.name, error as AxiosError<Exception>));
     }
   };
 }
