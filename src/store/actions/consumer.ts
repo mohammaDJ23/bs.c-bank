@@ -7,8 +7,9 @@ import {
   MostActiveConsumersApi,
   MostActiveConsumersApiConstructorType,
   Request,
+  UpdateConsumerApi,
 } from '../../apis';
-import { Consumer, Consumers, MostActiveConsumer, MostActiveConsumers } from '../../lib';
+import { Consumer, Consumers, MostActiveConsumer, MostActiveConsumers, UpdateConsumer } from '../../lib';
 import { RootDispatch } from '../store';
 import { createNewList } from './list';
 import {
@@ -93,6 +94,18 @@ export function getInitialMostActiveConsumers(params: MostActiveConsumersApiCons
       dispatch(initialProcessingApiSuccess(MostActiveConsumersApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(MostActiveConsumersApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function updateConsumer(data: UpdateConsumer) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(processingApiLoading(UpdateConsumerApi.name));
+      await new Request<Consumer, UpdateConsumer>(new UpdateConsumerApi(data)).build();
+      dispatch(processingApiSuccess(UpdateConsumerApi.name));
+    } catch (error) {
+      dispatch(processingApiError(UpdateConsumerApi.name, error as AxiosError<Exception>));
     }
   };
 }
