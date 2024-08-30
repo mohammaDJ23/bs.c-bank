@@ -31,6 +31,7 @@ import {
   selectMostActiveReceiversList,
   selectMostActiveUsersList,
 } from '../../store/selectors';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 const DeviceWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -473,12 +474,16 @@ const Dashboard: FC = () => {
                 </Box>
               </Card>
             ) : isInitialLastYearBillsApiSuccessed && chartData.length > 0 ? (
-              <Card>
-                <CardContent
-                  style={{ position: 'relative', height: '429px', overflow: 'hidden' }}
-                  id={lastYearChartElIdRef.current}
-                ></CardContent>
-              </Card>
+              <Box sx={{ overflow: 'hidden', height: '100%', width: '100%' }}>
+                <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                  <Card sx={{ transform: 'translateY(449px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                    <CardContent
+                      style={{ position: 'relative', height: '429px', overflow: 'hidden' }}
+                      id={lastYearChartElIdRef.current}
+                    ></CardContent>
+                  </Card>
+                </ResetStyleWithAnimation>
+              </Box>
             ) : (
               <Card style={{ height: '100%', minHeight: 'inherit' }}>
                 <Box
@@ -534,12 +539,16 @@ const Dashboard: FC = () => {
                   </Box>
                 </Card>
               ) : isInitialMostActiveConsumersApiSuccessed && mostActiveConsumersList.list.length > 0 ? (
-                <Card>
-                  <CardContent
-                    style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
-                    id={consumersChartElIdRef.current}
-                  ></CardContent>
-                </Card>
+                <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                  <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                    <Card sx={{ transform: 'translateY(370px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                      <CardContent
+                        style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
+                        id={consumersChartElIdRef.current}
+                      ></CardContent>
+                    </Card>
+                  </ResetStyleWithAnimation>
+                </Box>
               ) : (
                 <Card style={{ height: '100%', minHeight: 'inherit' }}>
                   <Box
@@ -593,12 +602,16 @@ const Dashboard: FC = () => {
                   </Box>
                 </Card>
               ) : isInitialMostActiveReceiversApiSuccessed && mostActiveReceiversList.list.length > 0 ? (
-                <Card>
-                  <CardContent
-                    style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
-                    id={receiversChartElIdRef.current}
-                  ></CardContent>
-                </Card>
+                <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                  <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                    <Card sx={{ transform: 'translateY(370px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                      <CardContent
+                        style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
+                        id={receiversChartElIdRef.current}
+                      ></CardContent>
+                    </Card>
+                  </ResetStyleWithAnimation>
+                </Box>
               ) : (
                 <Card style={{ height: '100%', minHeight: 'inherit' }}>
                   <Box
@@ -652,12 +665,16 @@ const Dashboard: FC = () => {
                   </Box>
                 </Card>
               ) : isInitialMostActiveLocationsApiSuccessed && mostActiveLocationsList.list.length > 0 ? (
-                <Card>
-                  <CardContent
-                    style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
-                    id={locationsChartElIdRef.current}
-                  ></CardContent>
-                </Card>
+                <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                  <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                    <Card sx={{ transform: 'translateY(370px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                      <CardContent
+                        style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
+                        id={locationsChartElIdRef.current}
+                      ></CardContent>
+                    </Card>
+                  </ResetStyleWithAnimation>
+                </Box>
               ) : (
                 <Card style={{ height: '100%', minHeight: 'inherit' }}>
                   <Box
@@ -717,24 +734,30 @@ const Dashboard: FC = () => {
                 ) : (
                   isInitialMostActiveUsersApiSuccessed &&
                   mostActiveUsersList.list.length > 0 && (
-                    <HorizonCarousel infinity height="53px" timer={4000}>
-                      {mostActiveUsersList.list.map((item) => (
-                        <Card key={item.user.id}>
-                          <CardContent>
-                            <Box display="flex" gap="20px" flexDirection="column">
-                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                  {item.user.firstName} {item.user.lastName}:{' '}
-                                </Typography>
-                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                  {item.quantities}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </HorizonCarousel>
+                    <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                      <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                        <Box sx={{ transform: 'translateY(73px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                          <HorizonCarousel infinity height="53px" timer={4000}>
+                            {mostActiveUsersList.list.map((item) => (
+                              <Card key={item.user.id}>
+                                <CardContent>
+                                  <Box display="flex" gap="20px" flexDirection="column">
+                                    <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                      <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                        {item.user.firstName} {item.user.lastName}:{' '}
+                                      </Typography>
+                                      <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                        {item.quantities}
+                                      </Typography>
+                                    </Box>
+                                  </Box>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </HorizonCarousel>
+                        </Box>
+                      </ResetStyleWithAnimation>
+                    </Box>
                   )
                 )}
               </Box>
@@ -772,28 +795,32 @@ const Dashboard: FC = () => {
               ) : (
                 isInitialBillQuantitiesApiSuccessed &&
                 selectors.specificDetails.billquantities && (
-                  <Card>
-                    <CardContent>
-                      <Box display="flex" gap="20px" flexDirection="column">
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Bill quantities:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.billquantities.quantities}
-                          </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Bill amounts:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.billquantities.amount}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                  </Card>
+                  <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                    <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                      <Card sx={{ transform: 'translateY(116px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                        <CardContent>
+                          <Box display="flex" gap="20px" flexDirection="column">
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Bill quantities:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.billquantities.quantities}
+                              </Typography>
+                            </Box>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Bill amounts:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.billquantities.amount}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </ResetStyleWithAnimation>
+                  </Box>
                 )
               )}
             </Box>
@@ -828,28 +855,32 @@ const Dashboard: FC = () => {
               ) : (
                 isInitialDeletedBillQuantitiesApiSuccessed &&
                 selectors.specificDetails.deletedBillQuantities && (
-                  <Card>
-                    <CardContent>
-                      <Box display="flex" gap="20px" flexDirection="column">
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Deleted bill quantities:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.deletedBillQuantities.quantities}
-                          </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                          <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                            Deleted bill amounts:{' '}
-                          </Typography>
-                          <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {selectors.specificDetails.deletedBillQuantities.amount}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                  </Card>
+                  <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                    <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                      <Card sx={{ transform: 'translateY(116px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                        <CardContent>
+                          <Box display="flex" gap="20px" flexDirection="column">
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Deleted bill quantities:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.deletedBillQuantities.quantities}
+                              </Typography>
+                            </Box>
+                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                Deleted bill amounts:{' '}
+                              </Typography>
+                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                {selectors.specificDetails.deletedBillQuantities.amount}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </ResetStyleWithAnimation>
+                  </Box>
                 )
               )}
             </Box>
@@ -887,28 +918,32 @@ const Dashboard: FC = () => {
                 ) : (
                   isInitialAllBillQuantitiesApiSuccessed &&
                   selectors.specificDetails.allBillQuantities && (
-                    <Card>
-                      <CardContent>
-                        <Box display="flex" gap="20px" flexDirection="column">
-                          <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                            <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                              All bill quantities:{' '}
-                            </Typography>
-                            <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                              {selectors.specificDetails.allBillQuantities.quantities}
-                            </Typography>
-                          </Box>
-                          <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                            <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                              All bill amounts:{' '}
-                            </Typography>
-                            <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                              {selectors.specificDetails.allBillQuantities.amount}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </CardContent>
-                    </Card>
+                    <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                      <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                        <Card sx={{ transform: 'translateY(116px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  All bill quantities:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.allBillQuantities.quantities}
+                                </Typography>
+                              </Box>
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  All bill amounts:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.allBillQuantities.amount}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </ResetStyleWithAnimation>
+                    </Box>
                   )
                 )}
               </Box>
@@ -942,28 +977,32 @@ const Dashboard: FC = () => {
                 ) : (
                   isInitialAllDeletedBillQuantitiesApiSuccessed &&
                   selectors.specificDetails.allDeletedBillQuantities && (
-                    <Card>
-                      <CardContent>
-                        <Box display="flex" gap="20px" flexDirection="column">
-                          <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                            <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                              All deleted bill quantities:{' '}
-                            </Typography>
-                            <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                              {selectors.specificDetails.allDeletedBillQuantities.quantities}
-                            </Typography>
-                          </Box>
-                          <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                            <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                              All deleted bill amounts:{' '}
-                            </Typography>
-                            <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                              {selectors.specificDetails.allDeletedBillQuantities.amount}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </CardContent>
-                    </Card>
+                    <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                      <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                        <Card sx={{ transform: 'translateY(116px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                          <CardContent>
+                            <Box display="flex" gap="20px" flexDirection="column">
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  All deleted bill quantities:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.allDeletedBillQuantities.quantities}
+                                </Typography>
+                              </Box>
+                              <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                  All deleted bill amounts:{' '}
+                                </Typography>
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                  {selectors.specificDetails.allDeletedBillQuantities.amount}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </ResetStyleWithAnimation>
+                    </Box>
                   )
                 )}
               </Box>
@@ -1003,44 +1042,48 @@ const Dashboard: FC = () => {
                   ) : (
                     isInitialUserQuantitiesApiSuccessed &&
                     selectors.specificDetails.userQuantities && (
-                      <Card>
-                        <CardContent>
-                          <Box display="flex" gap="20px" flexDirection="column">
-                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                Total Users:{' '}
-                              </Typography>
-                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                {selectors.specificDetails.userQuantities.quantities}
-                              </Typography>
-                            </Box>
-                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                Owners:{' '}
-                              </Typography>
-                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                {selectors.specificDetails.userQuantities.ownerQuantities}
-                              </Typography>
-                            </Box>
-                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                Admins:{' '}
-                              </Typography>
-                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                {selectors.specificDetails.userQuantities.adminQuantities}
-                              </Typography>
-                            </Box>
-                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                Users:{' '}
-                              </Typography>
-                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                {selectors.specificDetails.userQuantities.userQuantities}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </CardContent>
-                      </Card>
+                      <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                        <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                          <Card sx={{ transform: 'translateY(198px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                            <CardContent>
+                              <Box display="flex" gap="20px" flexDirection="column">
+                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                    Total Users:{' '}
+                                  </Typography>
+                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                    {selectors.specificDetails.userQuantities.quantities}
+                                  </Typography>
+                                </Box>
+                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                    Owners:{' '}
+                                  </Typography>
+                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                    {selectors.specificDetails.userQuantities.ownerQuantities}
+                                  </Typography>
+                                </Box>
+                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                    Admins:{' '}
+                                  </Typography>
+                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                    {selectors.specificDetails.userQuantities.adminQuantities}
+                                  </Typography>
+                                </Box>
+                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                    Users:{' '}
+                                  </Typography>
+                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                    {selectors.specificDetails.userQuantities.userQuantities}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </ResetStyleWithAnimation>
+                      </Box>
                     )
                   )}
                 </Box>
@@ -1076,44 +1119,48 @@ const Dashboard: FC = () => {
                   ) : (
                     isInitialDeletedUserQuantitiesApiSuccessed &&
                     selectors.specificDetails.deletedUserQuantities && (
-                      <Card>
-                        <CardContent>
-                          <Box display="flex" gap="20px" flexDirection="column">
-                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                Total Deleted Users:{' '}
-                              </Typography>
-                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                {selectors.specificDetails.deletedUserQuantities.quantities}
-                              </Typography>
-                            </Box>
-                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                Deleted Owners:{' '}
-                              </Typography>
-                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
-                              </Typography>
-                            </Box>
-                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                Deleted Admins:{' '}
-                              </Typography>
-                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                {selectors.specificDetails.deletedUserQuantities.adminQuantities}
-                              </Typography>
-                            </Box>
-                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                Deleted Users:{' '}
-                              </Typography>
-                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                {selectors.specificDetails.deletedUserQuantities.userQuantities}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </CardContent>
-                      </Card>
+                      <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                        <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                          <Card sx={{ transform: 'translateY(198px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                            <CardContent>
+                              <Box display="flex" gap="20px" flexDirection="column">
+                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                    Total Deleted Users:{' '}
+                                  </Typography>
+                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                    {selectors.specificDetails.deletedUserQuantities.quantities}
+                                  </Typography>
+                                </Box>
+                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                    Deleted Owners:{' '}
+                                  </Typography>
+                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                    {selectors.specificDetails.deletedUserQuantities.ownerQuantities}
+                                  </Typography>
+                                </Box>
+                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                    Deleted Admins:{' '}
+                                  </Typography>
+                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                    {selectors.specificDetails.deletedUserQuantities.adminQuantities}
+                                  </Typography>
+                                </Box>
+                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                    Deleted Users:{' '}
+                                  </Typography>
+                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                    {selectors.specificDetails.deletedUserQuantities.userQuantities}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </ResetStyleWithAnimation>
+                      </Box>
                     )
                   )}
                 </Box>
@@ -1154,20 +1201,24 @@ const Dashboard: FC = () => {
                   ) : (
                     isInitialNotificationQuantitiesApiSuccessed &&
                     selectors.specificDetails.notificationQuantities && (
-                      <Card>
-                        <CardContent>
-                          <Box display="flex" gap="20px" flexDirection="column">
-                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                Notification quantities:{' '}
-                              </Typography>
-                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                {selectors.specificDetails.notificationQuantities.quantities}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </CardContent>
-                      </Card>
+                      <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                        <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                          <Card sx={{ transform: 'translateY(73px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                            <CardContent>
+                              <Box display="flex" gap="20px" flexDirection="column">
+                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                    Notification quantities:{' '}
+                                  </Typography>
+                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                    {selectors.specificDetails.notificationQuantities.quantities}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </ResetStyleWithAnimation>
+                      </Box>
                     )
                   )}
                 </Box>
@@ -1203,20 +1254,24 @@ const Dashboard: FC = () => {
                   ) : (
                     isInitialAllNotificationQuantitiesApiSuccessed &&
                     selectors.specificDetails.allNotificationQuantities && (
-                      <Card>
-                        <CardContent>
-                          <Box display="flex" gap="20px" flexDirection="column">
-                            <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
-                              <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
-                                All notification quantities:{' '}
-                              </Typography>
-                              <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
-                                {selectors.specificDetails.allNotificationQuantities.quantities}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </CardContent>
-                      </Card>
+                      <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                        <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                          <Card sx={{ transform: 'translateY(73px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                            <CardContent>
+                              <Box display="flex" gap="20px" flexDirection="column">
+                                <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
+                                  <Typography whiteSpace="nowrap" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                                    All notification quantities:{' '}
+                                  </Typography>
+                                  <Typography sx={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.6)' }}>
+                                    {selectors.specificDetails.allNotificationQuantities.quantities}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </ResetStyleWithAnimation>
+                      </Box>
                     )
                   )}
                 </Box>
