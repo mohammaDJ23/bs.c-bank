@@ -86,7 +86,7 @@ const List: FC = () => {
                 <Box
                   sx={{
                     opacity: '0',
-                    transform: 'translateY(50px)',
+                    transform: 'translateY(30px)',
                     transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
                     transitionDelay: `${index * 0.02}s`,
                   }}

@@ -71,7 +71,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
           <Box
             sx={{
               opacity: '0',
-              transform: 'translateY(50px)',
+              transform: 'translateY(30px)',
               transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
               width: '100%',
               mb: '15px',
@@ -100,7 +100,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
           <Typography
             sx={{
               opacity: '0',
-              transform: 'translateY(50px)',
+              transform: 'translateY(30px)',
               transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
               transitionDelay: '0.02s',
             }}
@@ -118,7 +118,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
           <Typography
             sx={{
               opacity: '0',
-              transform: 'translateY(50px)',
+              transform: 'translateY(30px)',
               transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
               transitionDelay: '0.04s',
             }}
@@ -139,7 +139,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
               fontSize: '12px',
               color: 'rgba(0, 0, 0, 0.6)',
               opacity: '0',
-              transform: 'translateY(50px)',
+              transform: 'translateY(30px)',
               transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
               transitionDelay: '0.06s',
             }}
@@ -182,7 +182,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
             color="rgba(0, 0, 0, 0.6)"
             sx={{
               opacity: '0',
-              transform: 'translateY(50px)',
+              transform: 'translateY(30px)',
               transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
               transitionDelay: '0.08s',
             }}
@@ -200,7 +200,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
             color="rgba(0, 0, 0, 0.6)"
             sx={{
               opacity: '0',
-              transform: 'translateY(50px)',
+              transform: 'translateY(30px)',
               transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
               transitionDelay: '0.1s',
             }}
@@ -218,7 +218,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
             color="rgba(0, 0, 0, 0.6)"
             sx={{
               opacity: '0',
-              transform: 'translateY(50px)',
+              transform: 'translateY(30px)',
               transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
               transitionDelay: '0.12s',
             }}
@@ -237,7 +237,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
               color="rgba(0, 0, 0, 0.6)"
               sx={{
                 opacity: '0',
-                transform: 'translateY(50px)',
+                transform: 'translateY(30px)',
                 transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
                 transitionDelay: '0.14s',
               }}
@@ -254,7 +254,7 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
             mt="30px"
             sx={{
               opacity: '0',
-              transform: 'translateY(50px)',
+              transform: 'translateY(30px)',
               transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
               transitionDelay: '0.16s',
             }}
