@@ -9,6 +9,7 @@ import { Bill, deletedAtColor, getDynamicPath, Pathes } from '../../lib';
 import { ModalNames } from '../../store';
 import { DeleteBillApi } from '../../apis';
 import { useSnackbar } from 'notistack';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 interface DetailsImporation {
   bill: Bill;
@@ -65,111 +66,211 @@ const Details: FC<DetailsImporation> = ({ bill }) => {
 
   return (
     <>
-      <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px">
-        <Box width="100%" mb="15px" display="flex" gap="8px" justifyContent="space-between" alignItems="center">
-          <Typography component={'p'} fontSize="14px" fontWeight={'bold'}>
-            {bill.amount}
+      <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px" overflow="hidden">
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Box
+            sx={{
+              opacity: '0',
+              transform: 'translateY(50px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              width: '100%',
+              mb: '15px',
+              display: 'flex',
+              gap: '8px',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Typography component={'p'} fontSize="14px" fontWeight={'bold'}>
+              {bill.amount}
+            </Typography>
+            <IconButton onClick={onMenuOpen}>
+              <MoreVert />
+            </IconButton>
+            <Menu anchorEl={anchorEl} open={open} onClick={onMenuClose}>
+              {options.map((option) => (
+                <MenuItem key={option.path} onClick={onMenuClick(option)}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+        </ResetStyleWithAnimation>
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Typography
+            sx={{
+              opacity: '0',
+              transform: 'translateY(50px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.02s',
+            }}
+            component={'p'}
+            fontSize="12px"
+            color={`${bill.receiver.deletedAt ? deletedAtColor() : 'rgba(0, 0, 0, 0.6)'}`}
+          >
+            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+              Receiver:
+            </Typography>{' '}
+            {bill.receiver.name}
           </Typography>
-          <IconButton onClick={onMenuOpen}>
-            <MoreVert />
-          </IconButton>
-          <Menu anchorEl={anchorEl} open={open} onClick={onMenuClose}>
-            {options.map((option) => (
-              <MenuItem key={option.path} onClick={onMenuClick(option)}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Menu>
-        </Box>
-        <Typography
-          component={'p'}
-          fontSize="12px"
-          color={`${bill.receiver.deletedAt ? deletedAtColor() : 'rgba(0, 0, 0, 0.6)'}`}
-        >
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Receiver:
-          </Typography>{' '}
-          {bill.receiver.name}
-        </Typography>
-        <Typography
-          component={'p'}
-          fontSize="12px"
-          color={`${bill.location.deletedAt ? deletedAtColor() : 'rgba(0, 0, 0, 0.6)'}`}
-        >
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Location:
-          </Typography>{' '}
-          {bill.location.name}
-        </Typography>
-        <Typography component={'p'} sx={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.6)' }}>
-          <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
-            Consumers:{' '}
+        </ResetStyleWithAnimation>
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Typography
+            sx={{
+              opacity: '0',
+              transform: 'translateY(50px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.04s',
+            }}
+            component={'p'}
+            fontSize="12px"
+            color={`${bill.location.deletedAt ? deletedAtColor() : 'rgba(0, 0, 0, 0.6)'}`}
+          >
+            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+              Location:
+            </Typography>{' '}
+            {bill.location.name}
           </Typography>
-          {bill.consumers.map((consumer) => (
-            <Box
-              key={consumer.id}
-              component={'span'}
-              sx={{
-                backgroundColor: '#e6e6e6',
-                borderRadius: '20px',
-                padding: '1px 10px',
-                minWidth: '50px',
-                display: 'inline-block',
-                textAlign: 'center',
-                margin: '1px',
-              }}
-            >
-              <Typography
+        </ResetStyleWithAnimation>
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Typography
+            component={'p'}
+            sx={{
+              fontSize: '12px',
+              color: 'rgba(0, 0, 0, 0.6)',
+              opacity: '0',
+              transform: 'translateY(50px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.06s',
+            }}
+          >
+            <Typography component={'span'} sx={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+              Consumers:{' '}
+            </Typography>
+            {bill.consumers.map((consumer) => (
+              <Box
+                key={consumer.id}
                 component={'span'}
                 sx={{
-                  fontSize: '12px',
+                  backgroundColor: '#e6e6e6',
+                  borderRadius: '20px',
+                  padding: '1px 10px',
+                  minWidth: '50px',
+                  display: 'inline-block',
                   textAlign: 'center',
-                  color: `${consumer.deletedAt ? deletedAtColor() : 'rgba(0, 0, 0, 0.6)'}`,
+                  margin: '1px',
                 }}
               >
-                {consumer.name}
-              </Typography>
-            </Box>
-          ))}
-        </Typography>
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Description:
-          </Typography>{' '}
-          {bill.description}
-        </Typography>
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Received at:
-          </Typography>{' '}
-          {bill.date ? moment(bill.date).format('LL') : '_'}
-        </Typography>
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Created at:
-          </Typography>{' '}
-          {moment(bill.createdAt).format('LLLL')}
-        </Typography>
-        {new Date(bill.updatedAt) > new Date(bill.createdAt) && (
-          <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-              Last update:
-            </Typography>{' '}
-            {moment(bill.updatedAt).format('LLLL')}
+                <Typography
+                  component={'span'}
+                  sx={{
+                    fontSize: '12px',
+                    textAlign: 'center',
+                    color: `${consumer.deletedAt ? deletedAtColor() : 'rgba(0, 0, 0, 0.6)'}`,
+                  }}
+                >
+                  {consumer.name}
+                </Typography>
+              </Box>
+            ))}
           </Typography>
-        )}
-        <Box mt="30px">
-          <Button
-            disabled={isDeleteBillApiProcessing}
-            onClick={onDeleteBill}
-            variant="contained"
-            color="error"
-            size="small"
-            sx={{ textTransform: 'capitalize' }}
+        </ResetStyleWithAnimation>
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Typography
+            component={'p'}
+            fontSize="12px"
+            color="rgba(0, 0, 0, 0.6)"
+            sx={{
+              opacity: '0',
+              transform: 'translateY(50px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.08s',
+            }}
           >
-            Delete the bill
-          </Button>
-        </Box>
+            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+              Description:
+            </Typography>{' '}
+            {bill.description}
+          </Typography>
+        </ResetStyleWithAnimation>
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Typography
+            component={'p'}
+            fontSize="12px"
+            color="rgba(0, 0, 0, 0.6)"
+            sx={{
+              opacity: '0',
+              transform: 'translateY(50px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.1s',
+            }}
+          >
+            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+              Received at:
+            </Typography>{' '}
+            {bill.date ? moment(bill.date).format('LL') : '_'}
+          </Typography>
+        </ResetStyleWithAnimation>
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Typography
+            component={'p'}
+            fontSize="12px"
+            color="rgba(0, 0, 0, 0.6)"
+            sx={{
+              opacity: '0',
+              transform: 'translateY(50px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.12s',
+            }}
+          >
+            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+              Created at:
+            </Typography>{' '}
+            {moment(bill.createdAt).format('LLLL')}
+          </Typography>
+        </ResetStyleWithAnimation>
+        {new Date(bill.updatedAt) > new Date(bill.createdAt) && (
+          <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+            <Typography
+              component={'p'}
+              fontSize="12px"
+              color="rgba(0, 0, 0, 0.6)"
+              sx={{
+                opacity: '0',
+                transform: 'translateY(50px)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.14s',
+              }}
+            >
+              <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                Last update:
+              </Typography>{' '}
+              {moment(bill.updatedAt).format('LLLL')}
+            </Typography>
+          </ResetStyleWithAnimation>
+        )}
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Box
+            mt="30px"
+            sx={{
+              opacity: '0',
+              transform: 'translateY(50px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.16s',
+            }}
+          >
+            <Button
+              disabled={isDeleteBillApiProcessing}
+              onClick={onDeleteBill}
+              variant="contained"
+              color="error"
+              size="small"
+              sx={{ textTransform: 'capitalize' }}
+            >
+              Delete the bill
+            </Button>
+          </Box>
+        </ResetStyleWithAnimation>
       </Box>
       <Modal
         title="Deleting the Bill"

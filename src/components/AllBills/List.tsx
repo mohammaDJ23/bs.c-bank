@@ -82,15 +82,16 @@ const List: FC = () => {
         <>
           <MuiList>
             {allBillsList.list.map((bill, index) => (
-              <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+              <ResetStyleWithAnimation key={index} sx={{ opacity: '1', transform: 'translateY(0)' }}>
                 <Box
                   sx={{
                     opacity: '0',
                     transform: 'translateY(50px)',
                     transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                    transitionDelay: `${index * 0.02}s`,
                   }}
                 >
-                  <BillWithUserCard key={index} index={index} bill={bill} list={allBillsList} />
+                  <BillWithUserCard index={index} bill={bill} list={allBillsList} />
                 </Box>
               </ResetStyleWithAnimation>
             ))}

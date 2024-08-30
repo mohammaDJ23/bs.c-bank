@@ -11,6 +11,7 @@ import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
 import { selectBillsList } from '../../store/selectors';
 import { useSnackbar } from 'notistack';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 const List: FC = () => {
   const actions = useAction();
@@ -79,7 +80,18 @@ const List: FC = () => {
         <>
           <MuiList>
             {billsList.list.map((bill, index) => (
-              <BillCard key={index} index={index} bill={bill} list={billsList} />
+              <ResetStyleWithAnimation key={index} sx={{ opacity: '1', transform: 'translateY(0)' }}>
+                <Box
+                  sx={{
+                    opacity: '0',
+                    transform: 'translateY(50px)',
+                    transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                    transitionDelay: `${index * 0.02}s`,
+                  }}
+                >
+                  <BillCard index={index} bill={bill} list={billsList} />
+                </Box>
+              </ResetStyleWithAnimation>
             ))}
           </MuiList>
 

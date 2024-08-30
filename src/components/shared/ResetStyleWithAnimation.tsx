@@ -37,7 +37,11 @@ const ResetStyleWithAnimation: FC<Props> = ({ children, sx }) => {
     })();
   }, []);
 
-  return <Box ref={ref}>{children}</Box>;
+  return (
+    <Box sx={{ width: '100%', height: '100%' }} ref={ref}>
+      {children}
+    </Box>
+  );
 };
 
 export default ResetStyleWithAnimation;
