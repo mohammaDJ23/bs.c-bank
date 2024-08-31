@@ -11,6 +11,7 @@ import { ModalNames } from '../../store';
 import NotificationCard from '../shared/NotificationCard';
 import { selectNotificationsList } from '../../store/selectors';
 import { useSnackbar } from 'notistack';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 const List: FC = () => {
   const request = useRequest();
@@ -81,7 +82,18 @@ const List: FC = () => {
         <>
           <MuiList>
             {notificationsList.list.map((notification, index) => (
-              <NotificationCard key={index} index={index} notification={notification} list={notificationsList} />
+              <ResetStyleWithAnimation key={index} sx={{ opacity: '1', transform: 'translateY(0)' }}>
+                <Box
+                  sx={{
+                    opacity: '0',
+                    transform: 'translateY(30px)',
+                    transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                    transitionDelay: `${index * 0.02}s`,
+                  }}
+                >
+                  <NotificationCard index={index} notification={notification} list={notificationsList} />
+                </Box>
+              </ResetStyleWithAnimation>
             ))}
           </MuiList>
           {notificationsList.take < notificationsList.total && (

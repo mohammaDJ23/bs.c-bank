@@ -11,6 +11,7 @@ import UserSkeleton from '../shared/UsersSkeleton';
 import UserCard from '../shared/UserCard';
 import { selectUsersList } from '../../store/selectors';
 import { useSnackbar } from 'notistack';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 const List: FC = () => {
   const selectors = useSelector();
@@ -113,7 +114,18 @@ const List: FC = () => {
         <>
           <MuiList>
             {usersList.list.map((user, index) => (
-              <UserCard key={index} index={index} user={user} list={usersList} />
+              <ResetStyleWithAnimation key={index} sx={{ opacity: '1', transform: 'translateY(0)' }}>
+                <Box
+                  sx={{
+                    opacity: '0',
+                    transform: 'translateY(30px)',
+                    transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                    transitionDelay: `${index * 0.02}s`,
+                  }}
+                >
+                  <UserCard index={index} user={user} list={usersList} />
+                </Box>
+              </ResetStyleWithAnimation>
             ))}
           </MuiList>
           {usersList.take < usersList.total && (

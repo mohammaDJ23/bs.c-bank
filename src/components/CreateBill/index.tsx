@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import FormContainer from '../../layout/FormContainer';
 import { Box, TextField, Button, Autocomplete, CircularProgress } from '@mui/material';
 import {
@@ -9,7 +8,6 @@ import {
   getTime,
   isoDate,
   LocationListFilters,
-  wait,
 } from '../../lib';
 import { useForm, useRequest, useFocus, useSelector, useAction } from '../../hooks';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
@@ -17,6 +15,7 @@ import { ConsumersApi, CreateBillApi, LocationsApi, ReceiversApi } from '../../a
 import { useSnackbar } from 'notistack';
 import Navigation from '../../layout/Navigation';
 import { selectConsumersList, selectLocationsList, selectReceiversList } from '../../store/selectors';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 const CreateBillContent: FC = () => {
   const selectors = useSelector();
@@ -49,7 +48,6 @@ const CreateBillContent: FC = () => {
   const locationsList = selectLocationsList(selectors);
   const snackbar = useSnackbar();
   const oneQuarterDebounce = useRef(debounce(250));
-  const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     createBillFromInstance.onSubmit(() => {
@@ -158,31 +156,13 @@ const CreateBillContent: FC = () => {
     setConsumers(Array.from(newConsumers));
   }, [consumersList, consumerListFiltersForm, createBillFrom]);
 
-  useEffect(() => {
-    (async () => {
-      let el = document.getElementById(formElIdRef.current);
-      if (el) {
-        for (const node of Array.from(el.childNodes)) {
-          // @ts-ignore
-          node.style.transition = 'opacity 0.1s, transform 0.2s';
-          // @ts-ignore
-          node.style.opacity = 1;
-          // @ts-ignore
-          node.style.transform = 'translateX(0)';
-
-          await wait();
-        }
-      }
-    })();
-  }, []);
-
   return (
     <Navigation>
       <FormContainer>
         <Box
+          overflow="hidden"
           component="form"
           noValidate
-          id={formElIdRef.current}
           autoComplete="off"
           display="flex"
           flexDirection="column"
@@ -192,231 +172,291 @@ const CreateBillContent: FC = () => {
             formSubmition();
           }}
         >
-          <TextField
-            sx={{ opacity: 0, transform: 'translateX(10px)' }}
-            label="Amount"
-            variant="standard"
-            type="number"
-            value={createBillFrom.amount}
-            onChange={(event) => createBillFromInstance.onChange('amount', Number(event.target.value).toString())}
-            helperText={createBillFromInstance.getInputErrorMessage('amount')}
-            error={createBillFromInstance.isInputInValid('amount')}
-            disabled={isCreateBillApiProcessing}
-            name="amount"
-          />
-          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(15px)' }}>
-            <Autocomplete
-              freeSolo
-              open={isReceiverAutocompleteOpen}
-              onBlur={() => {
-                setReceivers([]);
-                setIsReceiverAutocompleteOpen(false);
+          <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+            <TextField
+              sx={{
+                width: '100%',
+                opacity: '0',
+                transform: 'translateY(10px)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
               }}
-              value={createBillFrom.receiver}
-              onChange={(event, value) => {
-                value = value || '';
-                createBillFromInstance.onChange('receiver', value);
-                receiverListFiltersFormInstance.onChange('q', '');
-                setReceivers([]);
-                setIsReceiverAutocompleteOpen(false);
-              }}
+              label="Amount"
+              variant="standard"
+              type="number"
+              value={createBillFrom.amount}
+              onChange={(event) => createBillFromInstance.onChange('amount', Number(event.target.value).toString())}
+              helperText={createBillFromInstance.getInputErrorMessage('amount')}
+              error={createBillFromInstance.isInputInValid('amount')}
               disabled={isCreateBillApiProcessing}
-              options={receviers}
-              filterOptions={(options) => options}
-              getOptionLabel={(option) => option}
-              clearIcon={false}
-              clearOnBlur
-              clearOnEscape
-              blurOnSelect
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  sx={{}}
-                  onBlur={(event) => {
-                    receiverListFiltersFormInstance.onChange('q', '');
-                  }}
-                  onFocus={() => {
-                    setReceivers([]);
-                    setIsReceiverAutocompleteOpen(false);
-                  }}
-                  variant="standard"
-                  label="Receiver"
-                  value={receiverListFiltersForm.q}
-                  onChange={onReceiverChange}
-                  error={
-                    createBillFromInstance.isInputInValid('receiver') ||
-                    receiverListFiltersFormInstance.isInputInValid('q')
-                  }
-                  helperText={
-                    createBillFromInstance.getInputErrorMessage('receiver') ||
-                    receiverListFiltersFormInstance.getInputErrorMessage('q')
-                  }
-                />
-              )}
+              name="amount"
             />
-            {isReceiversApiProcessing && (
-              <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
-            )}
-          </Box>
-          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(20px)' }}>
-            <Autocomplete
-              freeSolo
-              open={isLocationAutocompleteOpen}
-              onBlur={() => {
-                setLocations([]);
-                setIsLocationAutocompleteOpen(false);
+          </ResetStyleWithAnimation>
+          <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+            <Box
+              position={'relative'}
+              sx={{
+                opacity: '0',
+                transform: 'translateY(15px)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.03s',
               }}
-              value={createBillFrom.location}
-              onChange={(event, value) => {
-                value = value || '';
-                createBillFromInstance.onChange('location', value);
-                locationListFiltersFormInstance.onChange('q', '');
-                setLocations([]);
-                setIsLocationAutocompleteOpen(false);
-              }}
-              disabled={isCreateBillApiProcessing}
-              options={locations}
-              filterOptions={(options) => options}
-              getOptionLabel={(option) => option}
-              clearIcon={false}
-              clearOnBlur
-              clearOnEscape
-              blurOnSelect
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  sx={{}}
-                  onBlur={(event) => {
-                    locationListFiltersFormInstance.onChange('q', '');
-                  }}
-                  onFocus={() => {
-                    setLocations([]);
-                    setIsLocationAutocompleteOpen(false);
-                  }}
-                  variant="standard"
-                  label="Location"
-                  value={locationListFiltersForm.q}
-                  onChange={onLocationChange}
-                  error={
-                    createBillFromInstance.isInputInValid('location') ||
-                    locationListFiltersFormInstance.isInputInValid('q')
-                  }
-                  helperText={
-                    createBillFromInstance.getInputErrorMessage('location') ||
-                    locationListFiltersFormInstance.getInputErrorMessage('q')
-                  }
-                />
-              )}
-            />
-            {isLocationsApiProcessing && (
-              <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
-            )}
-          </Box>
-          <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(25px)' }}>
-            <Autocomplete
-              multiple
-              freeSolo
-              open={isConsumerAutocompleteOpen}
-              onBlur={() => {
-                setConsumers([]);
-                setIsConsumerAutocompleteOpen(false);
-              }}
-              value={createBillFrom.consumers}
-              onChange={(event, value) => {
-                createBillFromInstance.onChange('consumers', value);
-                setConsumers([]);
-                setIsConsumerAutocompleteOpen(false);
-              }}
-              disabled={isCreateBillApiProcessing}
-              options={consumers}
-              filterOptions={(options) => options}
-              getOptionLabel={(option) => option}
-              clearIcon={false}
-              clearOnBlur
-              clearOnEscape
-              blurOnSelect
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  sx={{}}
-                  onFocus={() => {
-                    setConsumers([]);
-                    setIsConsumerAutocompleteOpen(false);
-                  }}
-                  variant="standard"
-                  label="Consumers"
-                  value={consumerListFiltersForm.q}
-                  onChange={onConsumerChange}
-                  error={
-                    createBillFromInstance.isInputInValid('consumers') ||
-                    consumerListFiltersFormInstance.isInputInValid('q')
-                  }
-                  helperText={
-                    createBillFromInstance.getInputErrorMessage('consumers') ||
-                    consumerListFiltersFormInstance.getInputErrorMessage('q')
-                  }
-                />
-              )}
-            />
-            {isConsumersApiProcessing && (
-              <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
-            )}
-          </Box>
-          <TextField
-            sx={{ opacity: 0, transform: 'translateX(30px)' }}
-            label="Date"
-            type="date"
-            variant="standard"
-            value={createBillFrom.date ? isoDate(createBillFrom.date) : 'undefined'}
-            onChange={(event) =>
-              createBillFromInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
-            }
-            helperText={createBillFromInstance.getInputErrorMessage('date')}
-            error={createBillFromInstance.isInputInValid('date')}
-            InputLabelProps={{ shrink: true }}
-            disabled={isCreateBillApiProcessing}
-          />
-          <TextField
-            sx={{ opacity: 0, transform: 'translateX(35px)' }}
-            label="Description"
-            type="text"
-            rows="5"
-            multiline
-            variant="standard"
-            value={createBillFrom.description}
-            onChange={(event) => createBillFromInstance.onChange('description', event.target.value)}
-            helperText={createBillFromInstance.getInputErrorMessage('description')}
-            error={createBillFromInstance.isInputInValid('description')}
-            disabled={isCreateBillApiProcessing}
-          />
-          <Box
-            component="div"
-            display="flex"
-            alignItems="center"
-            gap="10px"
-            marginTop="20px"
-            sx={{ opacity: 0, transform: 'translateX(40px)' }}
-          >
-            <Button
-              disabled={isCreateBillApiProcessing || !createBillFromInstance.isFormValid()}
-              variant="contained"
-              size="small"
-              type="submit"
-              sx={{ textTransform: 'capitalize' }}
             >
-              Create
-            </Button>
-            <Button
-              disabled={isCreateBillApiProcessing}
-              variant="outlined"
-              size="small"
-              type="button"
-              sx={{ textTransform: 'capitalize' }}
-              onClick={() => createBillFromInstance.resetForm()}
+              <Autocomplete
+                freeSolo
+                open={isReceiverAutocompleteOpen}
+                onBlur={() => {
+                  setReceivers([]);
+                  setIsReceiverAutocompleteOpen(false);
+                }}
+                value={createBillFrom.receiver}
+                onChange={(event, value) => {
+                  value = value || '';
+                  createBillFromInstance.onChange('receiver', value);
+                  receiverListFiltersFormInstance.onChange('q', '');
+                  setReceivers([]);
+                  setIsReceiverAutocompleteOpen(false);
+                }}
+                disabled={isCreateBillApiProcessing}
+                options={receviers}
+                filterOptions={(options) => options}
+                getOptionLabel={(option) => option}
+                clearIcon={false}
+                clearOnBlur
+                clearOnEscape
+                blurOnSelect
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    sx={{}}
+                    onBlur={(event) => {
+                      receiverListFiltersFormInstance.onChange('q', '');
+                    }}
+                    onFocus={() => {
+                      setReceivers([]);
+                      setIsReceiverAutocompleteOpen(false);
+                    }}
+                    variant="standard"
+                    label="Receiver"
+                    value={receiverListFiltersForm.q}
+                    onChange={onReceiverChange}
+                    error={
+                      createBillFromInstance.isInputInValid('receiver') ||
+                      receiverListFiltersFormInstance.isInputInValid('q')
+                    }
+                    helperText={
+                      createBillFromInstance.getInputErrorMessage('receiver') ||
+                      receiverListFiltersFormInstance.getInputErrorMessage('q')
+                    }
+                  />
+                )}
+              />
+              {isReceiversApiProcessing && (
+                <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
+              )}
+            </Box>
+          </ResetStyleWithAnimation>
+          <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+            <Box
+              position={'relative'}
+              sx={{
+                opacity: '0',
+                transform: 'translateY(20px)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.06s',
+              }}
             >
-              Reset
-            </Button>
-          </Box>
+              <Autocomplete
+                freeSolo
+                open={isLocationAutocompleteOpen}
+                onBlur={() => {
+                  setLocations([]);
+                  setIsLocationAutocompleteOpen(false);
+                }}
+                value={createBillFrom.location}
+                onChange={(event, value) => {
+                  value = value || '';
+                  createBillFromInstance.onChange('location', value);
+                  locationListFiltersFormInstance.onChange('q', '');
+                  setLocations([]);
+                  setIsLocationAutocompleteOpen(false);
+                }}
+                disabled={isCreateBillApiProcessing}
+                options={locations}
+                filterOptions={(options) => options}
+                getOptionLabel={(option) => option}
+                clearIcon={false}
+                clearOnBlur
+                clearOnEscape
+                blurOnSelect
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    sx={{}}
+                    onBlur={(event) => {
+                      locationListFiltersFormInstance.onChange('q', '');
+                    }}
+                    onFocus={() => {
+                      setLocations([]);
+                      setIsLocationAutocompleteOpen(false);
+                    }}
+                    variant="standard"
+                    label="Location"
+                    value={locationListFiltersForm.q}
+                    onChange={onLocationChange}
+                    error={
+                      createBillFromInstance.isInputInValid('location') ||
+                      locationListFiltersFormInstance.isInputInValid('q')
+                    }
+                    helperText={
+                      createBillFromInstance.getInputErrorMessage('location') ||
+                      locationListFiltersFormInstance.getInputErrorMessage('q')
+                    }
+                  />
+                )}
+              />
+              {isLocationsApiProcessing && (
+                <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
+              )}
+            </Box>
+          </ResetStyleWithAnimation>
+          <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+            <Box
+              position={'relative'}
+              sx={{
+                opacity: '0',
+                transform: 'translateY(25px)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.09s',
+              }}
+            >
+              <Autocomplete
+                multiple
+                freeSolo
+                open={isConsumerAutocompleteOpen}
+                onBlur={() => {
+                  setConsumers([]);
+                  setIsConsumerAutocompleteOpen(false);
+                }}
+                value={createBillFrom.consumers}
+                onChange={(event, value) => {
+                  createBillFromInstance.onChange('consumers', value);
+                  setConsumers([]);
+                  setIsConsumerAutocompleteOpen(false);
+                }}
+                disabled={isCreateBillApiProcessing}
+                options={consumers}
+                filterOptions={(options) => options}
+                getOptionLabel={(option) => option}
+                clearIcon={false}
+                clearOnBlur
+                clearOnEscape
+                blurOnSelect
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    sx={{}}
+                    onFocus={() => {
+                      setConsumers([]);
+                      setIsConsumerAutocompleteOpen(false);
+                    }}
+                    variant="standard"
+                    label="Consumers"
+                    value={consumerListFiltersForm.q}
+                    onChange={onConsumerChange}
+                    error={
+                      createBillFromInstance.isInputInValid('consumers') ||
+                      consumerListFiltersFormInstance.isInputInValid('q')
+                    }
+                    helperText={
+                      createBillFromInstance.getInputErrorMessage('consumers') ||
+                      consumerListFiltersFormInstance.getInputErrorMessage('q')
+                    }
+                  />
+                )}
+              />
+              {isConsumersApiProcessing && (
+                <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
+              )}
+            </Box>
+          </ResetStyleWithAnimation>
+          <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+            <TextField
+              sx={{
+                width: '100%',
+                opacity: '0',
+                transform: 'translateY(30px)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.12s',
+              }}
+              label="Date"
+              type="date"
+              variant="standard"
+              value={createBillFrom.date ? isoDate(createBillFrom.date) : 'undefined'}
+              onChange={(event) =>
+                createBillFromInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
+              }
+              helperText={createBillFromInstance.getInputErrorMessage('date')}
+              error={createBillFromInstance.isInputInValid('date')}
+              InputLabelProps={{ shrink: true }}
+              disabled={isCreateBillApiProcessing}
+            />
+          </ResetStyleWithAnimation>
+          <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+            <TextField
+              sx={{
+                width: '100%',
+                opacity: '0',
+                transform: 'translateY(35px)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.15s',
+              }}
+              label="Description"
+              type="text"
+              rows="5"
+              multiline
+              variant="standard"
+              value={createBillFrom.description}
+              onChange={(event) => createBillFromInstance.onChange('description', event.target.value)}
+              helperText={createBillFromInstance.getInputErrorMessage('description')}
+              error={createBillFromInstance.isInputInValid('description')}
+              disabled={isCreateBillApiProcessing}
+            />
+          </ResetStyleWithAnimation>
+          <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+            <Box
+              component="div"
+              display="flex"
+              alignItems="center"
+              gap="10px"
+              marginTop="20px"
+              sx={{
+                opacity: '0',
+                transform: 'translateY(40px)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.18s',
+              }}
+            >
+              <Button
+                disabled={isCreateBillApiProcessing || !createBillFromInstance.isFormValid()}
+                variant="contained"
+                size="small"
+                type="submit"
+                sx={{ textTransform: 'capitalize' }}
+              >
+                Create
+              </Button>
+              <Button
+                disabled={isCreateBillApiProcessing}
+                variant="outlined"
+                size="small"
+                type="button"
+                sx={{ textTransform: 'capitalize' }}
+                onClick={() => createBillFromInstance.resetForm()}
+              >
+                Reset
+              </Button>
+            </Box>
+          </ResetStyleWithAnimation>
         </Box>
       </FormContainer>
     </Navigation>

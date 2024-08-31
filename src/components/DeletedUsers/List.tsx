@@ -11,6 +11,7 @@ import UserCard from '../shared/UserCard';
 import UserSkeleton from '../shared/UsersSkeleton';
 import { selectDeletedUsersList } from '../../store/selectors';
 import { useSnackbar } from 'notistack';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 const List: FC = () => {
   const request = useRequest();
@@ -83,7 +84,18 @@ const List: FC = () => {
         <>
           <MuiList>
             {deletedUsersList.list.map((user, index) => (
-              <UserCard key={index} index={index} user={user} list={deletedUsersList} />
+              <ResetStyleWithAnimation key={index} sx={{ opacity: '1', transform: 'translateY(0)' }}>
+                <Box
+                  sx={{
+                    opacity: '0',
+                    transform: 'translateY(30px)',
+                    transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                    transitionDelay: `${index * 0.02}s`,
+                  }}
+                >
+                  <UserCard index={index} user={user} list={deletedUsersList} />
+                </Box>
+              </ResetStyleWithAnimation>
             ))}
           </MuiList>
           {deletedUsersList.take < deletedUsersList.total && (
