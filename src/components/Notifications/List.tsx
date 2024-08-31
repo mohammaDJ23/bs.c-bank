@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button, Autocomplete } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { NotificationListFilters, getTime, isoDate, UserRoles } from '../../lib';
+import { NotificationListFilters, getTime, isoDate, UserRoles, listScrollTop } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { NotificationsApi } from '../../apis';
 import NotificationsSkeleton from '../shared/NotificationsSkeleton';
@@ -43,6 +43,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (notificationsList.page === page || isNotificationsApiProcessing) return;
+      listScrollTop();
       actions.getNotifications({
         page,
         take: notificationsList.take,

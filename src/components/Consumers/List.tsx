@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { ConsumerListFilters } from '../../lib';
+import { ConsumerListFilters, listScrollTop } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { ConsumersApi } from '../../apis';
 import ConsumersSkeleton from '../shared/ConsumersSkeleton';
@@ -43,6 +43,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (consumersList.page === page || isConsumersApiProcessing) return;
+      listScrollTop();
       actions.getConsumers({
         page,
         take: consumersList.take,

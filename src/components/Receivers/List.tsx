@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { ReceiverListFilters } from '../../lib';
+import { listScrollTop, ReceiverListFilters } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { ReceiversApi } from '../../apis';
 import ReceiversSkeleton from '../shared/ReceiversSkeleton';
@@ -43,6 +43,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (receiversList.page === page || isReceiversApiProcessing) return;
+      listScrollTop();
       actions.getReceivers({
         page,
         take: receiversList.take,
