@@ -32,6 +32,7 @@ import { LocalStorage, Pathes, routes, UserRoles } from '../lib';
 import { useAuth, useSelector } from '../hooks';
 import { MoreVert } from '@mui/icons-material';
 import { Menu, MenuItem } from '@mui/material';
+import ResetStyleWithAnimation from '../components/shared/ResetStyleWithAnimation';
 
 interface StyledListItemTextAttr {
   active: string | undefined;
@@ -275,36 +276,74 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
   return (
     <>
       <AppBar>
-        <Toolbar sx={{ minHeight: 'inherit' }}>
+        <Toolbar
+          sx={{
+            minHeight: 'inherit',
+          }}
+        >
           {isUserAuthenticated && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={() => setIsDrawerOpened(true)}
-              edge="start"
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon sx={{ color: 'white' }} />
-            </IconButton>
+            <Box mr="20px" overflow="hidden" flexShrink={0}>
+              <ResetStyleWithAnimation sx={{ transform: 'translateX(8px)' }}>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={() => setIsDrawerOpened(true)}
+                  edge="start"
+                  sx={{
+                    width: '100%',
+                    minHeight: 'inherit',
+                    transform: 'translateX(-100%)',
+                    transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
+                  }}
+                >
+                  <MenuIcon sx={{ color: 'white' }} />
+                </IconButton>
+              </ResetStyleWithAnimation>
+            </Box>
           )}
 
-          <Typography variant="h6" noWrap component="div" sx={{ color: 'white' }}>
-            {title || activeRouteTitle}
-          </Typography>
+          <Box overflow="hidden" width="100%">
+            <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+              <Typography
+                variant="h6"
+                noWrap
+                component="div"
+                sx={{
+                  width: '100%',
+                  color: 'white',
+                  minHeight: 'inherit',
+                  transform: 'translateY(100%)',
+                  transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
+                }}
+              >
+                {title || activeRouteTitle}
+              </Typography>
+            </ResetStyleWithAnimation>
+          </Box>
         </Toolbar>
 
         {menuOptions && menuOptions.length > 0 && (
-          <Box>
-            <IconButton onClick={onMenuOpen}>
-              <MoreVertIcon />
-            </IconButton>
-            <Menu anchorEl={anchorEl} open={isMenuOpened} onClick={onMenuClose}>
-              {menuOptions.map((menu, index) => (
-                <MenuItem key={index} onClick={onMenuClick}>
-                  {menu}
-                </MenuItem>
-              ))}
-            </Menu>
+          <Box overflow="hidden">
+            <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+              <Box
+                sx={{
+                  minHeight: 'inherit',
+                  transform: 'translateX(100%)',
+                  transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
+                }}
+              >
+                <IconButton onClick={onMenuOpen}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu anchorEl={anchorEl} open={isMenuOpened} onClick={onMenuClose}>
+                  {menuOptions.map((menu, index) => (
+                    <MenuItem key={index} onClick={onMenuClick}>
+                      {menu}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </Box>
+            </ResetStyleWithAnimation>
           </Box>
         )}
       </AppBar>
@@ -312,51 +351,67 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
       <ChildrenWrapper>{children}</ChildrenWrapper>
 
       {isUserAuthenticated && (
-        <Drawer sx={{ zIndex: 20 }} anchor="left" open={isDrawerOpened} onClose={() => setIsDrawerOpened(false)}>
-          <Box sx={{ width: 250 }} role="presentation">
+        <Drawer
+          sx={{ zIndex: 20, overflow: 'hidden' }}
+          anchor="left"
+          open={isDrawerOpened}
+          onClose={() => setIsDrawerOpened(false)}
+        >
+          <Box sx={{ width: 250, overflow: 'hidden' }} role="presentation">
             <DrawerHeader>
               <CloseIcon onClick={() => setIsDrawerOpened(false)} />
             </DrawerHeader>
 
             <Divider />
 
-            <List>
+            <List sx={{ overflow: 'hidden' }}>
               {getNavigationItems().map((item, index) => {
                 const navigationEl = (
-                  <ListItem
-                    onClick={() => {
-                      new Promise<boolean>((resolve) => {
-                        setIsDrawerOpened(false);
-                        resolve(true);
-                      })
-                        .then(() => {
-                          if (item.onClick) item.onClick.call({});
-                        })
-                        .then(() => {
-                          if (item.path && item.redirectPath && !isPathActive(item))
-                            navigate(item.redirectPath, item.navigateOptions);
-                        });
-                    }}
-                    key={index}
-                    disablePadding
-                  >
-                    <ListItemButton>
-                      <StyledListItemIcon active={isPathActive(item)}>{item.icon}</StyledListItemIcon>
-                      <Box
-                        component="div"
-                        sx={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          width: '10rem',
-                          maxWidth: '10rem',
+                  <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateX(0)' }}>
+                    <Box
+                      sx={{
+                        opacity: '0',
+                        transform: 'translateX(-20px)',
+                        transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
+                        transitionDelay: `${index * 0.01}s`,
+                      }}
+                    >
+                      <ListItem
+                        onClick={() => {
+                          new Promise<boolean>((resolve) => {
+                            setIsDrawerOpened(false);
+                            resolve(true);
+                          })
+                            .then(() => {
+                              if (item.onClick) item.onClick.call({});
+                            })
+                            .then(() => {
+                              if (item.path && item.redirectPath && !isPathActive(item))
+                                navigate(item.redirectPath, item.navigateOptions);
+                            });
                         }}
+                        key={index}
+                        disablePadding
                       >
-                        <StyledListItemText fontSize="1rem" marginY="4px" noWrap active={isPathActive(item)}>
-                          {item.title}
-                        </StyledListItemText>
-                      </Box>
-                    </ListItemButton>
-                  </ListItem>
+                        <ListItemButton>
+                          <StyledListItemIcon active={isPathActive(item)}>{item.icon}</StyledListItemIcon>
+                          <Box
+                            component="div"
+                            sx={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              width: '10rem',
+                              maxWidth: '10rem',
+                            }}
+                          >
+                            <StyledListItemText fontSize="1rem" marginY="4px" noWrap active={isPathActive(item)}>
+                              {item.title}
+                            </StyledListItemText>
+                          </Box>
+                        </ListItemButton>
+                      </ListItem>
+                    </Box>
+                  </ResetStyleWithAnimation>
                 );
 
                 return !item.roles ? (

@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { ConsumerListFilters } from '../../lib';
+import { ConsumerListFilters, listScrollTop } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { ConsumersApi } from '../../apis';
 import ConsumersSkeleton from '../shared/ConsumersSkeleton';
@@ -11,6 +11,7 @@ import { ModalNames } from '../../store';
 import ConsumerCard from '../shared/ConsumerCard';
 import { selectConsumersList } from '../../store/selectors';
 import { useSnackbar } from 'notistack';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 const List: FC = () => {
   const actions = useAction();
@@ -42,6 +43,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (consumersList.page === page || isConsumersApiProcessing) return;
+      listScrollTop();
       actions.getConsumers({
         page,
         take: consumersList.take,
@@ -71,7 +73,18 @@ const List: FC = () => {
         <>
           <MuiList>
             {consumersList.list.map((consumer, index) => (
-              <ConsumerCard key={index} index={index} consumer={consumer} list={consumersList} />
+              <ResetStyleWithAnimation key={index} sx={{ opacity: '1', transform: 'translateY(0)' }}>
+                <Box
+                  sx={{
+                    opacity: '0',
+                    transform: 'translateY(30px)',
+                    transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                    transitionDelay: `${index * 0.02}s`,
+                  }}
+                >
+                  <ConsumerCard index={index} consumer={consumer} list={consumersList} />
+                </Box>
+              </ResetStyleWithAnimation>
             ))}
           </MuiList>
 

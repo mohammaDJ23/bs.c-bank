@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { BillListFilters, getTime, isoDate } from '../../lib';
+import { BillListFilters, getTime, isoDate, listScrollTop } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { BillsApi } from '../../apis';
 import BillsSkeleton from '../shared/BillsSkeleton';
@@ -11,6 +11,7 @@ import { ModalNames } from '../../store';
 import BillCard from '../shared/BiilCard';
 import { selectBillsList } from '../../store/selectors';
 import { useSnackbar } from 'notistack';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 const List: FC = () => {
   const actions = useAction();
@@ -42,6 +43,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (billsList.page === page || isBillsApiProcessing) return;
+      listScrollTop();
       actions.getBills({
         page,
         take: billsList.take,
@@ -79,7 +81,18 @@ const List: FC = () => {
         <>
           <MuiList>
             {billsList.list.map((bill, index) => (
-              <BillCard key={index} index={index} bill={bill} list={billsList} />
+              <ResetStyleWithAnimation key={index} sx={{ opacity: '1', transform: 'translateY(0)' }}>
+                <Box
+                  sx={{
+                    opacity: '0',
+                    transform: 'translateY(30px)',
+                    transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                    transitionDelay: `${index * 0.02}s`,
+                  }}
+                >
+                  <BillCard index={index} bill={bill} list={billsList} />
+                </Box>
+              </ResetStyleWithAnimation>
             ))}
           </MuiList>
 

@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { ReceiverListFilters } from '../../lib';
+import { listScrollTop, ReceiverListFilters } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { ReceiversApi } from '../../apis';
 import ReceiversSkeleton from '../shared/ReceiversSkeleton';
@@ -11,6 +11,7 @@ import { ModalNames } from '../../store';
 import ReceiverCard from '../shared/ReceiverCard';
 import { selectReceiversList } from '../../store/selectors';
 import { useSnackbar } from 'notistack';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 const List: FC = () => {
   const request = useRequest();
@@ -42,6 +43,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (receiversList.page === page || isReceiversApiProcessing) return;
+      listScrollTop();
       actions.getReceivers({
         page,
         take: receiversList.take,
@@ -71,7 +73,18 @@ const List: FC = () => {
         <>
           <MuiList>
             {receiversList.list.map((receiver, index) => (
-              <ReceiverCard key={index} index={index} receiver={receiver} list={receiversList} />
+              <ResetStyleWithAnimation key={index} sx={{ opacity: '1', transform: 'translateY(0)' }}>
+                <Box
+                  sx={{
+                    opacity: '0',
+                    transform: 'translateY(30px)',
+                    transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                    transitionDelay: `${index * 0.02}s`,
+                  }}
+                >
+                  <ReceiverCard index={index} receiver={receiver} list={receiversList} />
+                </Box>
+              </ResetStyleWithAnimation>
             ))}
           </MuiList>
           {receiversList.take < receiversList.total && (
