@@ -1,5 +1,5 @@
-import { FC, useCallback, useEffect, useRef } from 'react';
-import { getDynamicPath, getUserRoles, Pathes, reInitializeToken, UpdateUserByOwner, wait } from '../../lib';
+import { FC, useCallback, useEffect } from 'react';
+import { getDynamicPath, getUserRoles, Pathes, reInitializeToken, UpdateUserByOwner } from '../../lib';
 import Modal from '../shared/Modal';
 import { ModalNames } from '../../store';
 import { useAction, useAuth, useForm, useRequest, useSelector } from '../../hooks';
@@ -7,7 +7,7 @@ import { Box, TextField, Button, Select, FormControl, MenuItem, InputLabel, Form
 import { UpdateUserByOwnerApi } from '../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
-import { v4 as uuid } from 'uuid';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 interface FormImportation {
   formInstance: ReturnType<typeof useForm<UpdateUserByOwner>>;
@@ -27,7 +27,6 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
   const snackbar = useSnackbar();
   const auth = useAuth();
   const decodedToken = auth.getDecodedToken();
-  const formElIdRef = useRef(uuid());
   const updatedUserByOwner = selectors.specificDetails.updatedUserByOwner;
 
   const formSubmition = useCallback(() => {
@@ -53,30 +52,10 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
     }
   }, [isUpdateUserByOwnerApiFailed, isUpdateUserByOwnerApiSuccessed, updatedUserByOwner]);
 
-  useEffect(() => {
-    (async () => {
-      await wait(10);
-
-      let el = document.getElementById(formElIdRef.current);
-      if (el) {
-        for (const node of Array.from(el.childNodes)) {
-          // @ts-ignore
-          node.style.transition = 'opacity 0.1s, transform 0.2s';
-          // @ts-ignore
-          node.style.opacity = 1;
-          // @ts-ignore
-          node.style.transform = 'translateX(0)';
-
-          await wait();
-        }
-      }
-    })();
-  }, []);
-
   return (
     <>
       <Box
-        id={formElIdRef.current}
+        overflow="hidden"
         component="form"
         noValidate
         autoComplete="off"
@@ -88,98 +67,153 @@ const Form: FC<FormImportation> = ({ formInstance }) => {
           formInstance.confirmation();
         }}
       >
-        <TextField
-          sx={{ opacity: 0, transform: 'translateX(10px)' }}
-          label="First Name"
-          variant="standard"
-          type="text"
-          value={form.firstName}
-          onChange={(event) => formInstance.onChange('firstName', event.target.value)}
-          helperText={formInstance.getInputErrorMessage('firstName')}
-          error={formInstance.isInputInValid('firstName')}
-          disabled={isUpdateUserByOwnerApiProcessing}
-        />
-        <TextField
-          sx={{ opacity: 0, transform: 'translateX(15px)' }}
-          label="Last Name"
-          variant="standard"
-          type="text"
-          value={form.lastName}
-          onChange={(event) => formInstance.onChange('lastName', event.target.value)}
-          helperText={formInstance.getInputErrorMessage('lastName')}
-          error={formInstance.isInputInValid('lastName')}
-          disabled={isUpdateUserByOwnerApiProcessing}
-        />
-        <TextField
-          sx={{ opacity: 0, transform: 'translateX(20px)' }}
-          label="Email"
-          type="email"
-          variant="standard"
-          value={form.email}
-          onChange={(event) => formInstance.onChange('email', event.target.value.trim())}
-          helperText={formInstance.getInputErrorMessage('email')}
-          error={formInstance.isInputInValid('email')}
-          disabled={isUpdateUserByOwnerApiProcessing}
-        />
-        <TextField
-          sx={{ opacity: 0, transform: 'translateX(25px)' }}
-          label="Phone"
-          type="text"
-          variant="standard"
-          value={form.phone}
-          onChange={(event) => formInstance.onChange('phone', event.target.value.trim())}
-          helperText={formInstance.getInputErrorMessage('phone')}
-          error={formInstance.isInputInValid('phone')}
-          disabled={isUpdateUserByOwnerApiProcessing}
-        />
-        <FormControl variant="standard" sx={{ opacity: 0, transform: 'translateX(30px)' }}>
-          <InputLabel id="role">Role</InputLabel>
-          <Select
-            labelId="role"
-            id="role"
-            value={form.role}
-            onChange={(event) => formInstance.onChange('role', event.target.value)}
-            label="Role"
-            error={formInstance.isInputInValid('role')}
-          >
-            {getUserRoles().map((el) => (
-              <MenuItem key={el.value} value={el.value}>
-                {el.label}
-              </MenuItem>
-            ))}
-          </Select>
-          {formInstance.isInputInValid('role') && (
-            <FormHelperText>{formInstance.getInputErrorMessage('role')}</FormHelperText>
-          )}
-        </FormControl>
-        <Box
-          sx={{ opacity: 0, transform: 'translateX(35px)' }}
-          component="div"
-          display="flex"
-          alignItems="center"
-          gap="10px"
-          marginTop="20px"
-        >
-          <Button
-            disabled={isUpdateUserByOwnerApiProcessing || !formInstance.isFormValid()}
-            variant="contained"
-            size="small"
-            type="submit"
-            sx={{ textTransform: 'capitalize' }}
-          >
-            Update
-          </Button>
-          <Button
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <TextField
+            sx={{
+              width: '100%',
+              opacity: 0,
+              transform: 'translateY(10px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+            }}
+            label="First Name"
+            variant="standard"
+            type="text"
+            value={form.firstName}
+            onChange={(event) => formInstance.onChange('firstName', event.target.value)}
+            helperText={formInstance.getInputErrorMessage('firstName')}
+            error={formInstance.isInputInValid('firstName')}
             disabled={isUpdateUserByOwnerApiProcessing}
-            variant="outlined"
-            size="small"
-            type="button"
-            sx={{ textTransform: 'capitalize' }}
-            onClick={() => formInstance.resetForm()}
+          />
+        </ResetStyleWithAnimation>
+
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <TextField
+            sx={{
+              width: '100%',
+              opacity: 0,
+              transform: 'translateY(15px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.03s',
+            }}
+            label="Last Name"
+            variant="standard"
+            type="text"
+            value={form.lastName}
+            onChange={(event) => formInstance.onChange('lastName', event.target.value)}
+            helperText={formInstance.getInputErrorMessage('lastName')}
+            error={formInstance.isInputInValid('lastName')}
+            disabled={isUpdateUserByOwnerApiProcessing}
+          />
+        </ResetStyleWithAnimation>
+
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <TextField
+            sx={{
+              width: '100%',
+              opacity: 0,
+              transform: 'translateY(20px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.06s',
+            }}
+            label="Email"
+            type="email"
+            variant="standard"
+            value={form.email}
+            onChange={(event) => formInstance.onChange('email', event.target.value.trim())}
+            helperText={formInstance.getInputErrorMessage('email')}
+            error={formInstance.isInputInValid('email')}
+            disabled={isUpdateUserByOwnerApiProcessing}
+          />
+        </ResetStyleWithAnimation>
+
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <TextField
+            sx={{
+              width: '100%',
+              opacity: 0,
+              transform: 'translateY(25px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.09s',
+            }}
+            label="Phone"
+            type="text"
+            variant="standard"
+            value={form.phone}
+            onChange={(event) => formInstance.onChange('phone', event.target.value.trim())}
+            helperText={formInstance.getInputErrorMessage('phone')}
+            error={formInstance.isInputInValid('phone')}
+            disabled={isUpdateUserByOwnerApiProcessing}
+          />
+        </ResetStyleWithAnimation>
+
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <FormControl
+            variant="standard"
+            sx={{
+              width: '100%',
+              opacity: 0,
+              transform: 'translateY(30px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.12s',
+            }}
           >
-            Reset
-          </Button>
-        </Box>
+            <InputLabel id="role">Role</InputLabel>
+            <Select
+              labelId="role"
+              id="role"
+              value={form.role}
+              onChange={(event) => formInstance.onChange('role', event.target.value)}
+              label="Role"
+              error={formInstance.isInputInValid('role')}
+            >
+              {getUserRoles().map((el) => (
+                <MenuItem key={el.value} value={el.value}>
+                  {el.label}
+                </MenuItem>
+              ))}
+            </Select>
+            {formInstance.isInputInValid('role') && (
+              <FormHelperText>{formInstance.getInputErrorMessage('role')}</FormHelperText>
+            )}
+          </FormControl>
+        </ResetStyleWithAnimation>
+
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Box
+            sx={{
+              width: '100%',
+              opacity: 0,
+              transform: 'translateY(30px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.15s',
+            }}
+            component="div"
+            display="flex"
+            alignItems="center"
+            gap="10px"
+            marginTop="20px"
+          >
+            <Button
+              disabled={isUpdateUserByOwnerApiProcessing || !formInstance.isFormValid()}
+              variant="contained"
+              size="small"
+              type="submit"
+              sx={{ textTransform: 'capitalize' }}
+            >
+              Update
+            </Button>
+            <Button
+              disabled={isUpdateUserByOwnerApiProcessing}
+              variant="outlined"
+              size="small"
+              type="button"
+              sx={{ textTransform: 'capitalize' }}
+              onClick={() => formInstance.resetForm()}
+            >
+              Reset
+            </Button>
+          </Box>
+        </ResetStyleWithAnimation>
       </Box>
       <Modal
         isLoading={isUpdateUserByOwnerApiProcessing}
