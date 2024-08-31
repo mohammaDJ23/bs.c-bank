@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect } from 'react';
 import { List as MuiList, Box, TextField, Button, Autocomplete } from '@mui/material';
-import { isoDate, getTime, UserRoles, DeletedUserListFilters } from '../../lib';
+import { isoDate, getTime, UserRoles, DeletedUserListFilters, listScrollTop } from '../../lib';
 import Pagination from '../shared/Pagination';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { DeletedUserApi, DeletedUsersApi } from '../../apis';
@@ -43,6 +43,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (deletedUsersList.page === page || isDeletedUsersApiProcessing) return;
+      listScrollTop();
       actions.getDeletedUsers({
         page,
         take: deletedUsersList.take,

@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect } from 'react';
 import { List as MuiList, Box, TextField, Button, Autocomplete } from '@mui/material';
-import { UserListFilters, isoDate, getTime, UserRoles } from '../../lib';
+import { UserListFilters, isoDate, getTime, UserRoles, listScrollTop } from '../../lib';
 import Pagination from '../shared/Pagination';
 import { useAction, useAuth, useForm, useRequest, useSelector } from '../../hooks';
 import { UsersApi } from '../../apis';
@@ -75,6 +75,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (usersList.page === page || isUsersApiProcessing) return;
+      listScrollTop();
       actions.getUsers({
         page,
         take: usersList.take,

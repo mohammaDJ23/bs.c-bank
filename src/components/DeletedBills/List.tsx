@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { DeletedBillListFilters, getTime, isoDate } from '../../lib';
+import { DeletedBillListFilters, getTime, isoDate, listScrollTop } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { DeletedBillsApi } from '../../apis';
 import BillsSkeleton from '../shared/BillsSkeleton';
@@ -43,6 +43,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (deletedBillsList.page === page || isDeletedBillsApiProcessing) return;
+      listScrollTop();
       actions.getDeletedBills({
         page,
         take: deletedBillsList.take,

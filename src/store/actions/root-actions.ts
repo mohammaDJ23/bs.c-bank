@@ -1,6 +1,5 @@
 import {
   HistoryActions,
-  ListContainerActions,
   ModalActions,
   SpecificDetailsActions,
   RequestProcessActions,
@@ -13,7 +12,6 @@ import {
 export type RootActions =
   | ModalActions
   | RequestProcessActions
-  | ListContainerActions
   | HistoryActions
   | SpecificDetailsActions
   | FormActions

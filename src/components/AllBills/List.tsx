@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button, Autocomplete } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { AllBillListFilters, getTime, isoDate, UserRoles } from '../../lib';
+import { AllBillListFilters, getTime, isoDate, listScrollTop, UserRoles } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { AllBillsApi } from '../../apis';
 import BillsSkeleton from '../shared/BillsSkeleton';
@@ -43,6 +43,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (allBillsList.page === page || isAllBillsApiProcessing) return;
+      listScrollTop();
       actions.getAllBills({
         page,
         take: allBillsList.take,

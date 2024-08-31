@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Box, List as MuiList, TextField, Button } from '@mui/material';
 import Pagination from '../shared/Pagination';
-import { LocationListFilters } from '../../lib';
+import { listScrollTop, LocationListFilters } from '../../lib';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { LocationsApi } from '../../apis';
 import LocationsSkeleton from '../shared/LocationsSkeleton';
@@ -43,6 +43,7 @@ const List: FC = () => {
   const changePage = useCallback(
     (page: number) => {
       if (locationsList.page || isLocationsApiProcessing) return;
+      listScrollTop();
       actions.getLocations({
         page,
         take: locationsList.take,
