@@ -11,6 +11,7 @@ import { ModalNames } from '../../store';
 import LocationCard from '../shared/LocationCard';
 import { selectLocationsList } from '../../store/selectors';
 import { useSnackbar } from 'notistack';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 const List: FC = () => {
   const request = useRequest();
@@ -71,7 +72,18 @@ const List: FC = () => {
         <>
           <MuiList>
             {locationsList.list.map((location, index) => (
-              <LocationCard key={index} index={index} location={location} list={locationsList} />
+              <ResetStyleWithAnimation key={index} sx={{ opacity: '1', transform: 'translateY(0)' }}>
+                <Box
+                  sx={{
+                    opacity: '0',
+                    transform: 'translateY(30px)',
+                    transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                    transitionDelay: `${index * 0.02}s`,
+                  }}
+                >
+                  <LocationCard index={index} location={location} list={locationsList} />
+                </Box>
+              </ResetStyleWithAnimation>
             ))}
           </MuiList>
 
