@@ -20,6 +20,7 @@ import { ConsumerApi, ConsumersApi, LocationsApi, ReceiversApi, UpdateBillApi } 
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { selectConsumersList, selectLocationsList, selectReceiversList } from '../../store/selectors';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 interface FormImportation {
   formInstance: ReturnType<typeof useForm<UpdateBill>>;
@@ -207,6 +208,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
     <>
       <Box
         id={formElIdRef.current}
+        overflow="hidden"
         component="form"
         noValidate
         autoComplete="off"
@@ -218,230 +220,298 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
           updateBillFormInstance.confirmation();
         }}
       >
-        <TextField
-          sx={{ opacity: 0, transform: 'translateX(10px)' }}
-          label="Amount"
-          variant="standard"
-          type="number"
-          value={updateBillForm.amount}
-          onChange={(event) => updateBillFormInstance.onChange('amount', Number(event.target.value).toString())}
-          helperText={updateBillFormInstance.getInputErrorMessage('amount')}
-          error={updateBillFormInstance.isInputInValid('amount')}
-          disabled={isUpdateBillApiProcessing}
-        />
-        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(15px)' }}>
-          <Autocomplete
-            freeSolo
-            open={isReceiverAutocompleteOpen}
-            onBlur={() => {
-              setReceivers([]);
-              setIsReceiverAutocompleteOpen(false);
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <TextField
+            sx={{
+              width: '100%',
+              opacity: '0',
+              transform: 'translateY(10px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
             }}
-            value={updateBillForm.receiver}
-            onChange={(event, value) => {
-              value = value || '';
-              updateBillFormInstance.onChange('receiver', value.trim());
-              receiverListFiltersFormInstance.onChange('q', '');
-              setReceivers([]);
-              setIsReceiverAutocompleteOpen(false);
-            }}
+            label="Amount"
+            variant="standard"
+            type="number"
+            value={updateBillForm.amount}
+            onChange={(event) => updateBillFormInstance.onChange('amount', Number(event.target.value).toString())}
+            helperText={updateBillFormInstance.getInputErrorMessage('amount')}
+            error={updateBillFormInstance.isInputInValid('amount')}
             disabled={isUpdateBillApiProcessing}
-            options={receviers}
-            filterOptions={(options) => options}
-            getOptionLabel={(option) => option}
-            clearIcon={false}
-            clearOnBlur
-            clearOnEscape
-            blurOnSelect
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                sx={{}}
-                onBlur={(event) => {
-                  receiverListFiltersFormInstance.onChange('q', '');
-                }}
-                onFocus={() => {
-                  setReceivers([]);
-                  setIsReceiverAutocompleteOpen(false);
-                }}
-                variant="standard"
-                label="Receiver"
-                value={receiverListFiltersForm.q}
-                onChange={onReceiverChange}
-                error={
-                  updateBillFormInstance.isInputInValid('receiver') ||
-                  receiverListFiltersFormInstance.isInputInValid('q')
-                }
-                helperText={
-                  updateBillFormInstance.getInputErrorMessage('receiver') ||
-                  receiverListFiltersFormInstance.getInputErrorMessage('q')
-                }
-              />
-            )}
           />
-          {isReceiversApiProcessing && (
-            <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
-          )}
-        </Box>
-        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(20px)' }}>
-          <Autocomplete
-            freeSolo
-            open={isLocationAutocompleteOpen}
-            onBlur={() => {
-              setLocations([]);
-              setIsLocationAutocompleteOpen(false);
+        </ResetStyleWithAnimation>
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Box
+            position={'relative'}
+            sx={{
+              width: '100%',
+              opacity: '0',
+              transform: 'translateY(15px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.03s',
             }}
-            value={updateBillForm.location}
-            onChange={(event, value) => {
-              value = value || '';
-              updateBillFormInstance.onChange('location', value);
-              locationListFiltersFormInstance.onChange('q', '');
-              setLocations([]);
-              setIsLocationAutocompleteOpen(false);
-            }}
-            disabled={isUpdateBillApiProcessing}
-            options={locations}
-            filterOptions={(options) => options}
-            getOptionLabel={(option) => option}
-            clearIcon={false}
-            clearOnBlur
-            clearOnEscape
-            blurOnSelect
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                sx={{}}
-                onBlur={(event) => {
-                  locationListFiltersFormInstance.onChange('q', '');
-                }}
-                onFocus={() => {
-                  setLocations([]);
-                  setIsLocationAutocompleteOpen(false);
-                }}
-                variant="standard"
-                label="Location"
-                value={locationListFiltersForm.q}
-                onChange={onLocationChange}
-                error={
-                  updateBillFormInstance.isInputInValid('location') ||
-                  locationListFiltersFormInstance.isInputInValid('q')
-                }
-                helperText={
-                  updateBillFormInstance.getInputErrorMessage('location') ||
-                  locationListFiltersFormInstance.getInputErrorMessage('q')
-                }
-              />
-            )}
-          />
-          {isLocationsApiProcessing && (
-            <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
-          )}
-        </Box>
-        <Box position={'relative'} sx={{ opacity: 0, transform: 'translateX(25px)' }}>
-          <Autocomplete
-            multiple
-            freeSolo
-            open={isConsumerAutocompleteOpen}
-            onBlur={() => {
-              setConsumers([]);
-              setIsConsumerAutocompleteOpen(false);
-            }}
-            value={updateBillForm.consumers}
-            onChange={(event, value) => {
-              updateBillFormInstance.onChange('consumers', value);
-              setConsumers([]);
-              setIsConsumerAutocompleteOpen(false);
-            }}
-            disabled={isUpdateBillApiProcessing}
-            options={consumers}
-            filterOptions={(options) => options}
-            getOptionLabel={(option) => option}
-            clearIcon={false}
-            clearOnBlur
-            clearOnEscape
-            blurOnSelect
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                sx={{}}
-                onFocus={() => {
-                  setConsumers([]);
-                  setIsConsumerAutocompleteOpen(false);
-                }}
-                variant="standard"
-                label="Consumers"
-                value={consumerListFiltersForm.q}
-                onChange={onConsumerChange}
-                error={
-                  updateBillFormInstance.isInputInValid('consumers') ||
-                  consumerListFiltersFormInstance.isInputInValid('q')
-                }
-                helperText={
-                  updateBillFormInstance.getInputErrorMessage('consumers') ||
-                  consumerListFiltersFormInstance.getInputErrorMessage('q')
-                }
-              />
-            )}
-          />
-          {isConsumersApiProcessing && (
-            <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
-          )}
-        </Box>
-        <TextField
-          sx={{ opacity: 0, transform: 'translateX(30px)' }}
-          label="Date"
-          type="date"
-          variant="standard"
-          value={updateBillForm.date ? isoDate(updateBillForm.date) : 'undefined'}
-          onChange={(event) =>
-            updateBillFormInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
-          }
-          helperText={updateBillFormInstance.getInputErrorMessage('date')}
-          error={updateBillFormInstance.isInputInValid('date')}
-          InputLabelProps={{ shrink: true }}
-          disabled={isUpdateBillApiProcessing}
-        />
-        <TextField
-          sx={{ opacity: 0, transform: 'translateX(35px)' }}
-          label="Description"
-          type="text"
-          rows="5"
-          multiline
-          variant="standard"
-          value={updateBillForm.description}
-          onChange={(event) => updateBillFormInstance.onChange('description', event.target.value)}
-          helperText={updateBillFormInstance.getInputErrorMessage('description')}
-          error={updateBillFormInstance.isInputInValid('description')}
-          disabled={isUpdateBillApiProcessing}
-        />
-        <Box
-          sx={{ opacity: 0, transform: 'translateX(40px)' }}
-          component="div"
-          display="flex"
-          alignItems="center"
-          gap="10px"
-          marginTop="20px"
-        >
-          <Button
-            disabled={isUpdateBillApiProcessing || !updateBillFormInstance.isFormValid()}
-            variant="contained"
-            size="small"
-            type="submit"
-            sx={{ textTransform: 'capitalize' }}
           >
-            Update
-          </Button>
-          <Button
-            disabled={isUpdateBillApiProcessing}
-            variant="outlined"
-            size="small"
-            type="button"
-            sx={{ textTransform: 'capitalize' }}
-            onClick={() => updateBillFormInstance.resetForm()}
+            <Autocomplete
+              freeSolo
+              open={isReceiverAutocompleteOpen}
+              onBlur={() => {
+                setReceivers([]);
+                setIsReceiverAutocompleteOpen(false);
+              }}
+              value={updateBillForm.receiver}
+              onChange={(event, value) => {
+                value = value || '';
+                updateBillFormInstance.onChange('receiver', value.trim());
+                receiverListFiltersFormInstance.onChange('q', '');
+                setReceivers([]);
+                setIsReceiverAutocompleteOpen(false);
+              }}
+              disabled={isUpdateBillApiProcessing}
+              options={receviers}
+              filterOptions={(options) => options}
+              getOptionLabel={(option) => option}
+              clearIcon={false}
+              clearOnBlur
+              clearOnEscape
+              blurOnSelect
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  sx={{}}
+                  onBlur={(event) => {
+                    receiverListFiltersFormInstance.onChange('q', '');
+                  }}
+                  onFocus={() => {
+                    setReceivers([]);
+                    setIsReceiverAutocompleteOpen(false);
+                  }}
+                  variant="standard"
+                  label="Receiver"
+                  value={receiverListFiltersForm.q}
+                  onChange={onReceiverChange}
+                  error={
+                    updateBillFormInstance.isInputInValid('receiver') ||
+                    receiverListFiltersFormInstance.isInputInValid('q')
+                  }
+                  helperText={
+                    updateBillFormInstance.getInputErrorMessage('receiver') ||
+                    receiverListFiltersFormInstance.getInputErrorMessage('q')
+                  }
+                />
+              )}
+            />
+            {isReceiversApiProcessing && (
+              <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
+            )}
+          </Box>
+        </ResetStyleWithAnimation>
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Box
+            position={'relative'}
+            sx={{
+              width: '100%',
+              opacity: '0',
+              transform: 'translateY(20px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.06s',
+            }}
           >
-            Reset
-          </Button>
-        </Box>
+            <Autocomplete
+              freeSolo
+              open={isLocationAutocompleteOpen}
+              onBlur={() => {
+                setLocations([]);
+                setIsLocationAutocompleteOpen(false);
+              }}
+              value={updateBillForm.location}
+              onChange={(event, value) => {
+                value = value || '';
+                updateBillFormInstance.onChange('location', value);
+                locationListFiltersFormInstance.onChange('q', '');
+                setLocations([]);
+                setIsLocationAutocompleteOpen(false);
+              }}
+              disabled={isUpdateBillApiProcessing}
+              options={locations}
+              filterOptions={(options) => options}
+              getOptionLabel={(option) => option}
+              clearIcon={false}
+              clearOnBlur
+              clearOnEscape
+              blurOnSelect
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  sx={{}}
+                  onBlur={(event) => {
+                    locationListFiltersFormInstance.onChange('q', '');
+                  }}
+                  onFocus={() => {
+                    setLocations([]);
+                    setIsLocationAutocompleteOpen(false);
+                  }}
+                  variant="standard"
+                  label="Location"
+                  value={locationListFiltersForm.q}
+                  onChange={onLocationChange}
+                  error={
+                    updateBillFormInstance.isInputInValid('location') ||
+                    locationListFiltersFormInstance.isInputInValid('q')
+                  }
+                  helperText={
+                    updateBillFormInstance.getInputErrorMessage('location') ||
+                    locationListFiltersFormInstance.getInputErrorMessage('q')
+                  }
+                />
+              )}
+            />
+            {isLocationsApiProcessing && (
+              <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
+            )}
+          </Box>
+        </ResetStyleWithAnimation>
+
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Box
+            position={'relative'}
+            sx={{
+              width: '100%',
+              opacity: '0',
+              transform: 'translateY(25px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.09s',
+            }}
+          >
+            <Autocomplete
+              multiple
+              freeSolo
+              open={isConsumerAutocompleteOpen}
+              onBlur={() => {
+                setConsumers([]);
+                setIsConsumerAutocompleteOpen(false);
+              }}
+              value={updateBillForm.consumers}
+              onChange={(event, value) => {
+                updateBillFormInstance.onChange('consumers', value);
+                setConsumers([]);
+                setIsConsumerAutocompleteOpen(false);
+              }}
+              disabled={isUpdateBillApiProcessing}
+              options={consumers}
+              filterOptions={(options) => options}
+              getOptionLabel={(option) => option}
+              clearIcon={false}
+              clearOnBlur
+              clearOnEscape
+              blurOnSelect
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  sx={{}}
+                  onFocus={() => {
+                    setConsumers([]);
+                    setIsConsumerAutocompleteOpen(false);
+                  }}
+                  variant="standard"
+                  label="Consumers"
+                  value={consumerListFiltersForm.q}
+                  onChange={onConsumerChange}
+                  error={
+                    updateBillFormInstance.isInputInValid('consumers') ||
+                    consumerListFiltersFormInstance.isInputInValid('q')
+                  }
+                  helperText={
+                    updateBillFormInstance.getInputErrorMessage('consumers') ||
+                    consumerListFiltersFormInstance.getInputErrorMessage('q')
+                  }
+                />
+              )}
+            />
+            {isConsumersApiProcessing && (
+              <CircularProgress size={20} sx={{ position: 'absolute', zIndex: '1', right: 0, top: '20px' }} />
+            )}
+          </Box>
+        </ResetStyleWithAnimation>
+
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <TextField
+            sx={{
+              width: '100%',
+              opacity: '0',
+              transform: 'translateY(30px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.12s',
+            }}
+            label="Date"
+            type="date"
+            variant="standard"
+            value={updateBillForm.date ? isoDate(updateBillForm.date) : 'undefined'}
+            onChange={(event) =>
+              updateBillFormInstance.onChange('date', event.target.value ? getTime(event.target.value) : null)
+            }
+            helperText={updateBillFormInstance.getInputErrorMessage('date')}
+            error={updateBillFormInstance.isInputInValid('date')}
+            InputLabelProps={{ shrink: true }}
+            disabled={isUpdateBillApiProcessing}
+          />
+        </ResetStyleWithAnimation>
+
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <TextField
+            sx={{
+              width: '100%',
+              opacity: '0',
+              transform: 'translateY(35px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.15s',
+            }}
+            label="Description"
+            type="text"
+            rows="5"
+            multiline
+            variant="standard"
+            value={updateBillForm.description}
+            onChange={(event) => updateBillFormInstance.onChange('description', event.target.value)}
+            helperText={updateBillFormInstance.getInputErrorMessage('description')}
+            error={updateBillFormInstance.isInputInValid('description')}
+            disabled={isUpdateBillApiProcessing}
+          />
+        </ResetStyleWithAnimation>
+
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Box
+            sx={{
+              width: '100%',
+              opacity: '0',
+              transform: 'translateY(40px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.18s',
+            }}
+            component="div"
+            display="flex"
+            alignItems="center"
+            gap="10px"
+            marginTop="20px"
+          >
+            <Button
+              disabled={isUpdateBillApiProcessing || !updateBillFormInstance.isFormValid()}
+              variant="contained"
+              size="small"
+              type="submit"
+              sx={{ textTransform: 'capitalize' }}
+            >
+              Update
+            </Button>
+            <Button
+              disabled={isUpdateBillApiProcessing}
+              variant="outlined"
+              size="small"
+              type="button"
+              sx={{ textTransform: 'capitalize' }}
+              onClick={() => updateBillFormInstance.resetForm()}
+            >
+              Reset
+            </Button>
+          </Box>
+        </ResetStyleWithAnimation>
       </Box>
       <Modal
         isLoading={isUpdateBillApiProcessing}

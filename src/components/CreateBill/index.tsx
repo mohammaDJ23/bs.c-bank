@@ -195,7 +195,7 @@ const CreateBillContent: FC = () => {
             <Box
               position={'relative'}
               sx={{
-                opacity: 0,
+                opacity: '0',
                 transform: 'translateY(15px)',
                 transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
                 transitionDelay: '0.03s',
@@ -259,7 +259,7 @@ const CreateBillContent: FC = () => {
             <Box
               position={'relative'}
               sx={{
-                opacity: 0,
+                opacity: '0',
                 transform: 'translateY(20px)',
                 transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
                 transitionDelay: '0.06s',
@@ -323,7 +323,7 @@ const CreateBillContent: FC = () => {
             <Box
               position={'relative'}
               sx={{
-                opacity: 0,
+                opacity: '0',
                 transform: 'translateY(25px)',
                 transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
                 transitionDelay: '0.09s',
@@ -383,7 +383,7 @@ const CreateBillContent: FC = () => {
             <TextField
               sx={{
                 width: '100%',
-                opacity: 0,
+                opacity: '0',
                 transform: 'translateY(30px)',
                 transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
                 transitionDelay: '0.12s',
@@ -405,7 +405,7 @@ const CreateBillContent: FC = () => {
             <TextField
               sx={{
                 width: '100%',
-                opacity: 0,
+                opacity: '0',
                 transform: 'translateY(35px)',
                 transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
                 transitionDelay: '0.15s',
@@ -430,7 +430,7 @@ const CreateBillContent: FC = () => {
               gap="10px"
               marginTop="20px"
               sx={{
-                opacity: 0,
+                opacity: '0',
                 transform: 'translateY(40px)',
                 transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
                 transitionDelay: '0.18s',
