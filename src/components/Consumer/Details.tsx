@@ -67,95 +67,98 @@ const Details: FC<DetailsImporation> = ({ consumer }) => {
   return (
     <>
       <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px" overflow="hidden">
-        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
-          <Box
-            sx={{
-              opacity: '0',
-              transform: 'translateY(30px)',
-              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
-              width: '100%',
-              mb: '15px',
-              display: 'flex',
-              gap: '8px',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <Typography component={'p'} fontSize="14px" fontWeight={'bold'}>
-              {consumer.name}
-            </Typography>
-            <IconButton onClick={onMenuOpen}>
-              <MoreVert />
-            </IconButton>
-            <Menu anchorEl={anchorEl} open={open} onClick={onMenuClose}>
-              {options.map((option) => (
-                <MenuItem key={option.path} onClick={onMenuClick(option)}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        </ResetStyleWithAnimation>
-        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
-          <Typography
-            component={'p'}
-            fontSize="12px"
-            color="rgba(0, 0, 0, 0.6)"
-            sx={{
-              opacity: '0',
-              transform: 'translateY(30px)',
-              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
-              transitionDelay: '0.02s',
-            }}
-          >
-            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-              Created at:
-            </Typography>{' '}
-            {moment(consumer.createdAt).format('LLLL')}
-          </Typography>
-        </ResetStyleWithAnimation>
-        {new Date(consumer.updatedAt) > new Date(consumer.createdAt) && (
-          <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+        <Box mb="15px" width="100%" overflow="hidden">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Box
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                width: '100%',
+                display: 'flex',
+                gap: '8px',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <Typography component={'p'} fontSize="14px" fontWeight={'bold'}>
+                {consumer.name}
+              </Typography>
+              <IconButton onClick={onMenuOpen}>
+                <MoreVert />
+              </IconButton>
+              <Menu anchorEl={anchorEl} open={open} onClick={onMenuClose}>
+                {options.map((option) => (
+                  <MenuItem key={option.path} onClick={onMenuClick(option)}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          </ResetStyleWithAnimation>
+        </Box>
+        <Box overflow="hidden">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
             <Typography
               component={'p'}
               fontSize="12px"
               color="rgba(0, 0, 0, 0.6)"
               sx={{
-                opacity: '0',
-                transform: 'translateY(30px)',
+                transform: 'translateY(100%)',
                 transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
-                transitionDelay: '0.04s',
+                transitionDelay: '0.02s',
               }}
             >
               <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-                Last update:
+                Created at:
               </Typography>{' '}
-              {moment(consumer.updatedAt).format('LLLL')}
+              {moment(consumer.createdAt).format('LLLL')}
             </Typography>
           </ResetStyleWithAnimation>
-        )}
-        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
-          <Box
-            mt="30px"
-            sx={{
-              opacity: '0',
-              transform: 'translateY(30px)',
-              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
-              transitionDelay: '0.06s',
-            }}
-          >
-            <Button
-              disabled={isDeleteConsumerApiProcessing}
-              onClick={onDeleteConsumer}
-              variant="contained"
-              color="error"
-              size="small"
-              sx={{ textTransform: 'capitalize' }}
-            >
-              Delete the consumer
-            </Button>
+        </Box>
+        {new Date(consumer.updatedAt) > new Date(consumer.createdAt) && (
+          <Box overflow="hidden">
+            <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+              <Typography
+                component={'p'}
+                fontSize="12px"
+                color="rgba(0, 0, 0, 0.6)"
+                sx={{
+                  transform: 'translateY(100%)',
+                  transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                  transitionDelay: '0.04s',
+                }}
+              >
+                <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                  Last update:
+                </Typography>{' '}
+                {moment(consumer.updatedAt).format('LLLL')}
+              </Typography>
+            </ResetStyleWithAnimation>
           </Box>
-        </ResetStyleWithAnimation>
+        )}
+        <Box overflow="hidden">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Box
+              mt="30px"
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.06s',
+              }}
+            >
+              <Button
+                disabled={isDeleteConsumerApiProcessing}
+                onClick={onDeleteConsumer}
+                variant="contained"
+                color="error"
+                size="small"
+                sx={{ textTransform: 'capitalize' }}
+              >
+                Delete the consumer
+              </Button>
+            </Box>
+          </ResetStyleWithAnimation>
+        </Box>
       </Box>
       <Modal
         title="Deleting the consumer"

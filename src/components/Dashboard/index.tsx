@@ -476,7 +476,7 @@ const Dashboard: FC = () => {
             ) : isInitialLastYearBillsApiSuccessed && chartData.length > 0 ? (
               <Box sx={{ overflow: 'hidden', height: '100%', width: '100%' }}>
                 <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                  <Card sx={{ transform: 'translateY(449px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                  <Card sx={{ transform: 'translateY(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                     <CardContent
                       style={{ position: 'relative', height: '429px', overflow: 'hidden' }}
                       id={lastYearChartElIdRef.current}
@@ -541,7 +541,7 @@ const Dashboard: FC = () => {
               ) : isInitialMostActiveConsumersApiSuccessed && mostActiveConsumersList.list.length > 0 ? (
                 <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
                   <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                    <Card sx={{ transform: 'translateY(370px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                    <Card sx={{ transform: 'translateY(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                       <CardContent
                         style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
                         id={consumersChartElIdRef.current}
@@ -604,7 +604,7 @@ const Dashboard: FC = () => {
               ) : isInitialMostActiveReceiversApiSuccessed && mostActiveReceiversList.list.length > 0 ? (
                 <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
                   <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                    <Card sx={{ transform: 'translateY(370px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                    <Card sx={{ transform: 'translateY(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                       <CardContent
                         style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
                         id={receiversChartElIdRef.current}
@@ -667,7 +667,7 @@ const Dashboard: FC = () => {
               ) : isInitialMostActiveLocationsApiSuccessed && mostActiveLocationsList.list.length > 0 ? (
                 <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
                   <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                    <Card sx={{ transform: 'translateY(370px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                    <Card sx={{ transform: 'translateY(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                       <CardContent
                         style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
                         id={locationsChartElIdRef.current}
@@ -736,7 +736,7 @@ const Dashboard: FC = () => {
                   mostActiveUsersList.list.length > 0 && (
                     <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
                       <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                        <Box sx={{ transform: 'translateY(73px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                        <Box sx={{ transform: 'translateY(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                           <HorizonCarousel infinity height="53px" timer={4000}>
                             {mostActiveUsersList.list.map((item) => (
                               <Card key={item.user.id}>

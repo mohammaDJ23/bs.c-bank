@@ -50,7 +50,7 @@ const Details: FC<DetailsImporation> = ({ user }) => {
 
   return (
     <>
-      <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px">
+      <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px" overflow="hidden">
         <Box overflow="hidden" mb="15px">
           <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
             <Box
