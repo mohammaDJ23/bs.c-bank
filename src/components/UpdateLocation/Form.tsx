@@ -1,5 +1,5 @@
-import { getDynamicPath, Pathes, UpdateLocation, wait } from '../../lib';
-import { FC, useCallback, useEffect, useRef } from 'react';
+import { getDynamicPath, Pathes, UpdateLocation } from '../../lib';
+import { FC, useCallback, useEffect } from 'react';
 import { Box, TextField, Button } from '@mui/material';
 import Modal from '../shared/Modal';
 import { useAction, useForm, useRequest } from '../../hooks';
@@ -7,7 +7,7 @@ import { ModalNames } from '../../store';
 import { UpdateLocationApi } from '../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
-import { v4 as uuid } from 'uuid';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 interface FormImportation {
   formInstance: ReturnType<typeof useForm<UpdateLocation>>;
@@ -24,7 +24,6 @@ const Form: FC<FormImportation> = ({ formInstance: updateLocationFormInstance })
   const updateLocationApiExceptionMessage = request.getExceptionMessage(UpdateLocationApi);
   const updateLocationForm = updateLocationFormInstance.getForm();
   const snackbar = useSnackbar();
-  const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     updateLocationFormInstance.onSubmit(() => {
@@ -45,30 +44,10 @@ const Form: FC<FormImportation> = ({ formInstance: updateLocationFormInstance })
     }
   }, [isUpdateLocationApiFailed, isUpdateLocationApiSuccessed]);
 
-  useEffect(() => {
-    (async () => {
-      await wait(10);
-
-      let el = document.getElementById(formElIdRef.current);
-      if (el) {
-        for (const node of Array.from(el.childNodes)) {
-          // @ts-ignore
-          node.style.transition = 'opacity 0.1s, transform 0.2s';
-          // @ts-ignore
-          node.style.opacity = 1;
-          // @ts-ignore
-          node.style.transform = 'translateX(0)';
-
-          await wait();
-        }
-      }
-    })();
-  }, []);
-
   return (
     <>
       <Box
-        id={formElIdRef.current}
+        overflow="hidden"
         component="form"
         noValidate
         autoComplete="off"
@@ -80,46 +59,61 @@ const Form: FC<FormImportation> = ({ formInstance: updateLocationFormInstance })
           updateLocationFormInstance.confirmation();
         }}
       >
-        <TextField
-          sx={{ opacity: 0, transform: 'translateX(10px)' }}
-          label="Name"
-          variant="standard"
-          type="text"
-          value={updateLocationForm.name}
-          onChange={(event) => updateLocationFormInstance.onChange('name', event.target.value.toString())}
-          helperText={updateLocationFormInstance.getInputErrorMessage('name')}
-          error={updateLocationFormInstance.isInputInValid('name')}
-          disabled={isUpdateLocationApiProcessing}
-        />
-
-        <Box
-          sx={{ opacity: 0, transform: 'translateX(15px)' }}
-          component="div"
-          display="flex"
-          alignItems="center"
-          gap="10px"
-          marginTop="20px"
-        >
-          <Button
-            disabled={isUpdateLocationApiProcessing || !updateLocationFormInstance.isFormValid()}
-            variant="contained"
-            size="small"
-            type="submit"
-            sx={{ textTransform: 'capitalize' }}
-          >
-            Update
-          </Button>
-          <Button
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <TextField
+            sx={{
+              width: '100%',
+              opacity: '0',
+              transform: 'translateY(10px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+            }}
+            label="Name"
+            variant="standard"
+            type="text"
+            value={updateLocationForm.name}
+            onChange={(event) => updateLocationFormInstance.onChange('name', event.target.value.toString())}
+            helperText={updateLocationFormInstance.getInputErrorMessage('name')}
+            error={updateLocationFormInstance.isInputInValid('name')}
             disabled={isUpdateLocationApiProcessing}
-            variant="outlined"
-            size="small"
-            type="button"
-            sx={{ textTransform: 'capitalize' }}
-            onClick={() => updateLocationFormInstance.resetForm()}
+          />
+        </ResetStyleWithAnimation>
+
+        <ResetStyleWithAnimation sx={{ opacity: '1', transform: 'translateY(0)' }}>
+          <Box
+            sx={{
+              width: '100%',
+              opacity: '0',
+              transform: 'translateY(15px)',
+              transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              transitionDelay: '0.03s',
+            }}
+            component="div"
+            display="flex"
+            alignItems="center"
+            gap="10px"
+            marginTop="20px"
           >
-            Reset
-          </Button>
-        </Box>
+            <Button
+              disabled={isUpdateLocationApiProcessing || !updateLocationFormInstance.isFormValid()}
+              variant="contained"
+              size="small"
+              type="submit"
+              sx={{ textTransform: 'capitalize' }}
+            >
+              Update
+            </Button>
+            <Button
+              disabled={isUpdateLocationApiProcessing}
+              variant="outlined"
+              size="small"
+              type="button"
+              sx={{ textTransform: 'capitalize' }}
+              onClick={() => updateLocationFormInstance.resetForm()}
+            >
+              Reset
+            </Button>
+          </Box>
+        </ResetStyleWithAnimation>
       </Box>
       <Modal
         isLoading={isUpdateLocationApiProcessing}
