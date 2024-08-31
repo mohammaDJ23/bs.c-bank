@@ -9,6 +9,7 @@ import { DeleteUserApi, DeleteUserByOwnerApi, DownloadBillReportApi } from '../.
 import { UserWithBillInfo, Pathes, getDynamicPath, LocalStorage } from '../../lib';
 import { ModalNames, UsersStatusType } from '../../store';
 import { useSnackbar } from 'notistack';
+import ResetStyleWithAnimation from '../shared/ResetStyleWithAnimation';
 
 interface DetailsImporation {
   user: UserWithBillInfo;
@@ -183,158 +184,343 @@ const Details: FC<DetailsImporation> = ({ user }) => {
 
   return (
     <>
-      <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px">
-        <Box width="100%" mb="20px" display="flex" gap="8px" justifyContent="space-between" alignItems="center">
-          <Box component={'div'} display="flex" alignItems="center" justifyContent="start" gap="10px" flexWrap="wrap">
-            {isCurrentOwner && (
+      <Box width="100%" display="flex" flexDirection="column" alignItems="start" gap="8px" overflow="hidden">
+        <Box overflow="hidden" mb="20px" width="100%">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Box
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+              }}
+              width="100%"
+              display="flex"
+              gap="8px"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <Box
-                sx={{
-                  flex: 'unset',
-                  width: '10px',
-                  height: '10px',
-                  backgroundColor: auth.getUserStatusColor(user.id),
-                  borderRadius: '50%',
-                }}
-                component={'span'}
-              ></Box>
-            )}
-            <Typography component={'p'} fontSize="14px" fontWeight={'bold'}>
-              {user.firstName} {user.lastName}
-            </Typography>
-          </Box>
-          {options.length > 0 && (
-            <>
-              <IconButton onClick={onMenuOpen}>
-                <MoreVert />
-              </IconButton>
-              <Menu anchorEl={anchorEl} open={open} onClick={onMenuClose}>
-                {options.map((option) => (
-                  <MenuItem key={option.path} onClick={onMenuClick(option)}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Menu>
-            </>
-          )}
+                component={'div'}
+                display="flex"
+                alignItems="center"
+                justifyContent="start"
+                gap="10px"
+                flexWrap="wrap"
+              >
+                {isCurrentOwner && (
+                  <Box
+                    sx={{
+                      flex: 'unset',
+                      width: '10px',
+                      height: '10px',
+                      backgroundColor: auth.getUserStatusColor(user.id),
+                      borderRadius: '50%',
+                    }}
+                    component={'span'}
+                  ></Box>
+                )}
+                <Typography component={'p'} fontSize="14px" fontWeight={'bold'}>
+                  {user.firstName} {user.lastName}
+                </Typography>
+              </Box>
+              {options.length > 0 && (
+                <>
+                  <IconButton onClick={onMenuOpen}>
+                    <MoreVert />
+                  </IconButton>
+                  <Menu anchorEl={anchorEl} open={open} onClick={onMenuClose}>
+                    {options.map((option) => (
+                      <MenuItem key={option.path} onClick={onMenuClick(option)}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </>
+              )}
+            </Box>
+          </ResetStyleWithAnimation>
         </Box>
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Email:
-          </Typography>{' '}
-          {user.email}
-        </Typography>
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Phone:
-          </Typography>{' '}
-          {user.phone}
-        </Typography>
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Role:
-          </Typography>{' '}
-          {user.role}
-        </Typography>
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Created by:
-          </Typography>{' '}
-          {user.parent.firstName} {user.parent.lastName} ({user.parent.role}){' '}
-          {user.parent.deletedAt && `was deleted at ${moment(user.parent.deletedAt).format('LLLL')}`}
-        </Typography>
+
+        <Box overflow="hidden">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Typography
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.02s',
+              }}
+              component={'p'}
+              fontSize="12px"
+              color="rgba(0, 0, 0, 0.6)"
+            >
+              <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                Email:
+              </Typography>{' '}
+              {user.email}
+            </Typography>
+          </ResetStyleWithAnimation>
+        </Box>
+
+        <Box overflow="hidden">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Typography
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.04s',
+              }}
+              component={'p'}
+              fontSize="12px"
+              color="rgba(0, 0, 0, 0.6)"
+            >
+              <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                Phone:
+              </Typography>{' '}
+              {user.phone}
+            </Typography>
+          </ResetStyleWithAnimation>
+        </Box>
+
+        <Box overflow="hidden">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Typography
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.06s',
+              }}
+              component={'p'}
+              fontSize="12px"
+              color="rgba(0, 0, 0, 0.6)"
+            >
+              <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                Role:
+              </Typography>{' '}
+              {user.role}
+            </Typography>
+          </ResetStyleWithAnimation>
+        </Box>
+
+        <Box overflow="hidden">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Typography
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.08s',
+              }}
+              component={'p'}
+              fontSize="12px"
+              color="rgba(0, 0, 0, 0.6)"
+            >
+              <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                Created by:
+              </Typography>{' '}
+              {user.parent.firstName} {user.parent.lastName} ({user.parent.role}){' '}
+              {user.parent.deletedAt && `was deleted at ${moment(user.parent.deletedAt).format('LLLL')}`}
+            </Typography>
+          </ResetStyleWithAnimation>
+        </Box>
+
         {isCurrentOwner && (
-          <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-              Total created users:
-            </Typography>{' '}
-            {user.users.quantities}
-          </Typography>
+          <Box overflow="hidden">
+            <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+              <Typography
+                sx={{
+                  transform: 'translateY(100%)',
+                  transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                  transitionDelay: '0.1s',
+                }}
+                component={'p'}
+                fontSize="12px"
+                color="rgba(0, 0, 0, 0.6)"
+              >
+                <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                  Total created users:
+                </Typography>{' '}
+                {user.users.quantities}
+              </Typography>
+            </ResetStyleWithAnimation>
+          </Box>
         )}
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Total bill quantities:
-          </Typography>{' '}
-          {user.bill.counts}
-        </Typography>
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Total bill amounts:
-          </Typography>{' '}
-          {user.bill.amounts}
-        </Typography>
+        <Box overflow="hidden">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Typography
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.12s',
+              }}
+              component={'p'}
+              fontSize="12px"
+              color="rgba(0, 0, 0, 0.6)"
+            >
+              <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                Total bill quantities:
+              </Typography>{' '}
+              {user.bill.counts}
+            </Typography>
+          </ResetStyleWithAnimation>
+        </Box>
+
+        <Box overflow="hidden">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Typography
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.14s',
+              }}
+              component={'p'}
+              fontSize="12px"
+              color="rgba(0, 0, 0, 0.6)"
+            >
+              <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                Total bill amounts:
+              </Typography>{' '}
+              {user.bill.amounts}
+            </Typography>
+          </ResetStyleWithAnimation>
+        </Box>
+
         {isCurrentOwner &&
           (() => {
             const userLastConnection = auth.getUserLastConnection(user.id);
             if (userLastConnection) {
               return (
-                <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-                  <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-                    Last connection:
-                  </Typography>{' '}
-                  {moment(userLastConnection).format('LLLL')}
-                </Typography>
+                <Box overflow="hidden">
+                  <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                    <Typography
+                      sx={{
+                        transform: 'translateY(100%)',
+                        transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                        transitionDelay: '0.16s',
+                      }}
+                      component={'p'}
+                      fontSize="12px"
+                      color="rgba(0, 0, 0, 0.6)"
+                    >
+                      <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                        Last connection:
+                      </Typography>{' '}
+                      {moment(userLastConnection).format('LLLL')}
+                    </Typography>
+                  </ResetStyleWithAnimation>
+                </Box>
               );
             }
             return <></>;
           })()}
-        <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-          <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-            Created at:
-          </Typography>{' '}
-          {moment(user.createdAt).format('LLLL')}
-        </Typography>
-        {new Date(user.updatedAt) > new Date(user.createdAt) && (
-          <Typography component={'p'} fontSize="12px" color="rgba(0, 0, 0, 0.6)">
-            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-              Last update:
-            </Typography>{' '}
-            {moment(user.updatedAt).format('LLLL')}
-          </Typography>
-        )}
-        {hasRoleAuthorized && (
-          <Box display="flex" alignItems="center" gap="8px">
-            <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
-              The bill report:
+        <Box overflow="hidden">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Typography
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.18s',
+              }}
+              component={'p'}
+              fontSize="12px"
+              color="rgba(0, 0, 0, 0.6)"
+            >
+              <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                Created at:
+              </Typography>{' '}
+              {moment(user.createdAt).format('LLLL')}
             </Typography>
-            <Box display="flex" alignItems="center" gap="10px">
+          </ResetStyleWithAnimation>
+        </Box>
+
+        {new Date(user.updatedAt) > new Date(user.createdAt) && (
+          <Box overflow="hidden">
+            <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
               <Typography
+                sx={{
+                  transform: 'translateY(100%)',
+                  transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                  transitionDelay: '0.2s',
+                }}
+                component={'p'}
                 fontSize="12px"
-                color="#20a0ff"
-                component="span"
-                sx={{ cursor: 'pointer' }}
-                onClick={downloadBillReport}
+                color="rgba(0, 0, 0, 0.6)"
               >
-                download
+                <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                  Last update:
+                </Typography>{' '}
+                {moment(user.updatedAt).format('LLLL')}
               </Typography>
-              {isDownloadBillReportApiProcessing && <CircularProgress size={10} />}
-            </Box>
+            </ResetStyleWithAnimation>
           </Box>
         )}
-        <Box mt="30px" display={'flex'} alignItems={'center'} gap={'10px'}>
-          {hasRoleAuthorized && (
-            <Button
-              disabled={isDeleteUserApiProcessing || isDeleteUserByOwnerApiProcessing}
-              onClick={onDeleteAccount}
-              variant="contained"
-              color="error"
-              size="small"
-              sx={{ textTransform: 'capitalize' }}
+        {hasRoleAuthorized && (
+          <Box overflow="hidden">
+            <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+              <Box
+                sx={{
+                  transform: 'translateY(100%)',
+                  transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                  transitionDelay: '0.22s',
+                }}
+                display="flex"
+                alignItems="center"
+                gap="8px"
+              >
+                <Typography component={'span'} fontSize="12px" fontWeight={'bold'} color={'black'}>
+                  The bill report:
+                </Typography>
+                <Box display="flex" alignItems="center" gap="10px">
+                  <Typography
+                    fontSize="12px"
+                    color="#20a0ff"
+                    component="span"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={downloadBillReport}
+                  >
+                    download
+                  </Typography>
+                  {isDownloadBillReportApiProcessing && <CircularProgress size={10} />}
+                </Box>
+              </Box>
+            </ResetStyleWithAnimation>
+          </Box>
+        )}
+        <Box overflow="hidden" mt="30px">
+          <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+            <Box
+              sx={{
+                transform: 'translateY(100%)',
+                transition: 'cubic-bezier(.41,.55,.03,.96) 1s',
+                transitionDelay: '0.24s',
+              }}
+              display={'flex'}
+              alignItems={'center'}
+              gap={'10px'}
             >
-              Delete the account
-            </Button>
-          )}
-          {hasCreatedByOwnerRoleAuthorized && isUserOnline && (
-            <Button
-              disabled={isDeleteUserApiProcessing || isDeleteUserByOwnerApiProcessing}
-              onClick={onLogoutUser}
-              variant="outlined"
-              color="primary"
-              size="small"
-              sx={{ textTransform: 'capitalize' }}
-            >
-              Logout the user
-            </Button>
-          )}
+              {hasRoleAuthorized && (
+                <Button
+                  disabled={isDeleteUserApiProcessing || isDeleteUserByOwnerApiProcessing}
+                  onClick={onDeleteAccount}
+                  variant="contained"
+                  color="error"
+                  size="small"
+                  sx={{ textTransform: 'capitalize' }}
+                >
+                  Delete the account
+                </Button>
+              )}
+              {hasCreatedByOwnerRoleAuthorized && isUserOnline && (
+                <Button
+                  disabled={isDeleteUserApiProcessing || isDeleteUserByOwnerApiProcessing}
+                  onClick={onLogoutUser}
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  sx={{ textTransform: 'capitalize' }}
+                >
+                  Logout the user
+                </Button>
+              )}
+            </Box>
+          </ResetStyleWithAnimation>
         </Box>
       </Box>
 
