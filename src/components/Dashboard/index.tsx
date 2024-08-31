@@ -796,8 +796,8 @@ const Dashboard: FC = () => {
                 isInitialBillQuantitiesApiSuccessed &&
                 selectors.specificDetails.billquantities && (
                   <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                    <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                      <Card sx={{ transform: 'translateY(116px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                    <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                      <Card sx={{ transform: 'translateX(-100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                         <CardContent>
                           <Box display="flex" gap="20px" flexDirection="column">
                             <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -856,8 +856,8 @@ const Dashboard: FC = () => {
                 isInitialDeletedBillQuantitiesApiSuccessed &&
                 selectors.specificDetails.deletedBillQuantities && (
                   <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                    <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                      <Card sx={{ transform: 'translateY(116px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                    <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                      <Card sx={{ transform: 'translateX(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                         <CardContent>
                           <Box display="flex" gap="20px" flexDirection="column">
                             <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -919,8 +919,8 @@ const Dashboard: FC = () => {
                   isInitialAllBillQuantitiesApiSuccessed &&
                   selectors.specificDetails.allBillQuantities && (
                     <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                      <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                        <Card sx={{ transform: 'translateY(116px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                      <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                        <Card sx={{ transform: 'translateX(-100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                           <CardContent>
                             <Box display="flex" gap="20px" flexDirection="column">
                               <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -978,8 +978,8 @@ const Dashboard: FC = () => {
                   isInitialAllDeletedBillQuantitiesApiSuccessed &&
                   selectors.specificDetails.allDeletedBillQuantities && (
                     <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                      <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                        <Card sx={{ transform: 'translateY(116px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                      <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                        <Card sx={{ transform: 'translateX(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                           <CardContent>
                             <Box display="flex" gap="20px" flexDirection="column">
                               <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -1043,8 +1043,8 @@ const Dashboard: FC = () => {
                     isInitialUserQuantitiesApiSuccessed &&
                     selectors.specificDetails.userQuantities && (
                       <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                        <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                          <Card sx={{ transform: 'translateY(198px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                        <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                          <Card sx={{ transform: 'translateX(-100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                             <CardContent>
                               <Box display="flex" gap="20px" flexDirection="column">
                                 <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -1120,8 +1120,8 @@ const Dashboard: FC = () => {
                     isInitialDeletedUserQuantitiesApiSuccessed &&
                     selectors.specificDetails.deletedUserQuantities && (
                       <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                        <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                          <Card sx={{ transform: 'translateY(198px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                        <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                          <Card sx={{ transform: 'translateX(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                             <CardContent>
                               <Box display="flex" gap="20px" flexDirection="column">
                                 <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -1202,8 +1202,8 @@ const Dashboard: FC = () => {
                     isInitialNotificationQuantitiesApiSuccessed &&
                     selectors.specificDetails.notificationQuantities && (
                       <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                        <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                          <Card sx={{ transform: 'translateY(73px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                        <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                          <Card sx={{ transform: 'translateX(-100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                             <CardContent>
                               <Box display="flex" gap="20px" flexDirection="column">
                                 <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
@@ -1255,8 +1255,8 @@ const Dashboard: FC = () => {
                     isInitialAllNotificationQuantitiesApiSuccessed &&
                     selectors.specificDetails.allNotificationQuantities && (
                       <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                        <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                          <Card sx={{ transform: 'translateY(73px)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                        <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                          <Card sx={{ transform: 'translateX(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                             <CardContent>
                               <Box display="flex" gap="20px" flexDirection="column">
                                 <Box display="flex" alignItems="center" justifyContent="space-between" gap="30px">
