@@ -8,15 +8,13 @@ import {
   Pathes,
   ReceiverListFilters,
   UpdateBill,
-  wait,
 } from '../../lib';
-import { v4 as uuid } from 'uuid';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Box, TextField, Button, Autocomplete, CircularProgress } from '@mui/material';
 import Modal from '../shared/Modal';
 import { useAction, useForm, useRequest, useSelector } from '../../hooks';
 import { ModalNames } from '../../store';
-import { ConsumerApi, ConsumersApi, LocationsApi, ReceiversApi, UpdateBillApi } from '../../apis';
+import { ConsumersApi, LocationsApi, ReceiversApi, UpdateBillApi } from '../../apis';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { selectConsumersList, selectLocationsList, selectReceiversList } from '../../store/selectors';
@@ -66,7 +64,6 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
   const oneQuarterDebounce = useRef(debounce(250));
   const updateBillForm = updateBillFormInstance.getForm();
   const snackbar = useSnackbar();
-  const formElIdRef = useRef(uuid());
 
   const formSubmition = useCallback(() => {
     updateBillFormInstance.onSubmit(() => {
@@ -186,28 +183,9 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
     }
   }, [consumersList, consumerListFiltersForm, updateBillForm, isConsumersApiSuccessed, isConsumersApiFailed]);
 
-  useEffect(() => {
-    (async () => {
-      let el = document.getElementById(formElIdRef.current);
-      if (el) {
-        for (const node of Array.from(el.childNodes)) {
-          // @ts-ignore
-          node.style.transition = 'opacity 0.1s, transform 0.2s';
-          // @ts-ignore
-          node.style.opacity = 1;
-          // @ts-ignore
-          node.style.transform = 'translateX(0)';
-
-          await wait();
-        }
-      }
-    })();
-  }, []);
-
   return (
     <>
       <Box
-        id={formElIdRef.current}
         overflow="hidden"
         component="form"
         noValidate
