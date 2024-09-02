@@ -47,7 +47,7 @@ const List: FC = () => {
       actions.getLocations({
         page,
         take: locationsList.take,
-        filters: { q: locationListFiltersForm.q },
+        filters: { q: locationListFiltersForm.q.trim() },
       });
     },
     [isLocationsApiProcessing, locationsList, locationListFiltersForm]
@@ -58,7 +58,7 @@ const List: FC = () => {
       actions.getLocations({
         page: 1,
         take: locationsList.take,
-        filters: { q: locationListFiltersForm.q },
+        filters: { q: locationListFiltersForm.q.trim() },
       });
     });
   }, [locationListFiltersFormInstance, locationListFiltersForm, locationsList]);
@@ -118,7 +118,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={locationListFiltersForm.q}
-            onChange={(event) => locationListFiltersFormInstance.onChange('q', event.target.value.trim())}
+            onChange={(event) => locationListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={locationListFiltersFormInstance.getInputErrorMessage('q')}
             error={locationListFiltersFormInstance.isInputInValid('q')}
             name="q"

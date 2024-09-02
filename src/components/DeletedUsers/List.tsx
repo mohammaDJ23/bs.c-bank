@@ -48,7 +48,7 @@ const List: FC = () => {
         page,
         take: deletedUsersList.take,
         filters: {
-          q: deletedUserListFiltersForm.q,
+          q: deletedUserListFiltersForm.q.trim(),
           roles: deletedUserListFiltersForm.roles,
           fromDate: deletedUserListFiltersForm.fromDate,
           toDate: deletedUserListFiltersForm.toDate,
@@ -65,7 +65,7 @@ const List: FC = () => {
         page: 1,
         take: deletedUsersList.take,
         filters: {
-          q: deletedUserListFiltersForm.q,
+          q: deletedUserListFiltersForm.q.trim(),
           roles: deletedUserListFiltersForm.roles,
           fromDate: deletedUserListFiltersForm.fromDate,
           toDate: deletedUserListFiltersForm.toDate,
@@ -129,7 +129,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={deletedUserListFiltersForm.q}
-            onChange={(event) => deletedUserListFiltersFormInstance.onChange('q', event.target.value.trim())}
+            onChange={(event) => deletedUserListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={deletedUserListFiltersFormInstance.getInputErrorMessage('q')}
             error={deletedUserListFiltersFormInstance.isInputInValid('q')}
             name="q"
