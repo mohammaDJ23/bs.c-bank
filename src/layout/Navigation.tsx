@@ -283,7 +283,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         >
           {isUserAuthenticated && (
             <Box mr="20px" overflow="hidden" flexShrink={0}>
-              <ResetStyleWithAnimation sx={{ transform: 'translateX(8px)' }}>
+              <ResetStyleWithAnimation sx={{ transform: 'translateX(12px)' }}>
                 <IconButton
                   color="inherit"
                   aria-label="open drawer"
@@ -357,7 +357,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
           open={isDrawerOpened}
           onClose={() => setIsDrawerOpened(false)}
         >
-          <Box sx={{ width: 250, overflow: 'hidden' }} role="presentation">
+          <Box sx={{ width: 250 }} role="presentation">
             <DrawerHeader>
               <CloseIcon onClick={() => setIsDrawerOpened(false)} />
             </DrawerHeader>

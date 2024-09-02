@@ -7,6 +7,7 @@ import { Typography } from '@mui/material';
 import { ModalNames } from '../../store';
 import { DeletedBillsApi } from '../../apis';
 import { selectDeletedBillsList } from '../../store/selectors';
+import { wait } from '../../lib';
 
 const DeletedBillListContent: FC = () => {
   const actions = useAction();
@@ -16,7 +17,18 @@ const DeletedBillListContent: FC = () => {
   const deletedBillsList = selectDeletedBillsList(selectors);
 
   const menuOptions = [
-    <Typography onClick={() => actions.showModal(ModalNames.DELETED_BILL_FILTERS)}>Filters</Typography>,
+    <Typography
+      onClick={async () => {
+        actions.showModal(ModalNames.DELETED_BILL_FILTERS);
+        await wait();
+        const searchEl = document.getElementById('_bank-service-deleted-bill-filters-form-search');
+        if (searchEl) {
+          searchEl.focus();
+        }
+      }}
+    >
+      Filters
+    </Typography>,
   ];
 
   return (

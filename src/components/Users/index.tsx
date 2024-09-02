@@ -1,5 +1,5 @@
 import ListContainer from '../../layout/ListContainer';
-import { getDynamicPath, Pathes } from '../../lib';
+import { getDynamicPath, Pathes, wait } from '../../lib';
 import List from './List';
 import { FC } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
@@ -24,7 +24,20 @@ const UsersContent: FC = () => {
     return <Navigate to={getDynamicPath(Pathes.USER, { id: previousUserId })} />;
   }
 
-  const menuOptions = [<Typography onClick={() => actions.showModal(ModalNames.USER_FILTERS)}>Filters</Typography>];
+  const menuOptions = [
+    <Typography
+      onClick={async () => {
+        actions.showModal(ModalNames.USER_FILTERS);
+        await wait();
+        const searchEl = document.getElementById('_bank-service-user-filters-form-search');
+        if (searchEl) {
+          searchEl.focus();
+        }
+      }}
+    >
+      Filters
+    </Typography>,
+  ];
 
   return (
     <Navigation title={`Users ${!isInitialUsersApiProcessing ? `(${usersList.total})` : ''}`} menuOptions={menuOptions}>

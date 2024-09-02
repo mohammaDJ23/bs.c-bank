@@ -6,6 +6,7 @@ import { ModalNames } from '../../store';
 import { ConsumersApi } from '../../apis';
 import List from './List';
 import { selectConsumersList } from '../../store/selectors';
+import { wait } from '../../lib';
 
 const ConsumersContent = () => {
   const actions = useAction();
@@ -14,7 +15,20 @@ const ConsumersContent = () => {
   const isInitialConsumersApiProcessing = request.isInitialApiProcessing(ConsumersApi);
   const consumersList = selectConsumersList(selectors);
 
-  const menuOptions = [<Typography onClick={() => actions.showModal(ModalNames.CONSUMER_FILTERS)}>Filters</Typography>];
+  const menuOptions = [
+    <Typography
+      onClick={async () => {
+        actions.showModal(ModalNames.CONSUMER_FILTERS);
+        await wait();
+        const searchEl = document.getElementById('_bank-service-consumer-filters-form-search');
+        if (searchEl) {
+          searchEl.focus();
+        }
+      }}
+    >
+      Filters
+    </Typography>,
+  ];
 
   return (
     <Navigation
