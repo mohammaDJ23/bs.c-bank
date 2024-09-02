@@ -357,7 +357,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
           open={isDrawerOpened}
           onClose={() => setIsDrawerOpened(false)}
         >
-          <Box sx={{ width: 250, overflow: 'hidden' }} role="presentation">
+          <Box sx={{ width: 250 }} role="presentation">
             <DrawerHeader>
               <CloseIcon onClick={() => setIsDrawerOpened(false)} />
             </DrawerHeader>
