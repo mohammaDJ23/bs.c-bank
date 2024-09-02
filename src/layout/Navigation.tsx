@@ -283,7 +283,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         >
           {isUserAuthenticated && (
             <Box mr="20px" overflow="hidden" flexShrink={0}>
-              <ResetStyleWithAnimation sx={{ transform: 'translateX(8px)' }}>
+              <ResetStyleWithAnimation sx={{ transform: 'translateX(12px)' }}>
                 <IconButton
                   color="inherit"
                   aria-label="open drawer"
