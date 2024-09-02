@@ -1,12 +1,15 @@
 import {
   ConsumerListFilters,
+  Consumers,
   debounce,
   getDynamicPath,
   getTime,
   isoDate,
   LocationListFilters,
+  Locations,
   Pathes,
   ReceiverListFilters,
+  Receivers,
   UpdateBill,
   wait,
 } from '../../lib';
@@ -234,6 +237,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
               open={isReceiverAutocompleteOpen}
               onBlur={() => {
                 setReceivers([]);
+                actions.createNewList(new Receivers());
                 setIsReceiverAutocompleteOpen(false);
               }}
               value={updateBillForm.receiver}
@@ -299,6 +303,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
               open={isLocationAutocompleteOpen}
               onBlur={() => {
                 setLocations([]);
+                actions.createNewList(new Locations());
                 setIsLocationAutocompleteOpen(false);
               }}
               value={updateBillForm.location}
@@ -366,6 +371,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
               open={isConsumerAutocompleteOpen}
               onBlur={() => {
                 setConsumers([]);
+                actions.createNewList(new Consumers());
                 setIsConsumerAutocompleteOpen(false);
               }}
               value={updateBillForm.consumers}
