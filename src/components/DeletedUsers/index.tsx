@@ -7,6 +7,7 @@ import { useAction, useRequest, useSelector } from '../../hooks';
 import { ModalNames } from '../../store';
 import { DeletedUsersApi } from '../../apis';
 import { selectDeletedUsersList } from '../../store/selectors';
+import { wait } from '../../lib';
 
 const UsersContent: FC = () => {
   const actions = useAction();
@@ -16,7 +17,18 @@ const UsersContent: FC = () => {
   const deletedUsersList = selectDeletedUsersList(selectors);
 
   const menuOptions = [
-    <Typography onClick={() => actions.showModal(ModalNames.DELETED_USER_FILTERS)}>Filters</Typography>,
+    <Typography
+      onClick={async () => {
+        actions.showModal(ModalNames.DELETED_USER_FILTERS);
+        await wait();
+        const searchEl = document.getElementById('_bank-service-deleted-user-filters-form-search');
+        if (searchEl) {
+          searchEl.focus();
+        }
+      }}
+    >
+      Filters
+    </Typography>,
   ];
 
   return (
