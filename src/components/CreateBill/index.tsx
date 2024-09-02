@@ -9,6 +9,9 @@ import {
   isoDate,
   LocationListFilters,
   wait,
+  Receivers,
+  Locations,
+  Consumers,
 } from '../../lib';
 import { useForm, useRequest, useFocus, useSelector, useAction } from '../../hooks';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
@@ -208,6 +211,7 @@ const CreateBillContent: FC = () => {
                 open={isReceiverAutocompleteOpen}
                 onBlur={() => {
                   setReceivers([]);
+                  actions.createNewList(new Receivers());
                   setIsReceiverAutocompleteOpen(false);
                 }}
                 value={createBillFrom.receiver}
@@ -272,6 +276,7 @@ const CreateBillContent: FC = () => {
                 open={isLocationAutocompleteOpen}
                 onBlur={() => {
                   setLocations([]);
+                  actions.createNewList(new Locations());
                   setIsLocationAutocompleteOpen(false);
                 }}
                 value={createBillFrom.location}
@@ -337,6 +342,7 @@ const CreateBillContent: FC = () => {
                 open={isConsumerAutocompleteOpen}
                 onBlur={() => {
                   setConsumers([]);
+                  actions.createNewList(new Consumers());
                   setIsConsumerAutocompleteOpen(false);
                 }}
                 value={createBillFrom.consumers}
