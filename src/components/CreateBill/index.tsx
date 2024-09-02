@@ -8,6 +8,10 @@ import {
   getTime,
   isoDate,
   LocationListFilters,
+  wait,
+  Receivers,
+  Locations,
+  Consumers,
 } from '../../lib';
 import { useForm, useRequest, useFocus, useSelector, useAction } from '../../hooks';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
@@ -48,6 +52,7 @@ const CreateBillContent: FC = () => {
   const locationsList = selectLocationsList(selectors);
   const snackbar = useSnackbar();
   const oneQuarterDebounce = useRef(debounce(250));
+  const consumerAutoCompleteInputRef = useRef<HTMLInputElement | null>(null);
 
   const formSubmition = useCallback(() => {
     createBillFromInstance.onSubmit(() => {
@@ -206,6 +211,7 @@ const CreateBillContent: FC = () => {
                 open={isReceiverAutocompleteOpen}
                 onBlur={() => {
                   setReceivers([]);
+                  actions.createNewList(new Receivers());
                   setIsReceiverAutocompleteOpen(false);
                 }}
                 value={createBillFrom.receiver}
@@ -270,6 +276,7 @@ const CreateBillContent: FC = () => {
                 open={isLocationAutocompleteOpen}
                 onBlur={() => {
                   setLocations([]);
+                  actions.createNewList(new Locations());
                   setIsLocationAutocompleteOpen(false);
                 }}
                 value={createBillFrom.location}
@@ -335,13 +342,18 @@ const CreateBillContent: FC = () => {
                 open={isConsumerAutocompleteOpen}
                 onBlur={() => {
                   setConsumers([]);
+                  actions.createNewList(new Consumers());
                   setIsConsumerAutocompleteOpen(false);
                 }}
                 value={createBillFrom.consumers}
-                onChange={(event, value) => {
+                onChange={async (event, value) => {
                   createBillFromInstance.onChange('consumers', value);
                   setConsumers([]);
                   setIsConsumerAutocompleteOpen(false);
+                  if (consumerAutoCompleteInputRef.current) {
+                    await wait();
+                    consumerAutoCompleteInputRef.current.focus();
+                  }
                 }}
                 disabled={isCreateBillApiProcessing}
                 options={consumers}
@@ -354,6 +366,7 @@ const CreateBillContent: FC = () => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
+                    inputRef={consumerAutoCompleteInputRef}
                     sx={{}}
                     onFocus={() => {
                       setConsumers([]);

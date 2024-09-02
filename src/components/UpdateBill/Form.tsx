@@ -1,13 +1,17 @@
 import {
   ConsumerListFilters,
+  Consumers,
   debounce,
   getDynamicPath,
   getTime,
   isoDate,
   LocationListFilters,
+  Locations,
   Pathes,
   ReceiverListFilters,
+  Receivers,
   UpdateBill,
+  wait,
 } from '../../lib';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Box, TextField, Button, Autocomplete, CircularProgress } from '@mui/material';
@@ -64,6 +68,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
   const oneQuarterDebounce = useRef(debounce(250));
   const updateBillForm = updateBillFormInstance.getForm();
   const snackbar = useSnackbar();
+  const consumerAutoCompleteInputRef = useRef<HTMLInputElement | null>(null);
 
   const formSubmition = useCallback(() => {
     updateBillFormInstance.onSubmit(() => {
@@ -232,6 +237,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
               open={isReceiverAutocompleteOpen}
               onBlur={() => {
                 setReceivers([]);
+                actions.createNewList(new Receivers());
                 setIsReceiverAutocompleteOpen(false);
               }}
               value={updateBillForm.receiver}
@@ -297,6 +303,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
               open={isLocationAutocompleteOpen}
               onBlur={() => {
                 setLocations([]);
+                actions.createNewList(new Locations());
                 setIsLocationAutocompleteOpen(false);
               }}
               value={updateBillForm.location}
@@ -364,13 +371,18 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
               open={isConsumerAutocompleteOpen}
               onBlur={() => {
                 setConsumers([]);
+                actions.createNewList(new Consumers());
                 setIsConsumerAutocompleteOpen(false);
               }}
               value={updateBillForm.consumers}
-              onChange={(event, value) => {
+              onChange={async (event, value) => {
                 updateBillFormInstance.onChange('consumers', value);
                 setConsumers([]);
                 setIsConsumerAutocompleteOpen(false);
+                if (consumerAutoCompleteInputRef.current) {
+                  await wait();
+                  consumerAutoCompleteInputRef.current.focus();
+                }
               }}
               disabled={isUpdateBillApiProcessing}
               options={consumers}
@@ -383,6 +395,7 @@ const Form: FC<FormImportation> = ({ formInstance: updateBillFormInstance }) => 
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  inputRef={consumerAutoCompleteInputRef}
                   sx={{}}
                   onFocus={() => {
                     setConsumers([]);

@@ -6,6 +6,7 @@ import { ModalNames } from '../../store';
 import { LocationsApi } from '../../apis';
 import List from './List';
 import { selectLocationsList } from '../../store/selectors';
+import { wait } from '../../lib';
 
 const LocationsContent = () => {
   const actions = useAction();
@@ -14,7 +15,20 @@ const LocationsContent = () => {
   const isInitialLocationsApiProcessing = request.isInitialApiProcessing(LocationsApi);
   const locationsList = selectLocationsList(selectors);
 
-  const menuOptions = [<Typography onClick={() => actions.showModal(ModalNames.LOCATION_FILTERS)}>Filters</Typography>];
+  const menuOptions = [
+    <Typography
+      onClick={async () => {
+        actions.showModal(ModalNames.LOCATION_FILTERS);
+        await wait();
+        const searchEl = document.getElementById('_bank-service-location-filters-form-search');
+        if (searchEl) {
+          searchEl.focus();
+        }
+      }}
+    >
+      Filters
+    </Typography>,
+  ];
 
   return (
     <Navigation

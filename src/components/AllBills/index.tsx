@@ -7,6 +7,7 @@ import Navigation from '../../layout/Navigation';
 import { Typography } from '@mui/material';
 import { ModalNames } from '../../store';
 import { selectAllBillsList } from '../../store/selectors';
+import { wait } from '../../lib';
 
 const AllBillsContent: FC = () => {
   const selectors = useSelector();
@@ -15,7 +16,20 @@ const AllBillsContent: FC = () => {
   const isInitialAllBillsApiProcessing = request.isInitialApiProcessing(AllBillsApi);
   const allBillsList = selectAllBillsList(selectors);
 
-  const menuOptions = [<Typography onClick={() => actions.showModal(ModalNames.ALL_BILL_FILTERS)}>Filters</Typography>];
+  const menuOptions = [
+    <Typography
+      onClick={async () => {
+        actions.showModal(ModalNames.ALL_BILL_FILTERS);
+        await wait();
+        const searchEl = document.getElementById('_bank-service-all-bill-filters-form-search');
+        if (searchEl) {
+          searchEl.focus();
+        }
+      }}
+    >
+      Filters
+    </Typography>,
+  ];
 
   return (
     <Navigation
