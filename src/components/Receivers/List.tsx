@@ -47,7 +47,7 @@ const List: FC = () => {
       actions.getReceivers({
         page,
         take: receiversList.take,
-        filters: { q: receiverListFiltersForm.q },
+        filters: { q: receiverListFiltersForm.q.trim() },
       });
     },
     [isReceiversApiProcessing, receiverListFiltersForm, receiversList]
@@ -58,7 +58,7 @@ const List: FC = () => {
       actions.getReceivers({
         page: 1,
         take: receiversList.take,
-        filters: { q: receiverListFiltersForm.q },
+        filters: { q: receiverListFiltersForm.q.trim() },
       });
     });
   }, [receiverListFiltersFormInstance, receiverListFiltersForm, receiversList]);
@@ -117,7 +117,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={receiverListFiltersForm.q}
-            onChange={(event) => receiverListFiltersFormInstance.onChange('q', event.target.value.trim())}
+            onChange={(event) => receiverListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={receiverListFiltersFormInstance.getInputErrorMessage('q')}
             error={receiverListFiltersFormInstance.isInputInValid('q')}
             name="q"

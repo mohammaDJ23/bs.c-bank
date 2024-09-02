@@ -48,7 +48,7 @@ const List: FC = () => {
         page,
         take: notificationsList.take,
         filters: {
-          q: notificationListFiltersForm.q,
+          q: notificationListFiltersForm.q.trim(),
           roles: notificationListFiltersForm.roles,
           fromDate: notificationListFiltersForm.fromDate,
           toDate: notificationListFiltersForm.toDate,
@@ -64,7 +64,7 @@ const List: FC = () => {
         page: 1,
         take: notificationsList.take,
         filters: {
-          q: notificationListFiltersForm.q,
+          q: notificationListFiltersForm.q.trim(),
           roles: notificationListFiltersForm.roles,
           fromDate: notificationListFiltersForm.fromDate,
           toDate: notificationListFiltersForm.toDate,
@@ -127,7 +127,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={notificationListFiltersForm.q}
-            onChange={(event) => notificationListFiltersFormInstance.onChange('q', event.target.value.trim())}
+            onChange={(event) => notificationListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={notificationListFiltersFormInstance.getInputErrorMessage('q')}
             error={notificationListFiltersFormInstance.isInputInValid('q')}
             name="q"

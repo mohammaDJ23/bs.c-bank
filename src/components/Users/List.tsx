@@ -80,7 +80,7 @@ const List: FC = () => {
         page,
         take: usersList.take,
         filters: {
-          q: userListFiltersForm.q,
+          q: userListFiltersForm.q.trim(),
           roles: userListFiltersForm.roles,
           fromDate: userListFiltersForm.fromDate,
           toDate: userListFiltersForm.toDate,
@@ -96,7 +96,7 @@ const List: FC = () => {
         page: 1,
         take: usersList.take,
         filters: {
-          q: userListFiltersForm.q,
+          q: userListFiltersForm.q.trim(),
           roles: userListFiltersForm.roles,
           fromDate: userListFiltersForm.fromDate,
           toDate: userListFiltersForm.toDate,
@@ -159,7 +159,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={userListFiltersForm.q}
-            onChange={(event) => userListFiltersFormInstance.onChange('q', event.target.value.trim())}
+            onChange={(event) => userListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={userListFiltersFormInstance.getInputErrorMessage('q')}
             error={userListFiltersFormInstance.isInputInValid('q')}
             name="q"

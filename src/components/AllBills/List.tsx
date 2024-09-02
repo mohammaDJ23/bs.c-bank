@@ -48,7 +48,7 @@ const List: FC = () => {
         page,
         take: allBillsList.take,
         filters: {
-          q: allBillListFiltersForm.q,
+          q: allBillListFiltersForm.q.trim(),
           roles: allBillListFiltersForm.roles,
           fromDate: allBillListFiltersForm.fromDate,
           toDate: allBillListFiltersForm.toDate,
@@ -64,7 +64,7 @@ const List: FC = () => {
         page: 1,
         take: allBillsList.take,
         filters: {
-          q: allBillListFiltersForm.q,
+          q: allBillListFiltersForm.q.trim(),
           roles: allBillListFiltersForm.roles,
           fromDate: allBillListFiltersForm.fromDate,
           toDate: allBillListFiltersForm.toDate,
@@ -128,7 +128,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={allBillListFiltersForm.q}
-            onChange={(event) => allBillListFiltersFormInstance.onChange('q', event.target.value.trim())}
+            onChange={(event) => allBillListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={allBillListFiltersFormInstance.getInputErrorMessage('q')}
             error={allBillListFiltersFormInstance.isInputInValid('q')}
             name="q"
