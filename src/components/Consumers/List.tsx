@@ -112,6 +112,7 @@ const List: FC = () => {
           }}
         >
           <TextField
+            id="_bank-service-consumer-filters-form-search"
             label="Search"
             variant="standard"
             type="text"
