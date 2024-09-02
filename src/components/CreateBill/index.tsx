@@ -8,6 +8,7 @@ import {
   getTime,
   isoDate,
   LocationListFilters,
+  wait,
 } from '../../lib';
 import { useForm, useRequest, useFocus, useSelector, useAction } from '../../hooks';
 import { ChangeEvent, FC, useCallback, useEffect, useRef, useState } from 'react';
@@ -48,6 +49,7 @@ const CreateBillContent: FC = () => {
   const locationsList = selectLocationsList(selectors);
   const snackbar = useSnackbar();
   const oneQuarterDebounce = useRef(debounce(250));
+  const consumerAutoCompleteInputRef = useRef<HTMLInputElement | null>(null);
 
   const formSubmition = useCallback(() => {
     createBillFromInstance.onSubmit(() => {
@@ -338,10 +340,14 @@ const CreateBillContent: FC = () => {
                   setIsConsumerAutocompleteOpen(false);
                 }}
                 value={createBillFrom.consumers}
-                onChange={(event, value) => {
+                onChange={async (event, value) => {
                   createBillFromInstance.onChange('consumers', value);
                   setConsumers([]);
                   setIsConsumerAutocompleteOpen(false);
+                  if (consumerAutoCompleteInputRef.current) {
+                    await wait();
+                    consumerAutoCompleteInputRef.current.focus();
+                  }
                 }}
                 disabled={isCreateBillApiProcessing}
                 options={consumers}
@@ -354,6 +360,7 @@ const CreateBillContent: FC = () => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
+                    inputRef={consumerAutoCompleteInputRef}
                     sx={{}}
                     onFocus={() => {
                       setConsumers([]);
