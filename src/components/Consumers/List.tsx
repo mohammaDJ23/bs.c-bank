@@ -47,7 +47,7 @@ const List: FC = () => {
       actions.getConsumers({
         page,
         take: consumersList.take,
-        filters: { q: consumerListFiltersForm.q },
+        filters: { q: consumerListFiltersForm.q.trim() },
       });
     },
     [isConsumersApiProcessing, consumersList, consumerListFiltersForm]
@@ -58,7 +58,7 @@ const List: FC = () => {
       actions.getConsumers({
         page: 1,
         take: consumersList.take,
-        filters: { q: consumerListFiltersForm.q },
+        filters: { q: consumerListFiltersForm.q.trim() },
       });
     });
   }, [consumerListFiltersFormInstance, consumersList, consumerListFiltersForm]);
@@ -118,7 +118,7 @@ const List: FC = () => {
             type="text"
             fullWidth
             value={consumerListFiltersForm.q}
-            onChange={(event) => consumerListFiltersFormInstance.onChange('q', event.target.value.trim())}
+            onChange={(event) => consumerListFiltersFormInstance.onChange('q', event.target.value)}
             helperText={consumerListFiltersFormInstance.getInputErrorMessage('q')}
             error={consumerListFiltersFormInstance.isInputInValid('q')}
             name="q"
