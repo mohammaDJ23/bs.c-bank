@@ -6,6 +6,8 @@ import {
   LocationsApiConstructorType,
   MostActiveLocationsApi,
   MostActiveLocationsApiConstructorType,
+  MostActiveLocationsByReceiversApi,
+  MostActiveLocationsByReceiversApiConstructorType,
   Request,
   UpdateLocationApi,
 } from '../../apis';
@@ -22,6 +24,10 @@ import {
 } from './requestProcess';
 import { Exception } from '../reducers';
 import { setSpecificDetails } from './speceficDetails';
+import {
+  MostActiveLocationByReceivers,
+  MostActiveLocationsByReceivers,
+} from '../../lib/lists/mostActiveLocationsByReceivers';
 
 export function getInitialLocations(params: LocationsApiConstructorType = {}) {
   return async function (dispatch: RootDispatch) {
@@ -69,6 +75,32 @@ export function getInitialMostActiveLocations(params: MostActiveLocationsApiCons
       dispatch(initialProcessingApiSuccess(MostActiveLocationsApi.name));
     } catch (error) {
       dispatch(initialProcessingApiError(MostActiveLocationsApi.name, error as AxiosError<Exception>));
+    }
+  };
+}
+
+export function getInitialMostActiveLocationsByReceivers(
+  params: MostActiveLocationsByReceiversApiConstructorType = {}
+) {
+  return async function (dispatch: RootDispatch) {
+    try {
+      dispatch(initialProcessingApiLoading(MostActiveLocationsByReceiversApi.name));
+      const response = await new Request<MostActiveLocationByReceivers[]>(
+        new MostActiveLocationsByReceiversApi(params)
+      ).build();
+      dispatch(
+        createNewList(
+          new MostActiveLocationsByReceivers({
+            list: response.data,
+            total: response.data.length,
+            page: params.page,
+            take: params.take,
+          })
+        )
+      );
+      dispatch(initialProcessingApiSuccess(MostActiveLocationsByReceiversApi.name));
+    } catch (error) {
+      dispatch(initialProcessingApiError(MostActiveLocationsByReceiversApi.name, error as AxiosError<Exception>));
     }
   };
 }
