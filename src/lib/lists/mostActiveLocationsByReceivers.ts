@@ -8,7 +8,8 @@ export interface MostActiveLocationByReceivers {
 }
 
 export class MostActiveLocationsByReceivers extends List<MostActiveLocationByReceivers> {
-  constructor() {
-    super({ take: 20 });
+  constructor(arg: Partial<List> = {}) {
+    super(arg);
+    this.take = 20;
   }
 }
