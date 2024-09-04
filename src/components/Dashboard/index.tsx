@@ -14,6 +14,7 @@ import {
   MostActiveConsumersApi,
   MostActiveLocationsApi,
   MostActiveReceiversApi,
+  MostActiveLocationsByReceiversApi,
 } from '../../apis';
 import { useAction, useAuth, useRequest, useSelector } from '../../hooks';
 import MainContainer from '../../layout/MainContainer';
@@ -27,6 +28,7 @@ import HorizonCarousel from '../shared/HorizonCarousel';
 import { v4 as uuid } from 'uuid';
 import {
   selectMostActiveConsumersList,
+  selectMostActiveLocationsByReceiversList,
   selectMostActiveLocationsList,
   selectMostActiveReceiversList,
   selectMostActiveUsersList,
@@ -54,6 +56,7 @@ const Dashboard: FC = () => {
   const selectors = useSelector();
   const mostActiveConsumersList = selectMostActiveConsumersList(selectors);
   const mostActiveLocationsList = selectMostActiveLocationsList(selectors);
+  const mostActiveLocationsByReceiversList = selectMostActiveLocationsByReceiversList(selectors);
   const mostActiveReceiversList = selectMostActiveReceiversList(selectors);
   const mostActiveUsersList = selectMostActiveUsersList(selectors);
   const isCurrentAdmin = auth.isCurrentAdmin();
@@ -99,6 +102,15 @@ const Dashboard: FC = () => {
   const isInitialMostActiveLocationsApiProcessing = request.isInitialApiProcessing(MostActiveLocationsApi);
   const isInitialMostActiveLocationsApiFailed = request.isInitialProcessingApiFailed(MostActiveLocationsApi);
   const isInitialMostActiveLocationsApiSuccessed = request.isInitialProcessingApiSuccessed(MostActiveLocationsApi);
+  const isInitialMostActiveLocationsByReceiversApiProcessing = request.isInitialApiProcessing(
+    MostActiveLocationsByReceiversApi
+  );
+  const isInitialMostActiveLocationsByReceiversApiFailed = request.isInitialProcessingApiFailed(
+    MostActiveLocationsByReceiversApi
+  );
+  const isInitialMostActiveLocationsByReceiversApiSuccessed = request.isInitialProcessingApiSuccessed(
+    MostActiveLocationsByReceiversApi
+  );
   const isInitialMostActiveReceiversApiProcessing = request.isInitialApiProcessing(MostActiveReceiversApi);
   const isInitialMostActiveReceiversApiFailed = request.isInitialProcessingApiFailed(MostActiveReceiversApi);
   const isInitialMostActiveReceiversApiSuccessed = request.isInitialProcessingApiSuccessed(MostActiveReceiversApi);
@@ -120,6 +132,7 @@ const Dashboard: FC = () => {
 
     actions.getInitialMostActiveConsumers({ page: 1, take: mostActiveConsumersList.take });
     actions.getInitialMostActiveLocations({ page: 1, take: mostActiveLocationsList.take });
+    actions.getInitialMostActiveLocationsByReceivers({ page: 1, take: mostActiveLocationsByReceiversList.take });
     actions.getInitialMostActiveReceivers({ page: 1, take: mostActiveReceiversList.take });
     actions.getInitialBillQuantities();
     actions.getInitialDeletedBillQuantities();
@@ -435,6 +448,70 @@ const Dashboard: FC = () => {
     }
   }, [mostActiveLocationsList.list]);
 
+  const mostActiveLocationsByReceiversElIdRef = useRef(uuid());
+  useEffect(() => {
+    if (mostActiveLocationsByReceiversList.list.length > 0) {
+      const el = document.getElementById(mostActiveLocationsByReceiversElIdRef.current) as HTMLDivElement | null;
+      if (el) {
+        const chart = echarts.init(el);
+        chart.setOption({
+          title: {
+            text: 'Most active locations by receivers',
+            left: 'center',
+            textStyle: { fontSize: 14, fontWeight: 700 },
+          },
+          tooltip: {
+            formatter: (info: any) => {
+              return info.data.name + ' ' + info.data.value;
+            },
+          },
+          series: [
+            {
+              type: 'treemap',
+              upperLabel: {
+                show: true,
+                height: 30,
+              },
+              width: '98%',
+              levels: [
+                {
+                  upperLabel: {
+                    show: false,
+                  },
+                  itemStyle: {
+                    gapWidth: 2,
+                    borderColor: '#d5d8dc',
+                    borderWidth: 0,
+                  },
+                },
+                {
+                  itemStyle: {
+                    borderColor: '#d5d8dc',
+                    borderWidth: 0,
+                    gapWidth: 2,
+                  },
+                },
+              ],
+              data: mostActiveLocationsByReceiversList.list.map((item) => ({
+                name: item.location.name,
+                children: item.receivers.map((item) => ({
+                  name: item.receiver.name,
+                  value: item.quantities,
+                })),
+              })),
+            },
+          ],
+        });
+
+        const onResize = () => {
+          chart.resize();
+        };
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+      }
+    }
+  }, [mostActiveLocationsByReceiversList.list]);
+
   return (
     <Navigation>
       <MainContainer>
@@ -701,6 +778,71 @@ const Dashboard: FC = () => {
               )}
             </Box>
           </DeviceWrapper>
+
+          <Box sx={{ width: '100%', height: '100%', minHeight: '450px' }}>
+            {isInitialMostActiveLocationsByReceiversApiProcessing ? (
+              <Skeleton height="450px" width="100%" />
+            ) : isInitialMostActiveLocationsByReceiversApiFailed ? (
+              <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: 'inherit',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography
+                    fontSize={'14px'}
+                    textAlign={'center'}
+                    fontWeight={'500'}
+                    color={'#d00000'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    Failed to load the most locations by receivers.
+                  </Typography>
+                </Box>
+              </Card>
+            ) : isInitialMostActiveLocationsByReceiversApiSuccessed &&
+              mostActiveLocationsByReceiversList.list.length > 0 ? (
+              <Box sx={{ overflow: 'hidden', height: '100%', width: '100%' }}>
+                <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                  <Card sx={{ transform: 'translateX(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                    <CardContent
+                      style={{ position: 'relative', height: '450px', overflow: 'hidden' }}
+                      id={mostActiveLocationsByReceiversElIdRef.current}
+                    ></CardContent>
+                  </Card>
+                </ResetStyleWithAnimation>
+              </Box>
+            ) : (
+              <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: 'inherit',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography
+                    fontSize={'14px'}
+                    textAlign={'center'}
+                    fontWeight={'500'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    No bills exist.
+                  </Typography>
+                </Box>
+              </Card>
+            )}
+          </Box>
 
           {isCurrentOwner && (
             <Box width="100%" height="100%">
