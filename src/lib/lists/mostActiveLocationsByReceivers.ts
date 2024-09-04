@@ -7,4 +7,8 @@ export interface MostActiveLocationByReceivers {
   receivers: MostActiveReceiver[];
 }
 
-export class MostActiveLocationsByReceivers extends List<MostActiveLocationByReceivers> {}
+export class MostActiveLocationsByReceivers extends List<MostActiveLocationByReceivers> {
+  constructor() {
+    super({ take: 20 });
+  }
+}
