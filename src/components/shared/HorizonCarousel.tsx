@@ -224,7 +224,7 @@ const HorizonCarousel: FC<Props> = ({
       onMouseEnter={() => (infinityRef.current = false)}
       onMouseLeave={() => (infinityRef.current = infinity)}
     >
-      {showArrows && (
+      {showArrows && IsChildrenExist() && (
         <Box
           onClick={() => prev()}
           data-arrow="carousel-left-arrow"
@@ -252,7 +252,7 @@ const HorizonCarousel: FC<Props> = ({
         </Box>
       )}
       <Content ref={contentElRef}>{children}</Content>
-      {showArrows && (
+      {showArrows && IsChildrenExist() && (
         <Box
           onClick={() => next()}
           data-arrow="carousel-right-arrow"
