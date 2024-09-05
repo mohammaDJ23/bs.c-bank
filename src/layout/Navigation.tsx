@@ -275,78 +275,82 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
 
   return (
     <>
-      <AppBar>
-        <Toolbar
-          sx={{
-            minHeight: 'inherit',
-          }}
-        >
-          {isUserAuthenticated && (
-            <Box mr="20px" overflow="hidden" flexShrink={0}>
-              <ResetStyleWithAnimation sx={{ transform: 'translateX(12px)' }}>
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={() => setIsDrawerOpened(true)}
-                  edge="start"
+      <ResetStyleWithAnimation sx={{ top: '0' }}>
+        <AppBar sx={{ top: '-70px', transition: 'cubic-bezier(.41,.55,.03,.96) 0.5s' }}>
+          <Toolbar
+            sx={{
+              minHeight: 'inherit',
+            }}
+          >
+            {isUserAuthenticated && (
+              <Box mr="20px" overflow="hidden" flexShrink={0}>
+                <ResetStyleWithAnimation sx={{ transform: 'translateX(12px)' }}>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    onClick={() => setIsDrawerOpened(true)}
+                    edge="start"
+                    sx={{
+                      width: '100%',
+                      minHeight: 'inherit',
+                      transform: 'translateX(-100%)',
+                      transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
+                      transitionDelay: '0.6s',
+                    }}
+                  >
+                    <MenuIcon sx={{ color: 'white' }} />
+                  </IconButton>
+                </ResetStyleWithAnimation>
+              </Box>
+            )}
+
+            <Box overflow="hidden" width="100%">
+              <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="div"
                   sx={{
                     width: '100%',
+                    color: 'white',
                     minHeight: 'inherit',
-                    transform: 'translateX(-100%)',
+                    transform: 'translateY(100%)',
+                    transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
+                    transitionDelay: '0.6s',
+                  }}
+                >
+                  {title || activeRouteTitle}
+                </Typography>
+              </ResetStyleWithAnimation>
+            </Box>
+          </Toolbar>
+
+          {menuOptions && menuOptions.length > 0 && (
+            <Box overflow="hidden">
+              <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                <Box
+                  sx={{
+                    minHeight: 'inherit',
+                    transform: 'translateX(100%)',
                     transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
                   }}
                 >
-                  <MenuIcon sx={{ color: 'white' }} />
-                </IconButton>
+                  <IconButton onClick={onMenuOpen}>
+                    <MoreVertIcon />
+                  </IconButton>
+                  <Menu anchorEl={anchorEl} open={isMenuOpened} onClick={onMenuClose}>
+                    {menuOptions.map((menu, index) => (
+                      <MenuItem key={index} onClick={onMenuClick}>
+                        {menu}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </Box>
               </ResetStyleWithAnimation>
             </Box>
           )}
-
-          <Box overflow="hidden" width="100%">
-            <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-              <Typography
-                variant="h6"
-                noWrap
-                component="div"
-                sx={{
-                  width: '100%',
-                  color: 'white',
-                  minHeight: 'inherit',
-                  transform: 'translateY(100%)',
-                  transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
-                }}
-              >
-                {title || activeRouteTitle}
-              </Typography>
-            </ResetStyleWithAnimation>
-          </Box>
-        </Toolbar>
-
-        {menuOptions && menuOptions.length > 0 && (
-          <Box overflow="hidden">
-            <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
-              <Box
-                sx={{
-                  minHeight: 'inherit',
-                  transform: 'translateX(100%)',
-                  transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
-                }}
-              >
-                <IconButton onClick={onMenuOpen}>
-                  <MoreVertIcon />
-                </IconButton>
-                <Menu anchorEl={anchorEl} open={isMenuOpened} onClick={onMenuClose}>
-                  {menuOptions.map((menu, index) => (
-                    <MenuItem key={index} onClick={onMenuClick}>
-                      {menu}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
-            </ResetStyleWithAnimation>
-          </Box>
-        )}
-      </AppBar>
+        </AppBar>
+      </ResetStyleWithAnimation>
 
       <ChildrenWrapper>{children}</ChildrenWrapper>
 
