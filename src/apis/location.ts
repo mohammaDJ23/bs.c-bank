@@ -74,3 +74,20 @@ export class MostActiveLocationsApi extends RootApi {
 }
 
 export type MostActiveLocationsApiConstructorType = ConstructorParameters<typeof MostActiveLocationsApi>[0];
+
+export class MostActiveLocationsByReceiversApi extends RootApi {
+  constructor(params: Partial<ListParams> = {}) {
+    super(
+      {
+        url: '/api/v1/bank/location/most-active-locations-by-receivers',
+        method: 'get',
+        params,
+      },
+      { baseURL: process.env.BANK_SERVICE }
+    );
+  }
+}
+
+export type MostActiveLocationsByReceiversApiConstructorType = ConstructorParameters<
+  typeof MostActiveLocationsByReceiversApi
+>[0];

@@ -13,6 +13,10 @@ import {
   Receivers,
   Users,
 } from '../../lib';
+import {
+  MostActiveLocationByReceivers,
+  MostActiveLocationsByReceivers,
+} from '../../lib/lists/mostActiveLocationsByReceivers';
 import { RootState } from '../store';
 
 export function selectUsersList(state: RootState): Users {
@@ -57,6 +61,10 @@ export function selectMostActiveConsumersList(state: RootState): MostActiveConsu
 
 export function selectMostActiveLocationsList(state: RootState): MostActiveLocations {
   return state.lists[MostActiveLocations.name];
+}
+
+export function selectMostActiveLocationsByReceiversList(state: RootState): MostActiveLocationsByReceivers {
+  return state.lists[MostActiveLocationsByReceivers.name];
 }
 
 export function selectMostActiveReceiversList(state: RootState): MostActiveReceivers {

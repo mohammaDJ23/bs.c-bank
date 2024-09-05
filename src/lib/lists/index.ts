@@ -11,6 +11,7 @@ import { MostActiveConsumers } from './mostActiveConsumers';
 import { MostActiveLocations } from './mostActiveLocations';
 import { MostActiveReceivers } from './mostActiveReceivers';
 import { MostActiveUsers } from './mostActiveUsers';
+import { MostActiveLocationsByReceivers } from './mostActiveLocationsByReceivers';
 
 export * from './deletedUsers';
 export * from './deletedBills';
@@ -38,6 +39,7 @@ export const lists = {
   Receivers,
   MostActiveConsumers,
   MostActiveLocations,
+  MostActiveLocationsByReceivers,
   MostActiveReceivers,
   MostActiveUsers,
 };
