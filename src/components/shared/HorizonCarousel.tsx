@@ -62,7 +62,8 @@ const HorizonCarousel: FC<Props> = ({
   }
 
   function IsChildrenExist() {
-    return getContentEl().children.length > 2;
+    const contentEl = getContentEl();
+    return contentEl && contentEl.children.length > 2;
   }
 
   function getFirstElementChild() {
