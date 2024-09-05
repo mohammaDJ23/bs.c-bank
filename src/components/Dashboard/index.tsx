@@ -485,6 +485,8 @@ const Dashboard: FC = () => {
                   },
                 },
                 {
+                  // @ts-ignore
+                  colorSaturation: [0.35, 0.5],
                   itemStyle: {
                     borderColor: '#d5d8dc',
                     borderWidth: 0,
