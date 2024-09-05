@@ -62,7 +62,8 @@ const VerticalCarousel: FC<Props> = ({
   }
 
   function IsChildrenExist() {
-    return getContentEl().children.length > 2;
+    const contentEl = getContentEl();
+    return contentEl && contentEl.children.length > 2;
   }
 
   function getFirstElementChild() {
@@ -224,7 +225,7 @@ const VerticalCarousel: FC<Props> = ({
       onMouseEnter={() => (infinityRef.current = false)}
       onMouseLeave={() => (infinityRef.current = infinity)}
     >
-      {showArrows && (
+      {showArrows && IsChildrenExist() && (
         <Box
           onClick={() => up()}
           data-arrow="carousel-up-arrow"
@@ -252,7 +253,7 @@ const VerticalCarousel: FC<Props> = ({
         </Box>
       )}
       <Content ref={contentElRef}>{children}</Content>
-      {showArrows && (
+      {showArrows && IsChildrenExist() && (
         <Box
           onClick={() => down()}
           data-arrow="carousel-down-arrow"
