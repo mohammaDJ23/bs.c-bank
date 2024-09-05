@@ -54,10 +54,6 @@ interface NavigationItemObj {
 }
 
 const AppBar = styled('div')(({ theme }) => ({
-  position: 'sticky',
-  top: 0,
-  left: 0,
-  zIndex: 15,
   minHeight: '64px',
   width: '100%',
   backgroundColor: '#20a0ff',
@@ -66,6 +62,29 @@ const AppBar = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between',
   gap: '20px',
+  [theme.breakpoints.between('xs', 'sm')]: {
+    minHeight: '48px',
+    '.css-hyum1k-MuiToolbar-root': {
+      transition: 'all 0.3s',
+      minHeight: '48px',
+    },
+  },
+  [theme.breakpoints.down('sm')]: {
+    minHeight: '48px',
+    '.css-hyum1k-MuiToolbar-root': {
+      transition: 'all 0.3s',
+      minHeight: '48px',
+    },
+  },
+}));
+
+const AppBarWrapper = styled('div')(({ theme }) => ({
+  position: 'sticky',
+  top: 0,
+  left: 0,
+  zIndex: 15,
+  minHeight: '64px',
+  width: '100%',
   [theme.breakpoints.between('xs', 'sm')]: {
     minHeight: '48px',
     '.css-hyum1k-MuiToolbar-root': {
@@ -275,78 +294,84 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
 
   return (
     <>
-      <AppBar>
-        <Toolbar
-          sx={{
-            minHeight: 'inherit',
-          }}
-        >
-          {isUserAuthenticated && (
-            <Box mr="20px" overflow="hidden" flexShrink={0}>
-              <ResetStyleWithAnimation sx={{ transform: 'translateX(12px)' }}>
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={() => setIsDrawerOpened(true)}
-                  edge="start"
-                  sx={{
-                    width: '100%',
-                    minHeight: 'inherit',
-                    transform: 'translateX(-100%)',
-                    transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
-                  }}
-                >
-                  <MenuIcon sx={{ color: 'white' }} />
-                </IconButton>
-              </ResetStyleWithAnimation>
-            </Box>
-          )}
+      <AppBarWrapper>
+        <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+          <AppBar sx={{ transform: 'translateY(-100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 0.5s' }}>
+            <Toolbar
+              sx={{
+                minHeight: 'inherit',
+              }}
+            >
+              {isUserAuthenticated && (
+                <Box mr="20px" overflow="hidden" flexShrink={0}>
+                  <ResetStyleWithAnimation sx={{ transform: 'translateX(12px)' }}>
+                    <IconButton
+                      color="inherit"
+                      aria-label="open drawer"
+                      onClick={() => setIsDrawerOpened(true)}
+                      edge="start"
+                      sx={{
+                        width: '100%',
+                        minHeight: 'inherit',
+                        transform: 'translateX(-100%)',
+                        transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
+                        transitionDelay: '0.2s',
+                      }}
+                    >
+                      <MenuIcon sx={{ color: 'white' }} />
+                    </IconButton>
+                  </ResetStyleWithAnimation>
+                </Box>
+              )}
 
-          <Box overflow="hidden" width="100%">
-            <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-              <Typography
-                variant="h6"
-                noWrap
-                component="div"
-                sx={{
-                  width: '100%',
-                  color: 'white',
-                  minHeight: 'inherit',
-                  transform: 'translateY(100%)',
-                  transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
-                }}
-              >
-                {title || activeRouteTitle}
-              </Typography>
-            </ResetStyleWithAnimation>
-          </Box>
-        </Toolbar>
-
-        {menuOptions && menuOptions.length > 0 && (
-          <Box overflow="hidden">
-            <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
-              <Box
-                sx={{
-                  minHeight: 'inherit',
-                  transform: 'translateX(100%)',
-                  transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
-                }}
-              >
-                <IconButton onClick={onMenuOpen}>
-                  <MoreVertIcon />
-                </IconButton>
-                <Menu anchorEl={anchorEl} open={isMenuOpened} onClick={onMenuClose}>
-                  {menuOptions.map((menu, index) => (
-                    <MenuItem key={index} onClick={onMenuClick}>
-                      {menu}
-                    </MenuItem>
-                  ))}
-                </Menu>
+              <Box overflow="hidden" width="100%">
+                <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                  <Typography
+                    variant="h6"
+                    noWrap
+                    component="div"
+                    sx={{
+                      width: '100%',
+                      color: 'white',
+                      minHeight: 'inherit',
+                      transform: 'translateY(100%)',
+                      transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
+                      transitionDelay: '0.2s',
+                    }}
+                  >
+                    {title || activeRouteTitle}
+                  </Typography>
+                </ResetStyleWithAnimation>
               </Box>
-            </ResetStyleWithAnimation>
-          </Box>
-        )}
-      </AppBar>
+            </Toolbar>
+
+            {menuOptions && menuOptions.length > 0 && (
+              <Box overflow="hidden">
+                <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
+                  <Box
+                    sx={{
+                      minHeight: 'inherit',
+                      transform: 'translateX(100%)',
+                      transition: 'cubic-bezier(.41,.55,.03,.96) 0.3s',
+                    }}
+                  >
+                    <IconButton onClick={onMenuOpen}>
+                      <MoreVertIcon />
+                    </IconButton>
+                    <Menu anchorEl={anchorEl} open={isMenuOpened} onClick={onMenuClose}>
+                      {menuOptions.map((menu, index) => (
+                        <MenuItem key={index} onClick={onMenuClick}>
+                          {menu}
+                        </MenuItem>
+                      ))}
+                    </Menu>
+                  </Box>
+                </ResetStyleWithAnimation>
+              </Box>
+            )}
+          </AppBar>
+        </ResetStyleWithAnimation>
+      </AppBarWrapper>
 
       <ChildrenWrapper>{children}</ChildrenWrapper>
 
