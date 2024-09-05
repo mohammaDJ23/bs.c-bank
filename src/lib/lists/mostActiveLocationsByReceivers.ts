@@ -3,6 +3,7 @@ import { Location } from './locations';
 import { MostActiveReceiver } from './mostActiveReceivers';
 
 export interface MostActiveLocationByReceivers {
+  quantities: number;
   location: Location;
   receivers: MostActiveReceiver[];
 }
