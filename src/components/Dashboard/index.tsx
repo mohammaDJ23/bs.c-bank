@@ -619,8 +619,8 @@ const Dashboard: FC = () => {
                 </Card>
               ) : isInitialMostActiveConsumersApiSuccessed && mostActiveConsumersList.list.length > 0 ? (
                 <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                  <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                    <Card sx={{ transform: 'translateY(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                  <ResetStyleWithAnimation sx={{ transform: 'translate(0, 0)' }}>
+                    <Card sx={{ transform: 'translate(-100%, 100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                       <CardContent
                         style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
                         id={consumersChartElIdRef.current}
@@ -745,8 +745,8 @@ const Dashboard: FC = () => {
                 </Card>
               ) : isInitialMostActiveLocationsApiSuccessed && mostActiveLocationsList.list.length > 0 ? (
                 <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                  <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                    <Card sx={{ transform: 'translateY(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                  <ResetStyleWithAnimation sx={{ transform: 'translate(0, 0)' }}>
+                    <Card sx={{ transform: 'translate(100%, 100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
                       <CardContent
                         style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
                         id={locationsChartElIdRef.current}
