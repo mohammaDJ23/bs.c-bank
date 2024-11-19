@@ -1,5 +1,5 @@
 import { PropsWithChildren, FC, useState, Fragment, useCallback } from 'react';
-import { useLocation, useNavigate, matchPath, useParams, NavigateOptions } from 'react-router-dom';
+import { useLocation, useNavigate, matchPath } from 'react-router-dom';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -27,12 +27,14 @@ import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import { styled } from '@mui/material/styles';
-import { LocalStorage, Pathes, routes, UserRoles } from '../lib';
+import ContrastIcon from '@mui/icons-material/Contrast';
+import { styled, useColorScheme } from '@mui/material/styles';
+import { getDynamicPath, LocalStorage, Pathes, routes, UserRoles } from '../lib';
 import { useAuth, useSelector } from '../hooks';
 import { MoreVert } from '@mui/icons-material';
 import { Menu, MenuItem } from '@mui/material';
 import ResetStyleWithAnimation from '../components/shared/ResetStyleWithAnimation';
+import { modes } from '../lib/providers/ThemeProvider';
 
 interface StyledListItemTextAttr {
   active: string | undefined;
@@ -46,11 +48,8 @@ interface NavigationItemObj {
   title: string;
   icon: JSX.Element;
   roles?: UserRoles[];
-  path?: Pathes;
-  redirectPath?: Pathes;
-  activationOptions?: boolean[];
-  navigateOptions?: NavigateOptions;
-  onClick?: () => void;
+  path?: Pathes | string;
+  onClick: () => void;
 }
 
 const AppBar = styled('div')(({ theme }) => ({
@@ -132,10 +131,10 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpened = Boolean(anchorEl);
   const [isDrawerOpened, setIsDrawerOpened] = useState(false);
+  const colorSchemes = useColorScheme();
   const navigate = useNavigate();
   const selectors = useSelector();
   const location = useLocation();
-  const params = useParams();
   const auth = useAuth();
   const decodedToken = auth.getDecodedToken()!;
   const isUserAuthenticated = auth.isUserAuthenticated();
@@ -162,92 +161,147 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
       {
         title: `${decodedToken.firstName} ${decodedToken.lastName}`,
         icon: <PersonIcon />,
-        path: Pathes.USER,
-        redirectPath: Pathes.USERS,
-        navigateOptions: { state: { previousUserId: decodedToken.id } },
-        activationOptions: [decodedToken.id === +(params.id as string)],
+        path: getDynamicPath(Pathes.USER, { id: decodedToken.id }),
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Dashboard',
         icon: <DashboardIcon />,
         path: Pathes.DASHBOARD,
-        redirectPath: Pathes.DASHBOARD,
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Create user',
         icon: <PersonAddAlt1Icon />,
-        path: Pathes.CREATE_USER,
-        redirectPath: Pathes.CREATE_USER,
         roles: [UserRoles.OWNER],
+        path: Pathes.CREATE_USER,
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Create bill',
         icon: <AddCardIcon />,
         path: Pathes.CREATE_BILL,
-        redirectPath: Pathes.CREATE_BILL,
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Users',
         icon: <SupervisorAccountIcon />,
         path: Pathes.USERS,
-        redirectPath: Pathes.USERS,
         roles: [UserRoles.OWNER, UserRoles.ADMIN],
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Deleted users',
         icon: <GroupRemoveIcon />,
         path: Pathes.DELETED_USERS,
-        redirectPath: Pathes.DELETED_USERS,
         roles: [UserRoles.OWNER],
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Bills',
-        icon: <CreditCardIcon />,
         path: Pathes.BILLS,
-        redirectPath: Pathes.BILLS,
+        icon: <CreditCardIcon />,
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Deleted bills',
-        icon: <LayersClearIcon />,
         path: Pathes.DELETED_bILLS,
-        redirectPath: Pathes.DELETED_bILLS,
+        icon: <LayersClearIcon />,
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Receivers',
-        icon: <CallReceivedIcon />,
         path: Pathes.RECEIVERS,
-        redirectPath: Pathes.RECEIVERS,
+        icon: <CallReceivedIcon />,
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Locations',
-        icon: <LocationOnIcon />,
         path: Pathes.LOCATIONS,
-        redirectPath: Pathes.LOCATIONS,
+        icon: <LocationOnIcon />,
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Consumers',
-        icon: <AddShoppingCartIcon />,
         path: Pathes.CONSUMERS,
-        redirectPath: Pathes.CONSUMERS,
+        icon: <AddShoppingCartIcon />,
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'All bills',
-        icon: <AutoAwesomeMotionIcon />,
         path: Pathes.ALL_BILLS,
-        redirectPath: Pathes.ALL_BILLS,
+        icon: <AutoAwesomeMotionIcon />,
         roles: [UserRoles.OWNER],
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       },
       {
         title: 'Notifications',
-        icon: <NotificationIcon />,
         path: Pathes.NOTIFICATIONS,
-        redirectPath: Pathes.NOTIFICATIONS,
+        icon: <NotificationIcon />,
         roles: [UserRoles.OWNER],
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
+      },
+      {
+        title: `Theme ${colorSchemes.mode ? `(${colorSchemes.mode})` : ''}`,
+        icon: <ContrastIcon />,
+        onClick() {
+          if (!colorSchemes.mode) {
+            colorSchemes.setMode(modes[0]);
+          } else {
+            let index = modes.indexOf(colorSchemes.mode);
+            index++;
+
+            if (index > modes.length - 1) {
+              index = 0;
+            }
+            colorSchemes.setMode(modes[index]);
+          }
+        },
       },
       {
         title: 'Logout',
         icon: <LogoutIcon />,
-        onClick: () => {
+        onClick() {
+          setIsDrawerOpened(false);
           if (selectors.userServiceSocket.connection) {
             selectors.userServiceSocket.connection.disconnect();
           }
@@ -260,37 +314,35 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
     if (isCurrentOwner) {
       navigationItems.splice(-2, 0, {
         title: 'Conversations',
-        icon: <ChatIcon />,
         path: Pathes.CHAT,
-        redirectPath: Pathes.CHAT,
+        icon: <ChatIcon />,
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       });
     } else {
       navigationItems.splice(-2, 0, {
         title: 'Contact support',
-        icon: <ChatIcon />,
         path: Pathes.CHAT,
-        redirectPath: Pathes.CHAT,
+        icon: <ChatIcon />,
+        onClick() {
+          setIsDrawerOpened(false);
+          navigate(this.path!);
+        },
       });
     }
 
     return navigationItems;
   }
 
-  function isActivationOptionsActive(item: ReturnType<typeof getNavigationItems>[number]) {
-    let isActive = true;
-    for (let i = 0; item.activationOptions && i < item.activationOptions.length; i++)
-      isActive = isActive && item.activationOptions[i];
-    return isActive;
-  }
-
-  function isSamePath(item: ReturnType<typeof getNavigationItems>[number]) {
-    return item.path === activeRoute?.path;
-  }
-
-  function isPathActive(item: ReturnType<typeof getNavigationItems>[number]) {
-    const isActive = isSamePath(item) && isActivationOptionsActive(item);
-    return isActive ? isActive.toString() : undefined;
-  }
+  const isPathActive = (item: NavigationItemObj) => {
+    const isActive = location.pathname === item.path;
+    if (isActive) {
+      return isActive.toString();
+    }
+    return undefined;
+  };
 
   return (
     <>
@@ -401,23 +453,7 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
                         transitionDelay: `${index * 0.01}s`,
                       }}
                     >
-                      <ListItem
-                        onClick={() => {
-                          new Promise<boolean>((resolve) => {
-                            setIsDrawerOpened(false);
-                            resolve(true);
-                          })
-                            .then(() => {
-                              if (item.onClick) item.onClick.call({});
-                            })
-                            .then(() => {
-                              if (item.path && item.redirectPath && !isPathActive(item))
-                                navigate(item.redirectPath, item.navigateOptions);
-                            });
-                        }}
-                        key={index}
-                        disablePadding
-                      >
+                      <ListItem onClick={() => item.onClick.call(item)} key={index} disablePadding>
                         <ListItemButton>
                           <StyledListItemIcon active={isPathActive(item)}>{item.icon}</StyledListItemIcon>
                           <Box
