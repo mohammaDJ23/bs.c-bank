@@ -15,6 +15,7 @@ import { createBrowserHistory } from 'history';
 import { SnackbarProvider } from 'notistack';
 import UserServiceConnectionSocketProvider from './lib/providers/userServiceConnectionSocketProvider';
 import LogoutUserSocketEventProvider from './lib/providers/LogoutUserSocketEventProvider';
+import ThemeProvider from './lib/providers/ThemeProvider';
 
 export const history = createBrowserHistory();
 
