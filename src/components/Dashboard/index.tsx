@@ -41,10 +41,10 @@ const DeviceWrapper = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
-  [theme.breakpoints.down('md')]: {
+  [theme.breakpoints.down('lg')]: {
     flexDirection: 'column',
   },
-  [theme.breakpoints.up('md')]: {
+  [theme.breakpoints.up('lg')]: {
     flexDirection: 'row',
   },
 }));
@@ -654,69 +654,6 @@ const Dashboard: FC = () => {
               )}
             </Box>
             <Box sx={{ width: '100%', height: '100%', minHeight: '350px' }}>
-              {isInitialMostActiveReceiversApiProcessing ? (
-                <Skeleton height="350px" width="100%" />
-              ) : isInitialMostActiveReceiversApiFailed ? (
-                <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                  <Box
-                    sx={{
-                      width: '100%',
-                      height: '100%',
-                      minHeight: 'inherit',
-                      padding: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Typography
-                      fontSize={'14px'}
-                      textAlign={'center'}
-                      fontWeight={'500'}
-                      color={'#d00000'}
-                      sx={{ wordBreak: 'break-word' }}
-                    >
-                      Failed to load the most active receivers chart.
-                    </Typography>
-                  </Box>
-                </Card>
-              ) : isInitialMostActiveReceiversApiSuccessed && mostActiveReceiversList.list.length > 0 ? (
-                <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
-                  <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
-                    <Card sx={{ transform: 'translateY(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
-                      <CardContent
-                        style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
-                        id={receiversChartElIdRef.current}
-                      ></CardContent>
-                    </Card>
-                  </ResetStyleWithAnimation>
-                </Box>
-              ) : (
-                <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                  <Box
-                    sx={{
-                      width: '100%',
-                      height: '100%',
-                      minHeight: 'inherit',
-                      padding: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Typography
-                      fontSize={'14px'}
-                      textAlign={'center'}
-                      fontWeight={'500'}
-                      sx={{ wordBreak: 'break-word' }}
-                    >
-                      No receivers exist.
-                    </Typography>
-                  </Box>
-                </Card>
-              )}
-            </Box>
-            <Box sx={{ width: '100%', height: '100%', minHeight: '350px' }}>
               {isInitialMostActiveLocationsApiProcessing ? (
                 <Skeleton height="350px" width="100%" />
               ) : isInitialMostActiveLocationsApiFailed ? (
@@ -781,70 +718,135 @@ const Dashboard: FC = () => {
             </Box>
           </DeviceWrapper>
 
-          <Box sx={{ width: '100%', height: '100%', minHeight: '450px' }}>
-            {isInitialMostActiveLocationsByReceiversApiProcessing ? (
-              <Skeleton height="450px" width="100%" />
-            ) : isInitialMostActiveLocationsByReceiversApiFailed ? (
-              <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                <Box
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    minHeight: 'inherit',
-                    padding: '16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography
-                    fontSize={'14px'}
-                    textAlign={'center'}
-                    fontWeight={'500'}
-                    color={'#d00000'}
-                    sx={{ wordBreak: 'break-word' }}
+          <DeviceWrapper>
+            <Box sx={{ width: '100%', height: '100%', minHeight: '350px' }}>
+              {isInitialMostActiveReceiversApiProcessing ? (
+                <Skeleton height="350px" width="100%" />
+              ) : isInitialMostActiveReceiversApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                   >
-                    Failed to load the most locations by receivers.
-                  </Typography>
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the most active receivers chart.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : isInitialMostActiveReceiversApiSuccessed && mostActiveReceiversList.list.length > 0 ? (
+                <Box sx={{ overflow: 'hidden', width: '100%', height: '100%' }}>
+                  <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                    <Card sx={{ transform: 'translateY(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                      <CardContent
+                        style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
+                        id={receiversChartElIdRef.current}
+                      ></CardContent>
+                    </Card>
+                  </ResetStyleWithAnimation>
                 </Box>
-              </Card>
-            ) : isInitialMostActiveLocationsByReceiversApiSuccessed &&
-              mostActiveLocationsByReceiversList.list.length > 0 ? (
-              <Box sx={{ overflow: 'hidden', height: '100%', width: '100%' }}>
-                <ResetStyleWithAnimation sx={{ transform: 'translateX(0)' }}>
-                  <Card sx={{ transform: 'translateX(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
-                    <CardContent
-                      style={{ position: 'relative', height: '450px', overflow: 'hidden' }}
-                      id={mostActiveLocationsByReceiversElIdRef.current}
-                    ></CardContent>
-                  </Card>
-                </ResetStyleWithAnimation>
-              </Box>
-            ) : (
-              <Card style={{ height: '100%', minHeight: 'inherit' }}>
-                <Box
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    minHeight: 'inherit',
-                    padding: '16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography
-                    fontSize={'14px'}
-                    textAlign={'center'}
-                    fontWeight={'500'}
-                    sx={{ wordBreak: 'break-word' }}
+              ) : (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                   >
-                    No bills exist.
-                  </Typography>
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      No receivers exist.
+                    </Typography>
+                  </Box>
+                </Card>
+              )}
+            </Box>
+            <Box sx={{ width: '100%', height: '100%', minHeight: '350px' }}>
+              {isInitialMostActiveLocationsByReceiversApiProcessing ? (
+                <Skeleton height="350px" width="100%" />
+              ) : isInitialMostActiveLocationsByReceiversApiFailed ? (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      color={'#d00000'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      Failed to load the most locations by receivers.
+                    </Typography>
+                  </Box>
+                </Card>
+              ) : isInitialMostActiveLocationsByReceiversApiSuccessed &&
+                mostActiveLocationsByReceiversList.list.length > 0 ? (
+                <Box sx={{ overflow: 'hidden', height: '100%', width: '100%' }}>
+                  <ResetStyleWithAnimation sx={{ transform: 'translateY(0)' }}>
+                    <Card sx={{ transform: 'translateY(100%)', transition: 'cubic-bezier(.41,.55,.03,.96) 1s' }}>
+                      <CardContent
+                        style={{ position: 'relative', height: '350px', overflow: 'hidden' }}
+                        id={mostActiveLocationsByReceiversElIdRef.current}
+                      ></CardContent>
+                    </Card>
+                  </ResetStyleWithAnimation>
                 </Box>
-              </Card>
-            )}
-          </Box>
+              ) : (
+                <Card style={{ height: '100%', minHeight: 'inherit' }}>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      minHeight: 'inherit',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      fontSize={'14px'}
+                      textAlign={'center'}
+                      fontWeight={'500'}
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      No bills exist.
+                    </Typography>
+                  </Box>
+                </Card>
+              )}
+            </Box>
+          </DeviceWrapper>
 
           {isCurrentOwner && (
             <Box width="100%" height="100%">
