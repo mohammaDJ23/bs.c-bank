@@ -25,42 +25,40 @@ const App: FC = () => {
     <HistoryRouter history={history}>
       <Provider store={store}>
         <RedirectionProvider>
-          <ThemeProvider>
-            <SnackbarProvider
-              dense
-              maxSnack={Infinity}
-              anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
-              style={{ maxWidth: '300px' }}
-            >
-              <HistoryProvider history={history}>
-                <Routes>
-                  {routes.map((route) => (
-                    <Route
-                      key={route.path}
-                      path={route.path}
-                      element={
-                        route.needAuth ? (
-                          <AuthProtectionProvider>
-                            <UserServiceConnectionSocketProvider>
-                              <LogoutUserSocketEventProvider>
-                                <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
-                              </LogoutUserSocketEventProvider>
-                            </UserServiceConnectionSocketProvider>
-                          </AuthProtectionProvider>
-                        ) : (
-                          <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
-                        )
-                      }
-                    />
-                  ))}
+          <SnackbarProvider
+            dense
+            maxSnack={Infinity}
+            anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+            style={{ maxWidth: '300px' }}
+          >
+            <HistoryProvider history={history}>
+              <Routes>
+                {routes.map((route) => (
                   <Route
-                    path={Pathes.BANK}
-                    element={<Navigate to={isUserAuthenticated() ? Pathes.DASHBOARD : Pathes.LOGIN} />}
+                    key={route.path}
+                    path={route.path}
+                    element={
+                      route.needAuth ? (
+                        <AuthProtectionProvider>
+                          <UserServiceConnectionSocketProvider>
+                            <LogoutUserSocketEventProvider>
+                              <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
+                            </LogoutUserSocketEventProvider>
+                          </UserServiceConnectionSocketProvider>
+                        </AuthProtectionProvider>
+                      ) : (
+                        <Suspense fallback={<LoadingFallback />}>{route.element}</Suspense>
+                      )
+                    }
                   />
-                </Routes>
-              </HistoryProvider>
-            </SnackbarProvider>
-          </ThemeProvider>
+                ))}
+                <Route
+                  path={Pathes.BANK}
+                  element={<Navigate to={isUserAuthenticated() ? Pathes.DASHBOARD : Pathes.LOGIN} />}
+                />
+              </Routes>
+            </HistoryProvider>
+          </SnackbarProvider>
         </RedirectionProvider>
       </Provider>
     </HistoryRouter>

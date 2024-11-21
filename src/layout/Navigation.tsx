@@ -27,14 +27,12 @@ import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import ContrastIcon from '@mui/icons-material/Contrast';
-import { styled, useColorScheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { getDynamicPath, LocalStorage, Pathes, routes, UserRoles } from '../lib';
 import { useAuth, useSelector } from '../hooks';
 import { MoreVert } from '@mui/icons-material';
 import { Menu, MenuItem } from '@mui/material';
 import ResetStyleWithAnimation from '../components/shared/ResetStyleWithAnimation';
-import { modes } from '../lib/providers/ThemeProvider';
 
 interface StyledListItemTextAttr {
   active: string | undefined;
@@ -131,7 +129,6 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpened = Boolean(anchorEl);
   const [isDrawerOpened, setIsDrawerOpened] = useState(false);
-  const colorSchemes = useColorScheme();
   const navigate = useNavigate();
   const selectors = useSelector();
   const location = useLocation();
@@ -278,23 +275,6 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         onClick() {
           setIsDrawerOpened(false);
           navigate(this.path!);
-        },
-      },
-      {
-        title: `Theme ${colorSchemes.mode ? `(${colorSchemes.mode})` : ''}`,
-        icon: <ContrastIcon />,
-        onClick() {
-          if (!colorSchemes.mode) {
-            colorSchemes.setMode(modes[0]);
-          } else {
-            let index = modes.indexOf(colorSchemes.mode);
-            index++;
-
-            if (index > modes.length - 1) {
-              index = 0;
-            }
-            colorSchemes.setMode(modes[index]);
-          }
         },
       },
       {
