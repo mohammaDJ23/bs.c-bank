@@ -90,9 +90,6 @@ module.exports = {
       exposes: {
         './BankApp': './src/bootstrap.tsx',
       },
-      remotes: {
-        chat: 'chat@' + process.env.CHAT_APP + process.env.CHAT_PUBLIC_PATH + 'remoteEntry.js',
-      },
       shared: packageJson.dependencies,
     }),
   ],
