@@ -26,9 +26,6 @@ const Details: FC<DetailsImporation> = ({ user }) => {
   const snackbar = useSnackbar();
   const isUserOnline = auth.isUserOnline(user.id);
   const isCurrentOwner = auth.isCurrentOwner();
-  const isCurrentAdmin = auth.isCurrentAdmin();
-  const isCurrentUser = auth.isCurrentUser();
-  const isOwner = auth.isOwner(user);
   const hasRoleAuthorized = auth.hasRoleAuthorized(user);
   const hasCreatedByOwnerRoleAuthorized = auth.hasCreatedByOwnerRoleAuthorized(user);
   const isUserEqualToCurrentUser = auth.isUserEqualToCurrentUser(user);
@@ -56,13 +53,6 @@ const Details: FC<DetailsImporation> = ({ user }) => {
         path: isCurrentOwner
           ? getDynamicPath(Pathes.UPDATE_USER_BY_OWNER, { id: user.id })
           : getDynamicPath(Pathes.UPDATE_USER, { id: user.id }),
-      });
-    }
-
-    if (isUserEqualToCurrentUser || ((isCurrentAdmin || isCurrentUser) && isOwner) || isCurrentOwner) {
-      options.push({
-        label: 'Start a conversation',
-        path: `${Pathes.CHAT}?uid=${user.id}`,
       });
     }
 

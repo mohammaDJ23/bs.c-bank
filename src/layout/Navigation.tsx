@@ -22,7 +22,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import NotificationIcon from '@mui/icons-material/Notifications';
-import ChatIcon from '@mui/icons-material/Chat';
 import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -290,28 +289,6 @@ const Navigation: FC<NavigationImportation> = ({ children, menuOptions, title })
         },
       },
     ];
-
-    if (isCurrentOwner) {
-      navigationItems.splice(-2, 0, {
-        title: 'Conversations',
-        path: Pathes.CHAT,
-        icon: <ChatIcon />,
-        onClick() {
-          setIsDrawerOpened(false);
-          navigate(this.path!);
-        },
-      });
-    } else {
-      navigationItems.splice(-2, 0, {
-        title: 'Contact support',
-        path: Pathes.CHAT,
-        icon: <ChatIcon />,
-        onClick() {
-          setIsDrawerOpened(false);
-          navigate(this.path!);
-        },
-      });
-    }
 
     return navigationItems;
   }
