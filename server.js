@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 if (isFileExist('dist')) {
-  app.use('/bank/static', express.static(path.join(__dirname, 'dist')));
+  app.use(process.env.BANK_PUBLIC_PATH, express.static(path.join(__dirname, 'dist')));
 }
 
 app.get('*', (req, res) => {
